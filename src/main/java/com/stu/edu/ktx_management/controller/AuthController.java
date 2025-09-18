@@ -54,7 +54,8 @@ public class AuthController {
 
         UserDetails ud = userDetailsService.loadUserByUsername(req.getUsername());
         String token = jwtUtil.generateToken(ud.getUsername());
-        return ResponseEntity.ok(new AuthResponse(token));
+        User user = userRepository.findByUsername(req.getUsername()).orElseThrow();
+        return ResponseEntity.ok(new AuthResponse(token, user.getRole().name()));
     }
 
     @Data
@@ -68,5 +69,6 @@ public class AuthController {
     @Data @AllArgsConstructor
     public static class AuthResponse {
         private String jwt;
+        private String role;
     }
 }
