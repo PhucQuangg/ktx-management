@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Admin Dashboard</title>
+  <meta charset="UTF-8">
+</head>
+<body>
+<h2>Welcome, Admin</h2>
+<button onclick="logout()">Logout</button>
+
+<script>
+  function logout() {
+    localStorage.removeItem("jwt");
+    localStorage.removeItem("role");
+    window.location.href = "/login";
+  }
+</script>
+</body>
+</html>
