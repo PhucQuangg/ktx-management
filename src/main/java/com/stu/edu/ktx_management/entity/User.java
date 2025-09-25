@@ -14,7 +14,9 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    @Column(name = "username",nullable = false,unique = true)
     private String username;
+    @Column(name = "password",nullable = false)
     private String password;
     @Column(name = "full_name")
     private String fullName;
@@ -22,6 +24,6 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private Role role;
-    private Date created_at;
+    private Date created_at = new Date();
 
 }
