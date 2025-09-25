@@ -24,9 +24,7 @@
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
             http.csrf().disable()
                     .authorizeHttpRequests(auth -> auth
-                            .requestMatchers("/**").permitAll()
-                            .requestMatchers("/api/auth/**").permitAll()
-                            .requestMatchers("/auth/**").permitAll()
+                            .requestMatchers("/","/login","/api/auth/**").permitAll()
                             .requestMatchers("/admin/**").hasRole("ADMIN")
                             .requestMatchers("/student/**").hasRole("STUDENT")
                             .anyRequest().authenticated()
