@@ -3,6 +3,7 @@ package com.stu.edu.ktx_management.controller;
 import com.stu.edu.ktx_management.config.jwt.JwtUtil;
 import com.stu.edu.ktx_management.entity.User;
 import com.stu.edu.ktx_management.repository.UserRepository;
+import com.stu.edu.ktx_management.service.ForgotPasswordService;
 import com.stu.edu.ktx_management.service.user.UserService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,10 +18,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("api/auth")
@@ -30,6 +28,7 @@ public class AuthController {
     @Autowired private AuthenticationManager authenticationManager;
     @Autowired private UserDetailsService userDetailsService;
     @Autowired private JwtUtil jwtUtil;
+    @Autowired private ForgotPasswordService forgotPasswordService;
 
     // Register
     @PostMapping("/register")
@@ -57,6 +56,18 @@ public class AuthController {
         String token = jwtUtil.generateToken(ud.getUsername());
         User user = userRepository.findByUsername(req.getUsername()).orElseThrow();
         return ResponseEntity.ok(new AuthResponse(token, user.getRole().name()));
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<String> forgotPassword(@RequestParam String email){
+        forgotPasswordService.createPasswordResetToken(email);
+        return ResponseEntity.ok("Email reset password đã được gửi tới: " +email);
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(@RequestParam String token, @RequestParam String newPassword){
+        forgotPasswordService.resetPassword(token,newPassword);
+        return ResponseEntity.ok("Mật khẩu đã được cập nhật thành công!");
     }
 
     @Data
