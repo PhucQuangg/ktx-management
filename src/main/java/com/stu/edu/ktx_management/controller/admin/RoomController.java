@@ -1,4 +1,4 @@
-package com.stu.edu.ktx_management.controller;
+package com.stu.edu.ktx_management.controller.admin;
 
 import com.stu.edu.ktx_management.entity.Room;
 import com.stu.edu.ktx_management.service.RoomService;

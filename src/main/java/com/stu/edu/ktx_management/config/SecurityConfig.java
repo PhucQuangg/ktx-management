@@ -1,6 +1,7 @@
     package com.stu.edu.ktx_management.config;
 
     import com.stu.edu.ktx_management.config.jwt.JwtRequestFilter;
+    import org.modelmapper.ModelMapper;
     import org.springframework.beans.factory.annotation.Autowired;
     import org.springframework.context.annotation.*;
     import org.springframework.security.authentication.*;
@@ -19,6 +20,10 @@
 
         @Autowired
         private JwtRequestFilter jwtRequestFilter;
+        @Bean
+        public ModelMapper modelMapper() {
+            return new ModelMapper();
+        }
 
         @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
