@@ -1,24 +1,69 @@
-<!DOCTYPE html>
+<!doctype html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Login</title>
-    <meta charset="UTF-8">
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        body {
+          background: url("https://maytinhgiaphat.vn/wp-content/uploads/2025/09/nhung-hinh-nen-may-tinh-thien-nhien-dep-nhat-1.png") no-repeat center center fixed;
+          background-size: cover;
+        }
+        .login-box {
+          max-width: 400px;
+          margin: 80px auto;
+          background: white;
+          border-radius: 15px;
+          box-shadow: 0 0 15px rgba(0,0,0,0.3);
+          padding: 25px;
+        }
+        .login-box h3 {
+          font-weight: bold;
+        }
+        .btn-green {
+          background-color: #28a745;
+          color: white;
+          height: 70px;
+
+        }
+        .btn-green:hover {
+          background-color: #218838;
+          color: white;
+        }
+    </style>
+    <title>Đăng nhập</title>
 </head>
 <body>
-<h2>Login</h2>
+<div class="container">
+    <div class="login-box">
+        <h3 class="text-center mb-4">
+            <i class="fa-solid fa-building"></i> Đăng nhập <i class="fa-solid fa-building"></i>
+        </h3>
 
-<form id="loginForm">
-    <label>Username:</label><br>
-    <input type="text" id="username" required><br><br>
+        <form id="loginForm">
+            <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" class="form-control" id="username" placeholder="username">
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Mật khẩu</label>
+                <input type="password" class="form-control" id="password" placeholder="Password">
+            </div>
 
-    <label>Password:</label><br>
-    <input type="password" id="password" required><br><br>
-
-    <button type="submit">Login</button>
-</form>
-
-<p id="error" style="color:red;"></p>
-
+            <button type="submit" class="btn btn-primary w-100 mt-2">Đăng nhập</button>
+            <div class="text-center mt-2">
+                <a href="#" class="text-decoration-none">Quên mật khẩu?</a>
+            </div>
+            <button type="button" class="btn btn-green d-block mx-auto mt-3 h-50">Tạo tài khoản mới</button>
+        </form>
+    </div>
+</div>
+</body>
 <script>
     document.getElementById("loginForm").addEventListener("submit", async function (e) {
         e.preventDefault();
@@ -50,5 +95,4 @@
         }
     });
 </script>
-</body>
 </html>
