@@ -29,7 +29,7 @@
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
             http.csrf().disable()
                     .authorizeHttpRequests(auth -> auth
-                            .requestMatchers("/","/login","/api/auth/**").permitAll()
+                            .requestMatchers("/","/login","/register","/api/auth/**").permitAll()
                             .requestMatchers("/admin/**").hasRole("ADMIN")
                             .requestMatchers("/student/**").hasRole("STUDENT")
                             .anyRequest().authenticated()
