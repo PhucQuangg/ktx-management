@@ -47,19 +47,19 @@
 
         <form id="loginForm">
             <div class="mb-3">
-                <label for="username" class="form-label">Username</label>
-                <input type="text" class="form-control" id="username" placeholder="username">
+                <label for="username" class="form-label">Tên đăng nhập</label>
+                <input type="text" class="form-control" id="username" placeholder="Tên đăng nhập">
             </div>
             <div class="mb-3">
                 <label for="password" class="form-label">Mật khẩu</label>
-                <input type="password" class="form-control" id="password" placeholder="Password">
+                <input type="password" class="form-control" id="password" placeholder="Mật khẩu">
             </div>
 
             <button type="submit" class="btn btn-primary w-100 mt-2">Đăng nhập</button>
             <div class="text-center mt-2">
-                <a href="#" class="text-decoration-none">Quên mật khẩu?</a>
+                <a th:href="@{/}" class="text-decoration-none">Quên mật khẩu?</a>
             </div>
-            <button type="button" class="btn btn-green d-block mx-auto mt-3 h-50">Tạo tài khoản mới</button>
+           <a th:href="@{/register}" type="button" class="btn btn-green d-block mx-auto mt-3 h-50"  >Tạo tài khoản mới</a>
         </form>
     </div>
 </div>

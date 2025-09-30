@@ -1,6 +1,7 @@
 package com.stu.edu.ktx_management.controller;
 
 import com.stu.edu.ktx_management.config.jwt.JwtUtil;
+import com.stu.edu.ktx_management.entity.Role;
 import com.stu.edu.ktx_management.entity.User;
 import com.stu.edu.ktx_management.repository.UserRepository;
 import com.stu.edu.ktx_management.service.ForgotPasswordService;
@@ -36,7 +37,14 @@ public class AuthController {
         if (userRepository.findByUsername(user.getUsername()).isPresent()) {
             return ResponseEntity.badRequest().body("Username already exists");
         }
+        if (userRepository.findByEmail(user.getEmail()).isPresent()){
+            return ResponseEntity.badRequest().body("Email already exists");
+        }
+        user.setUsername(user.getUsername());
+        user.setEmail(user.getEmail());
+        user.setFullName(user.getFullName());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setRole(Role.STUDENT);
         userRepository.save(user);
         return ResponseEntity.ok("User registered");
     }
