@@ -2,6 +2,7 @@ package com.stu.edu.ktx_management.config.jwt;
 
 import com.stu.edu.ktx_management.service.user.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,15 +25,16 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     @Autowired
     private CustomUserDetailsService userDetailsService;
 
-    // Bỏ qua filter cho các URL permitAll
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getServletPath();
         return path.equals("/")
-                || path.startsWith("/login")
-                || path.startsWith("/register")
-                || path.startsWith("/api/auth");
+                || path.equals("/api/auth/login")
+                || path.equals("/api/auth/register")
+                || path.startsWith("/api/auth/forgot-password")
+                || path.startsWith("/api/auth/reset-password");
     }
+
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)

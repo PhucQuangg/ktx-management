@@ -24,6 +24,7 @@ public class JwtUtil {
 
         return Jwts.builder()
                 .setSubject(username)
+                .claim("username", username)
                 .setIssuedAt(now)
                 .setExpiration(exp)
                 .signWith(key)
