@@ -23,7 +23,7 @@ public class ViewController {
         return "admin/dashboard";
     }
 
-    @GetMapping("/")
+    @GetMapping
     public String homePage() {
         return "index"; // trang chính của student
     }
