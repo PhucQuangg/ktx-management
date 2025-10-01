@@ -33,7 +33,6 @@
     </div>
     <!-- /.content-wrapper -->
 
-    <div th:replace="fragments/footer::footer"></div>
 
 
 </div>
@@ -42,6 +41,28 @@
 <!-- jQuery 3 -->
 
 <div th:replace="fragments/script::script"></div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        function parseJwt(token) {
+            try {
+                return JSON.parse(atob(token.split('.')[1]));
+            } catch (e) {
+                return null;
+            }
+        }
+
+        const token = localStorage.getItem("jwt");
+        if (token) {
+            const decoded = parseJwt(token);
+            if (decoded && decoded.username) {
+                const elements = document.querySelectorAll(".usernameSpan");
+                elements.forEach(el => {
+                    el.innerText = decoded.username;
+                });
+            }
+        }
+    });
+</script>
 
 </body>
 </html>

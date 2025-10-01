@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 @RequestMapping("api/auth")
 public class AuthController {
-    @Autowired private UserRepository userRepository;
+    @Autowired private UserService userService;
     @Autowired private PasswordEncoder passwordEncoder;
     @Autowired private AuthenticationManager authenticationManager;
     @Autowired private UserDetailsService userDetailsService;
@@ -34,10 +34,10 @@ public class AuthController {
     // Register
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody User user) {
-        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
+        if (userService.findByUsername(user.getUsername()).isPresent()) {
             return ResponseEntity.badRequest().body("Username already exists");
         }
-        if (userRepository.findByEmail(user.getEmail()).isPresent()){
+        if (userService.findByEmail(user.getEmail()).isPresent()){
             return ResponseEntity.badRequest().body("Email already exists");
         }
         user.setUsername(user.getUsername());
@@ -45,7 +45,7 @@ public class AuthController {
         user.setFullName(user.getFullName());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole(Role.STUDENT);
-        userRepository.save(user);
+        userService.createUser(user);
         return ResponseEntity.ok("User registered");
     }
 
@@ -62,7 +62,7 @@ public class AuthController {
 
         UserDetails ud = userDetailsService.loadUserByUsername(req.getUsername());
         String token = jwtUtil.generateToken(ud.getUsername());
-        User user = userRepository.findByUsername(req.getUsername()).orElseThrow();
+        User user = userService.findByUsername(req.getUsername()).orElseThrow();
         return ResponseEntity.ok(new AuthResponse(token, user.getRole().name()));
     }
 
