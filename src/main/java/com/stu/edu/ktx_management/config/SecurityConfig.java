@@ -8,6 +8,7 @@
     import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
     import org.springframework.security.config.annotation.web.builders.HttpSecurity;
     import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+    import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
     import org.springframework.security.config.http.SessionCreationPolicy;
     import org.springframework.security.web.*;
     import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -45,6 +46,11 @@
             return config.getAuthenticationManager();
         }
 
+        @Bean
+        WebSecurityCustomizer webSecurityCustomizer() {
+            return web -> web.debug(true).ignoring()
+                    .requestMatchers("/static/**", "/fe/**", "assets/**", "uploads/**");
+        }
         @Bean
         public PasswordEncoder passwordEncoder() {
             return new BCryptPasswordEncoder();
