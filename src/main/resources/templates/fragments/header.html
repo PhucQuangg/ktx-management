@@ -103,13 +103,13 @@
         <!-- User Account: style can be found in dropdown.less -->
         <li class="dropdown user user-menu">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-            <img th:src="@{/assets/images/user2-160x160.jpg}" class="user-image" alt="User Image">
+            <i class="fa-solid fa-circle-user"></i>
             <span class="hidden-xs"><span class="usernameSpan">Guest</span></span>
           </a>
           <ul class="dropdown-menu">
             <!-- User image -->
             <li class="user-header">
-              <img th:src="@{/assets/images/user2-160x160.jpg}" class="img-circle" alt="User Image">
+              <img th:src="@{/assets/images/userlogo.jpg}" class="img-circle" alt="User Image">
 
               <p>
                 <span class="hidden-xs"><span class="usernameSpan">Guest</span></span>
@@ -117,13 +117,8 @@
             </li>
 
             <!-- Menu Footer-->
-            <li class="user-footer">
-              <div class="pull-left">
-                <a href="#" class="btn btn-default btn-flat">Profile</a>
-              </div>
-              <div class="pull-right">
-                <a th:href="@{/admin-logout}" class="btn btn-default btn-flat">Sign out</a>
-              </div>
+            <li class="user-footer" id="userMenu">
+
             </li>
           </ul>
         </li>
@@ -131,4 +126,5 @@
       </ul>
     </div>
   </nav>
+
 </header>
