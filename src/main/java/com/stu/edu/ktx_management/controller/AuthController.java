@@ -66,6 +66,12 @@ public class AuthController {
         return ResponseEntity.ok(new AuthResponse(token, user.getRole().name()));
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout() {
+        return ResponseEntity.ok("Logout successful");
+    }
+
+
     @PostMapping("/forgot-password")
     public ResponseEntity<String> forgotPassword(@RequestParam String email){
         forgotPasswordService.createPasswordResetToken(email);

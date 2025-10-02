@@ -62,6 +62,36 @@
             }
         }
     });
+
+    function logout() {
+        fetch("/api/auth/logout", { method: "POST" })
+            .then(() => {
+                localStorage.removeItem("jwt");
+                localStorage.removeItem("role");
+                window.location.href = "/login";
+            });
+    }
+    const userMenu = document.getElementById("userMenu");
+    const token = localStorage.getItem("jwt");
+
+    if (token) {
+        // Đã login
+        userMenu.innerHTML = `
+            <div class="pull-left">
+                <a href="/profile" class="btn btn-default btn-flat">Profile</a>
+            </div>
+            <div class="pull-right">
+                <a href="javascript:void(0)" onclick="logout()" class="btn btn-default btn-flat">Sign out</a>
+            </div>
+        `;
+    } else {
+        // Chưa login
+        userMenu.innerHTML = `
+            <div class="text-center" style="width:100%">
+                <a href="/login" class="btn btn-default btn-flat">Sign in</a>
+            </div>
+        `;
+    }
 </script>
 
 </body>
