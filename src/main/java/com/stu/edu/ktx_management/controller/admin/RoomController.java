@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/admin/rooms")
+@RequestMapping("/api/admin/rooms")
 public class RoomController {
     @Autowired
     private RoomService roomService;

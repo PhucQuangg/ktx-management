@@ -51,7 +51,7 @@
             }
         }
 
-        const token = localStorage.getItem("jwt");
+        const token = localStorage.getItem("token");
         if (token) {
             const decoded = parseJwt(token);
             if (decoded && decoded.username) {
@@ -64,15 +64,15 @@
     });
 
     function logout() {
-        fetch("/api/auth/logout", { method: "POST" })
+        fetch("/api/auth/logout", { method: "POST", credentials: "include" })
             .then(() => {
-                localStorage.removeItem("jwt");
+                localStorage.removeItem("token");
                 localStorage.removeItem("role");
                 window.location.href = "/login";
             });
     }
     const userMenu = document.getElementById("userMenu");
-    const token = localStorage.getItem("jwt");
+    const token = localStorage.getItem("token");
 
     if (token) {
         // Đã login
@@ -81,7 +81,7 @@
                 <a href="/profile" class="btn btn-default btn-flat">Profile</a>
             </div>
             <div class="pull-right">
-                <a href="javascript:void(0)" onclick="logout()" class="btn btn-default btn-flat">Sign out</a>
+                <a onclick="logout()" class="btn btn-default btn-flat">Sign out</a>
             </div>
         `;
     } else {

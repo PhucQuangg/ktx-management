@@ -6,6 +6,8 @@ import com.stu.edu.ktx_management.entity.User;
 import com.stu.edu.ktx_management.repository.UserRepository;
 import com.stu.edu.ktx_management.service.ForgotPasswordService;
 import com.stu.edu.ktx_management.service.user.UserService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,14 +17,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @Controller
-@RequestMapping("api/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
     @Autowired private UserService userService;
     @Autowired private PasswordEncoder passwordEncoder;
@@ -49,27 +54,43 @@ public class AuthController {
         return ResponseEntity.ok("User registered");
     }
 
-    // Login -> trả JWT
+
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody AuthRequest req) {
+    @ResponseBody
+    public Object login(@RequestBody AuthRequest req, HttpServletResponse response) {
+
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(req.getUsername(), req.getPassword())
             );
         } catch (BadCredentialsException ex) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+            return ResponseEntity.status(401).body("Invalid credentials");
         }
 
         UserDetails ud = userDetailsService.loadUserByUsername(req.getUsername());
         String token = jwtUtil.generateToken(ud.getUsername());
+
+        // Lưu JWT vào cookie
+        Cookie jwtCookie = new Cookie("token", token);
+        jwtCookie.setHttpOnly(true);
+        jwtCookie.setPath("/");
+        response.addCookie(jwtCookie);
+
         User user = userService.findByUsername(req.getUsername()).orElseThrow();
-        return ResponseEntity.ok(new AuthResponse(token, user.getRole().name()));
+        String role = user.getRole().name();
+
+        return Map.of(
+                "token", token,
+                "role", role
+        );
     }
 
-    @PostMapping("/logout")
-    public ResponseEntity<String> logout() {
-        return ResponseEntity.ok("Logout successful");
+    @PostMapping("/api/auth/logout")
+    @ResponseBody
+    public ResponseEntity<?> logout() {
+        return ResponseEntity.ok("Logged out");
     }
+
 
 
     @PostMapping("/forgot-password")

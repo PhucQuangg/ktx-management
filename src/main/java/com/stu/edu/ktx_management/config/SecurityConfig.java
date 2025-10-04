@@ -31,11 +31,21 @@
             http.csrf().disable()
                     .authorizeHttpRequests(auth -> auth
                             .requestMatchers("/","/login","/register","/api/auth/**").permitAll()
-                            .requestMatchers("/admin/**").hasRole("ADMIN")
-                            .requestMatchers("/student/**").hasRole("STUDENT")
+                            .requestMatchers( "/admin/**","/api/admin/**").hasRole("ADMIN")
+                            .requestMatchers("/student/**", "/api/student/**").hasAnyRole("STUDENT","ADMIN")
                             .anyRequest().authenticated()
                     )
-                    .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                    .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                    .logout(logout -> logout
+                            .logoutUrl("/api/auth/logout")
+                            .logoutSuccessHandler((request, response, authentication) -> {
+
+                            })
+                            .invalidateHttpSession(false)
+                            .deleteCookies("token")
+                    );
+
+
 
             http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
             return http.build();
