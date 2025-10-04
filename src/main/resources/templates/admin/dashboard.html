@@ -1,19 +1,18 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <title>Admin Dashboard</title>
   <meta charset="UTF-8">
+  <title>Admin Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-<h2>Welcome, Admin</h2>
-<button onclick="logout()">Logout</button>
+<div class="container mt-5">
+  <h1>Xin chào Admin!</h1>
+  <p>Đây là trang dashboard của admin.</p>
 
-<script>
-  function logout() {
-    localStorage.removeItem("jwt");
-    localStorage.removeItem("role");
-    window.location.href = "/login";
-  }
-</script>
+  <!-- Ví dụ: menu quản lý user -->
+  <a href="#" class="btn btn-primary">Quản lý User</a>
+  <a href="#" class="btn btn-success">Quản lý KTX</a>
+</div>
 </body>
 </html>

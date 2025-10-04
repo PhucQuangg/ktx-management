@@ -17,14 +17,8 @@ public class ViewController {
     public String Register() {
         return "register";
     }
-
-    @GetMapping("/admin/dashboard")
-    public String adminDashboard() {
-        return "admin/dashboard";
-    }
-
     @GetMapping
     public String homePage() {
-        return "index"; // trang chính của student
+        return "index";
     }
 }

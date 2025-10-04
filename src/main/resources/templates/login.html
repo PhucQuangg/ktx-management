@@ -81,16 +81,17 @@
             const data = await response.json();
 
             // Lưu token vào localStorage
-            localStorage.setItem("jwt", data.jwt);
+            localStorage.setItem("token", data.token);
             localStorage.setItem("role", data.role);
 
-            // Redirect theo role
+
             if (data.role === "ADMIN") {
                 window.location.href = "/admin/dashboard";
             } else {
                 window.location.href = "/";
             }
         } else {
+
             document.getElementById("error").textContent = "Sai username hoặc password!";
         }
     });

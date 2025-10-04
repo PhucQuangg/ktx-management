@@ -10,7 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/student")
+@RequestMapping("/api/student")
 public class StudentProfileController {
 
     @Autowired
