@@ -17,6 +17,11 @@ public class ViewController {
     public String Register() {
         return "register";
     }
+    @GetMapping("/forgot-password")
+    public String forgotpassword() {
+        return "forgotPassword";
+    }
+
     @GetMapping
     public String homePage() {
         return "index";
