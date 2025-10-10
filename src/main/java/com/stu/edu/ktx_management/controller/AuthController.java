@@ -1,8 +1,10 @@
 package com.stu.edu.ktx_management.controller;
 
 import com.stu.edu.ktx_management.config.jwt.JwtUtil;
+import com.stu.edu.ktx_management.entity.PasswordResetToken;
 import com.stu.edu.ktx_management.entity.Role;
 import com.stu.edu.ktx_management.entity.User;
+import com.stu.edu.ktx_management.repository.PasswordResetTokenRepository;
 import com.stu.edu.ktx_management.repository.UserRepository;
 import com.stu.edu.ktx_management.service.ForgotPasswordService;
 import com.stu.edu.ktx_management.service.user.UserService;
@@ -22,8 +24,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @Controller
@@ -35,6 +39,8 @@ public class AuthController {
     @Autowired private UserDetailsService userDetailsService;
     @Autowired private JwtUtil jwtUtil;
     @Autowired private ForgotPasswordService forgotPasswordService;
+    @Autowired private PasswordResetTokenRepository tokenRepository;
+
 
     // Register
     @PostMapping("/register")
@@ -95,14 +101,37 @@ public class AuthController {
 
     @PostMapping("/forgot-password")
     public ResponseEntity<String> forgotPassword(@RequestParam String email){
-        forgotPasswordService.createPasswordResetToken(email);
-        return ResponseEntity.ok("Email reset password đã được gửi tới: " +email);
+        try {
+            forgotPasswordService.createPasswordResetToken(email);
+            return ResponseEntity.ok("Email reset password đã được gửi tới: " + email);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }    }
+
+    @GetMapping("/reset-password")
+    public String showResetPasswordPage(@RequestParam String token, Model model) {
+        PasswordResetToken resetToken = tokenRepository.findByToken(token)
+                .orElse(null);
+
+        if (resetToken == null || resetToken.getExpiryDate().isBefore(LocalDateTime.now())) {
+            model.addAttribute("error", "Liên kết không hợp lệ hoặc đã hết hạn!");
+            return "forgotPassword";
+        }
+
+        model.addAttribute("token", token);
+        return "resetPassword";
     }
+
 
     @PostMapping("/reset-password")
     public ResponseEntity<String> resetPassword(@RequestParam String token, @RequestParam String newPassword){
-        forgotPasswordService.resetPassword(token,newPassword);
-        return ResponseEntity.ok("Mật khẩu đã được cập nhật thành công!");
+        try {
+            forgotPasswordService.resetPassword(token,newPassword);
+            return ResponseEntity.ok("Mật khẩu đã được cập nhật thành công !");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+
     }
 
     @Data
