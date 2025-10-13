@@ -32,7 +32,6 @@
             return path.equals("/")
                     || path.equals("/api/auth/login")
                     || path.equals("/api/auth/register")
-                    || path.equals("/api/auth/logout")
                     || path.startsWith("/api/auth/forgot-password")
                     || path.startsWith("/api/auth/reset-password");
         }

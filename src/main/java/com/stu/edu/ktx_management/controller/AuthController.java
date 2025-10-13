@@ -1,25 +1,21 @@
 package com.stu.edu.ktx_management.controller;
 
 import com.stu.edu.ktx_management.config.jwt.JwtUtil;
+import com.stu.edu.ktx_management.dto.AuthRequestDTO;
 import com.stu.edu.ktx_management.entity.PasswordResetToken;
 import com.stu.edu.ktx_management.entity.Role;
 import com.stu.edu.ktx_management.entity.User;
 import com.stu.edu.ktx_management.repository.PasswordResetTokenRepository;
-import com.stu.edu.ktx_management.repository.UserRepository;
 import com.stu.edu.ktx_management.service.ForgotPasswordService;
 import com.stu.edu.ktx_management.service.user.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -63,7 +59,7 @@ public class AuthController {
 
     @PostMapping("/login")
     @ResponseBody
-    public Object login(@RequestBody AuthRequest req, HttpServletResponse response) {
+    public Object login(@RequestBody AuthRequestDTO req, HttpServletResponse response) {
 
         try {
             authenticationManager.authenticate(
@@ -90,14 +86,6 @@ public class AuthController {
                 "role", role
         );
     }
-
-    @PostMapping("/api/auth/logout")
-    @ResponseBody
-    public ResponseEntity<?> logout() {
-        return ResponseEntity.ok("Logged out");
-    }
-
-
 
     @PostMapping("/forgot-password")
     public ResponseEntity<String> forgotPassword(@RequestParam String email){
@@ -132,19 +120,5 @@ public class AuthController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
 
-    }
-
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class AuthRequest {
-        private String username;
-        private String password;
-    }
-
-    @Data @AllArgsConstructor
-    public static class AuthResponse {
-        private String jwt;
-        private String role;
     }
 }

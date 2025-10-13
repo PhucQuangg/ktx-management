@@ -73,7 +73,8 @@
             <form id="loginForm">
                 <input type="text" class="form-control " id="username" placeholder="Tên Đăng nhập" required>
                 <input type="password" class="form-control mt-4" id="password" placeholder="Mật khẩu" required>
-                <button type="submit" class="btn btn-login mt-4">Đăng nhập</button>
+                <p id="error" class="text-danger text-center mt-3 fw-bold"></p>
+                <button type="submit" class="btn btn-login mt-4 fw-bold">Đăng nhập</button>
             </form>
             <div class="login-links mt-4">
                 <a th:href="@{/forgot-password}" class="text-decoration-none text-primary fw-semibold">Quên mật khẩu?</a><br>
@@ -110,8 +111,7 @@
                 window.location.href = "/";
             }
         } else {
-
-            document.getElementById("error").textContent = "Sai username hoặc password!";
+            document.getElementById("error").textContent = "Sai tên đăng nhập hoặc mật khẩu!";
         }
     });
 </script>

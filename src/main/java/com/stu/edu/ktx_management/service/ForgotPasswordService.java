@@ -58,4 +58,15 @@ public class ForgotPasswordService {
 
         tokenRepository.delete(resetToken);
     }
+
+    public void updatePassword (String username, String oldPassword, String newPassword){
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(()-> new RuntimeException("Không tìm thấy user"));
+        if(!passwordEncoder.matches(oldPassword, user.getPassword())){
+            throw new RuntimeException("Mật khẩu cũ không đúng !");
+        }
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+    }
+
 }
