@@ -10,6 +10,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class StudentProfileDTO {
+    private String username;
     private String fullName;
     private String email;
     private String password;

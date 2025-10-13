@@ -21,6 +21,10 @@ public class ViewController {
     public String forgotpassword() {
         return "forgotPassword";
     }
+    @GetMapping("/profile")
+    public String profile() {
+        return "student/profileIndex";
+    }
 
     @GetMapping
     public String homePage() {

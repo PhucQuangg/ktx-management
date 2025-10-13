@@ -1,6 +1,8 @@
     package com.stu.edu.ktx_management.config;
 
     import com.stu.edu.ktx_management.config.jwt.JwtRequestFilter;
+    import jakarta.servlet.http.Cookie;
+    import jakarta.servlet.http.HttpServletResponse;
     import org.modelmapper.ModelMapper;
     import org.springframework.beans.factory.annotation.Autowired;
     import org.springframework.context.annotation.*;
@@ -14,6 +16,7 @@
     import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
     import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
     import org.springframework.security.crypto.password.PasswordEncoder;
+    import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
     @Configuration
     @EnableWebSecurity
@@ -25,7 +28,6 @@
         public ModelMapper modelMapper() {
             return new ModelMapper();
         }
-
         @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
             http.csrf().disable()
@@ -37,11 +39,15 @@
                     )
                     .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                     .logout(logout -> logout
-                            .logoutUrl("/api/auth/logout")
+                            .logoutRequestMatcher(new AntPathRequestMatcher("/api/auth/logout", "POST"))
                             .logoutSuccessHandler((request, response, authentication) -> {
-
+                                Cookie cookie = new Cookie("token", null);
+                                cookie.setMaxAge(0);
+                                cookie.setPath("/");
+                                response.addCookie(cookie);
+                                response.setStatus(HttpServletResponse.SC_OK);
                             })
-                            .invalidateHttpSession(false)
+                            .invalidateHttpSession(true)
                             .deleteCookies("token")
                     );
 

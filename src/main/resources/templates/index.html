@@ -64,12 +64,20 @@
     });
 
     function logout() {
-        fetch("/api/auth/logout", { method: "POST", credentials: "include" })
-            .then(() => {
-                localStorage.removeItem("token");
-                localStorage.removeItem("role");
-                window.location.href = "/login";
-            });
+        fetch("/api/auth/logout", {
+            method: "POST",
+            credentials: "include"
+        })
+            .then(res => {
+                if (res.ok) {
+                    localStorage.removeItem("token");
+                    localStorage.removeItem("role");
+                    window.location.href = "/login";
+                } else {
+                    alert("Logout failed: " + res.status);
+                }
+            })
+            .catch(err => console.error(err));
     }
     const userMenu = document.getElementById("userMenu");
     const token = localStorage.getItem("token");

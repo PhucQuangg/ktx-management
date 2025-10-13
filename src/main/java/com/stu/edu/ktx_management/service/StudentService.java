@@ -27,9 +27,11 @@ public class StudentService {
 
     public List<StudentProfileDTO> getAllStudents() {
         return studentRepository.findAll().stream().map(student -> new StudentProfileDTO(
+
                 student.getUser().getUsername(),
                 student.getUser().getFullName(),
                 student.getUser().getEmail(),
+                student.getUser().getPassword(),
                 student.getPhone(),
                 student.getClassName(),
                 student.getDateOfBirth(),
@@ -59,12 +61,24 @@ public class StudentService {
         studentRepository.deleteById(id);
     }
 
-    public Student getStudentByUsername(String username) {
+    public StudentProfileDTO getStudentByUsername(String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy user: " + username));
 
-        return studentRepository.findByUser(user)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy student với user: " + username));
+        Student student = studentRepository.findByUser(user).orElse(null);
+        StudentProfileDTO stuDto = new StudentProfileDTO();
+        stuDto.setUsername(user.getUsername());
+        stuDto.setFullName(user.getFullName());
+        stuDto.setEmail(user.getEmail());
+
+        if(student != null){
+            stuDto.setClassName(student.getClassName());
+            stuDto.setPhone(student.getPhone());
+            stuDto.setDateOfBirth(student.getDateOfBirth());
+            stuDto.setGender(student.getGender());
+        }
+        return stuDto;
+
     }
 
 
@@ -84,9 +98,7 @@ public class StudentService {
         // Update User
         if (request.getFullName() != null) user.setFullName(request.getFullName());
         if (request.getEmail() != null) user.setEmail(request.getEmail());
-        if (request.getPassword() != null) {
-            user.setPassword(passwordEncoder.encode(request.getPassword()));
-        }
+
 
         userRepository.save(user);
         return studentRepository.save(student);
