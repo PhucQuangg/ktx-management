@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 @Service
@@ -87,18 +89,33 @@ public class StudentService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         Student student = studentRepository.findByUser(user)
-                .orElseThrow(() -> new RuntimeException("Student not found"));
-
+                .orElseGet(() -> {
+                    Student s = new Student();
+                    s.setUser(user);
+                    return s;
+                });
         // Update Student
-        if (request.getPhone() != null) student.setPhone(request.getPhone());
-        if (request.getClassName() != null) student.setClassName(request.getClassName());
-        if (request.getDateOfBirth() != null) student.setDateOfBirth(request.getDateOfBirth());
-        if (request.getGender() != null) student.setGender(request.getGender());
+        if (request.getPhone() != null && !request.getPhone().isEmpty()) {
+            student.setPhone(request.getPhone());
+        }
+        if (request.getClassName() != null && !request.getClassName().isEmpty()) {
+            student.setClassName(request.getClassName());
+        }
+        if (request.getDateOfBirth() != null) {
+            student.setDateOfBirth(request.getDateOfBirth());
+        }
+
+        if (request.getGender() != null) {
+            student.setGender(request.getGender());
+        }
 
         // Update User
-        if (request.getFullName() != null) user.setFullName(request.getFullName());
-        if (request.getEmail() != null) user.setEmail(request.getEmail());
-
+        if (request.getFullName() != null && !request.getFullName().isEmpty()) {
+            user.setFullName(request.getFullName());
+        }
+        if (request.getEmail() != null && !request.getEmail().isEmpty()) {
+            user.setEmail(request.getEmail());
+        }
 
         userRepository.save(user);
         return studentRepository.save(student);

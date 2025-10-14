@@ -1,5 +1,6 @@
 package com.stu.edu.ktx_management.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import java.time.LocalDate;
