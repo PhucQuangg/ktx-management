@@ -25,4 +25,8 @@ public class Room {
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private RoomStatus status;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type")
+    private TypeRoom type;
 }

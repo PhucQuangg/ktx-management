@@ -2,6 +2,7 @@ package com.stu.edu.ktx_management.service;
 
 import com.stu.edu.ktx_management.entity.Room;
 import com.stu.edu.ktx_management.entity.RoomStatus;
+import com.stu.edu.ktx_management.entity.TypeRoom;
 import com.stu.edu.ktx_management.repository.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -69,6 +70,11 @@ public class RoomService {
         }
 
         return roomRepository.save(room);
+    }
+    public List<Room> getAvailableRoomsByType(TypeRoom type) {
+        List<Room> rooms = roomRepository.findByStatusAndType(RoomStatus.AVAILABLE, type);
+        System.out.println("Rooms size: " + rooms.size());
+        return rooms;
     }
 
 }
