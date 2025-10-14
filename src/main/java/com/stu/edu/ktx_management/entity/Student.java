@@ -1,5 +1,6 @@
 package com.stu.edu.ktx_management.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,6 +21,7 @@ public class Student {
     @JoinColumn(name = "user_id", nullable = false, referencedColumnName = "id")
     private User user;
 
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateOfBirth;
 
     private Boolean gender;
