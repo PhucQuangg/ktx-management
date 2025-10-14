@@ -23,11 +23,15 @@ public class ViewController {
     }
     @GetMapping("/profile")
     public String profile() {
-        return "student/profileIndex";
+        return "student/profile";
+    }
+    @GetMapping("/rooms")
+    public String rooms() {
+        return "student/rooms";
     }
 
     @GetMapping
     public String homePage() {
-        return "index";
+        return "student/index";
     }
 }
