@@ -65,8 +65,9 @@
         @Bean
         WebSecurityCustomizer webSecurityCustomizer() {
             return web -> web.debug(true).ignoring()
-                    .requestMatchers("/static/**", "/fe/**", "assets/**", "uploads/**");
+                    .requestMatchers("/static/**", "/assets/**", "/uploads/**");
         }
+
         @Bean
         public PasswordEncoder passwordEncoder() {
             return new BCryptPasswordEncoder();
