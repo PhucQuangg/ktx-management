@@ -12,6 +12,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -97,17 +98,23 @@ public class AuthController {
         }    }
 
     @GetMapping("/reset-password")
-    public String showResetPasswordPage(@RequestParam String token, Model model) {
+    public ResponseEntity<?> showResetPasswordPage(@RequestParam String token) {
         PasswordResetToken resetToken = tokenRepository.findByToken(token)
                 .orElse(null);
 
         if (resetToken == null || resetToken.getExpiryDate().isBefore(LocalDateTime.now())) {
-            model.addAttribute("error", "Liên kết không hợp lệ hoặc đã hết hạn!");
-            return "forgotPassword";
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of(
+                            "status", "error",
+                            "message", "Liên kết không hợp lệ hoặc đã hết hạn!"
+                    ));
         }
 
-        model.addAttribute("token", token);
-        return "resetPassword";
+        return ResponseEntity.ok(Map.of(
+                "status", "success",
+                "message", "Token hợp lệ!",
+                "token", token
+        ));
     }
 
 

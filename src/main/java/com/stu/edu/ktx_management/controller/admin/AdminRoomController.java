@@ -35,11 +35,6 @@ public class AdminRoomController {
         return ResponseEntity.ok("Xoá phòng thành công với id: "+id);
     }
 
-//    @GetMapping("/edit/{id}")
-//    public String editRoomForm(@PathVariable Integer id, Model model) {
-//        model.addAttribute("room", roomService.getRoomById(id));
-//        return "room/edit";
-//    }
 
     @PutMapping("/update/{id}")
     public ResponseEntity<Room> updateRoom(@PathVariable Integer id, @RequestBody Room roomDetails) {
