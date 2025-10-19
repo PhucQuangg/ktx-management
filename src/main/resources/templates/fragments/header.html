@@ -1,9 +1,12 @@
-<header class="main-header" th:fragment="header">
+<header class="main-header" th:fragment="header" xmlns:th="http://www.w3.org/1999/xhtml">
   <!-- Logo -->
   <a href="/admin" class="logo">
     <!-- mini logo for sidebar mini 50x50 pixels -->
     <!-- logo for regular state and mobile devices -->
-    <span class="logo-lg">DORMITORY</span>
+    <span class="logo-mini"><b>STU</b></span> <span class="logo-lg">
+      <img th:src="@{/assets/images/small-logos/Logo_STU.png}" height="40" width="40" style="max-height: 40px; width: auto;">
+
+    </span>
   </a>
   <!-- Header Navbar: style can be found in header.less -->
   <nav class="navbar navbar-static-top">
