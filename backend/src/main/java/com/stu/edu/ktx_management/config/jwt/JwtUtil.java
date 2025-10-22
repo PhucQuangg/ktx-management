@@ -18,18 +18,20 @@ public class JwtUtil {
     private final SecretKey key = Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
     private final long EXPIRATION_MS = 24 * 60 * 60 * 1000; // 1 day
 
-    public String generateToken(String username) {
+    public String generateToken(String username, String role) {
         Date now = new Date();
         Date exp = new Date(now.getTime() + EXPIRATION_MS);
 
         return Jwts.builder()
                 .setSubject(username)
                 .claim("username", username)
+                .claim("role", role)
                 .setIssuedAt(now)
                 .setExpiration(exp)
                 .signWith(key)
                 .compact();
     }
+
 
     public String extractUsername(String token) {
         return Jwts.parserBuilder().setSigningKey(key).build()

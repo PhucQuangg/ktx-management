@@ -95,19 +95,17 @@
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({username, password}),
-            credentials: "include"
     });
 
         if (response.ok) {
             const data = await response.json();
 
-            // Lưu token vào localStorage
             localStorage.setItem("token", data.token);
             localStorage.setItem("role", data.role);
 
 
             if (data.role === "ADMIN") {
-                window.location.href = "http://localhost:8082/";
+                window.location.href = `http://localhost:8082/admin/dashboard?token=${data.token}`;
             } else {
                 window.location.href = "http://localhost:8081/";
             }

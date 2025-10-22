@@ -67,12 +67,10 @@
                     .logout(logout -> logout
                             .logoutRequestMatcher(new AntPathRequestMatcher("/api/auth/logout", "POST"))
                             .logoutSuccessHandler((request, response, authentication) -> {
-
                                 response.setStatus(HttpServletResponse.SC_OK);
                                 response.getWriter().write("Đăng xuất thành công!");
                             })
                             .invalidateHttpSession(true)
-                            .deleteCookies("token")
                     );
 
             http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);

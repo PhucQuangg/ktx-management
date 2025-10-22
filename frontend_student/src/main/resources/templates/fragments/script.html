@@ -31,7 +31,6 @@
         function logout() {
             fetch("http://localhost:8080/api/auth/logout", {
                 method: "POST",
-                credentials: "include"
             })
                 .then(response => {
                     if (response.ok) {

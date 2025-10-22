@@ -154,8 +154,9 @@
     try {
       const response = await fetch("http://localhost:8080/api/student/profile", {
         method: "GET",
-        credentials: "include"
-
+        headers: {
+          "Authorization": "Bearer " + token,
+        }
       });
 
       if (!response.ok) throw new Error("Không thể tải thông tin sinh viên");
@@ -225,10 +226,10 @@
     try {
       const response = await fetch("http://localhost:8080/api/student/profile/update", {
         method: "PUT",
-        credentials: "include",
       headers: {
-          "Content-Type": "application/json"
-        },
+          "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+      },
         body: JSON.stringify(updatedData)
       });
 
@@ -283,9 +284,9 @@
     try {
       const response = await fetch("http://localhost:8080/api/student/change-password", {
         method: "PUT",
-        credentials: "include",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + token
         },
         body: JSON.stringify({
           oldPassword: oldPass,

@@ -34,7 +34,6 @@ public class AuthController {
     @Autowired private UserService userService;
     @Autowired private PasswordEncoder passwordEncoder;
     @Autowired private AuthenticationManager authenticationManager;
-    @Autowired private UserDetailsService userDetailsService;
     @Autowired private JwtUtil jwtUtil;
     @Autowired private ForgotPasswordService forgotPasswordService;
     @Autowired private PasswordResetTokenRepository tokenRepository;
@@ -57,8 +56,6 @@ public class AuthController {
         userService.createUser(user);
         return ResponseEntity.ok("User registered");
     }
-
-
     @PostMapping("/login")
     @ResponseBody
     public Object login(@RequestBody AuthRequestDTO req, HttpServletResponse response) {
@@ -71,23 +68,14 @@ public class AuthController {
             return ResponseEntity.status(401).body("Invalid credentials");
         }
 
-        UserDetails ud = userDetailsService.loadUserByUsername(req.getUsername());
-        String token = jwtUtil.generateToken(ud.getUsername());
-
-        // Lưu JWT vào cookie
-        Cookie jwtCookie = new Cookie("token", token);
-        jwtCookie.setHttpOnly(true);
-        jwtCookie.setPath("/");
-        jwtCookie.setMaxAge(24 * 60 * 60); // 1 ngày
-        jwtCookie.setDomain("localhost");
-        response.addCookie(jwtCookie);
-
         User user = userService.findByUsername(req.getUsername()).orElseThrow();
         String role = user.getRole().name();
+        String token = jwtUtil.generateToken(user.getUsername(), role);
 
         return Map.of(
                 "token", token,
                 "role", role
+
         );
     }
 
