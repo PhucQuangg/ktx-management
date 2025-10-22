@@ -11,6 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/student/rooms")
+@CrossOrigin(origins = "http://localhost:8081", allowCredentials = "true")
 public class StudentRoomController {
 
     @Autowired

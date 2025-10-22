@@ -17,11 +17,14 @@
     import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
     import org.springframework.security.crypto.password.PasswordEncoder;
     import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+    import org.springframework.web.servlet.config.annotation.CorsRegistry;
+    import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+    import java.util.List;
 
     @Configuration
     @EnableWebSecurity
     public class SecurityConfig {
-
         @Autowired
         private JwtRequestFilter jwtRequestFilter;
         @Bean
@@ -29,33 +32,53 @@
             return new ModelMapper();
         }
         @Bean
+        public WebMvcConfigurer corsConfigurer() {
+            return new WebMvcConfigurer() {
+                @Override
+                public void addCorsMappings(CorsRegistry registry) {
+                    registry.addMapping("/**")
+                            .allowedOrigins("http://localhost:8081", "http://localhost:8082")
+                            .allowedMethods("GET", "POST", "PUT", "DELETE")
+                            .allowedHeaders("*")
+                            .exposedHeaders("*")
+                            .allowCredentials(true);
+                }
+            };
+        }
+        @Bean
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-            http.csrf().disable()
+            http
+                    .cors(cors -> cors.configurationSource(request -> {
+                        var config = new org.springframework.web.cors.CorsConfiguration();
+                        config.setAllowedOrigins(List.of("http://localhost:8081", "http://localhost:8082"));
+                        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                        config.setAllowedHeaders(List.of("*"));
+                        config.setAllowCredentials(true);
+                        return config;
+                    }))
+                    .csrf(csrf -> csrf.disable())
                     .authorizeHttpRequests(auth -> auth
-                            .requestMatchers("/","/login","/register","/forgot-password","/api/auth/**").permitAll()
-                            .requestMatchers( "/admin/**","/api/admin/**").hasRole("ADMIN")
-                            .requestMatchers("/student/**", "/api/student/**").hasAnyRole("STUDENT","ADMIN")
+                            .requestMatchers("/", "/login", "/register", "/forgot-password", "/api/auth/**").permitAll()
+                            .requestMatchers("/admin/**", "/api/admin/**").hasRole("ADMIN")
+                            .requestMatchers("/student/**", "/api/student/**").hasAnyRole("STUDENT", "ADMIN")
                             .anyRequest().authenticated()
                     )
                     .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                     .logout(logout -> logout
                             .logoutRequestMatcher(new AntPathRequestMatcher("/api/auth/logout", "POST"))
                             .logoutSuccessHandler((request, response, authentication) -> {
-                                Cookie cookie = new Cookie("token", null);
-                                cookie.setMaxAge(0);
-                                cookie.setPath("/");
-                                response.addCookie(cookie);
+
                                 response.setStatus(HttpServletResponse.SC_OK);
+                                response.getWriter().write("Đăng xuất thành công!");
                             })
                             .invalidateHttpSession(true)
                             .deleteCookies("token")
                     );
 
-
-
             http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
             return http.build();
         }
+
 
         @Bean
         public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {

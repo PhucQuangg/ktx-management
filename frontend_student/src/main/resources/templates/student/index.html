@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="fragments/head::head"></head>
+<style>
+    .content-wrapper {
+      background-color: #ecf0f5; /* Giữ nền xám nhạt mặc định */
+    }
+    section.content-header {
+      text-align: center;
+      margin-bottom: 10px; /* bạn có thể chỉnh 20px, 40px tuỳ ý */
+
+    }
+
+
+    section.content {
+      background: url('/assets/images/illustrations/index.jpg') no-repeat center center;
+      background-size: cover;
+      background-attachment: local;
+      min-height: 100vh;
+      border-radius: 8px;
+    }
+</style>
+<body class="hold-transition skin-blue sidebar-mini">
+
+
+<!-- Site wrapper -->
+<div class="wrapper">
+    <div th:replace="fragments/header::header"></div>
+
+    <!-- =============================================== -->
+
+    <!-- Left side column. contains the sidebar -->
+    <div th:replace="fragments/sidebar::sidebar"></div>
+
+    <!-- =============================================== -->
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1 class=" text-danger text-uppercase ">
+                Chào mừng đến với ký túc xá sinh viên
+            </h1>
+
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+
+
+</div>
+<!-- ./wrapper -->
+
+<!-- jQuery 3 -->
+
+<div th:replace="fragments/script::script"></div>
+
+
+</body>
+</html>
+

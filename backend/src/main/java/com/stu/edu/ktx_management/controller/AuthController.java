@@ -29,6 +29,7 @@ import java.util.Map;
 
 @Controller
 @RequestMapping("/api/auth")
+@CrossOrigin(origins = "http://localhost:8081", allowCredentials = "true")
 public class AuthController {
     @Autowired private UserService userService;
     @Autowired private PasswordEncoder passwordEncoder;
@@ -77,6 +78,8 @@ public class AuthController {
         Cookie jwtCookie = new Cookie("token", token);
         jwtCookie.setHttpOnly(true);
         jwtCookie.setPath("/");
+        jwtCookie.setMaxAge(24 * 60 * 60); // 1 ngày
+        jwtCookie.setDomain("localhost");
         response.addCookie(jwtCookie);
 
         User user = userService.findByUsername(req.getUsername()).orElseThrow();

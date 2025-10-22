@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head::head"></head>
+<body class="hold-transition skin-blue sidebar-mini">
+
+<style>
+  .room-type {
+    display: inline-block;
+    padding: 20px;
+    margin: 10px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background 0.3s;
+  }
+  .room-type:hover {
+    background-color: #0056b3;
+  }
+  .room-list {
+    margin-top: 20px;
+  }
+  .room-card {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+  }
+  #backButton {
+    margin-top: 15px;
+  }
+</style>
+
+<div class="wrapper">
+  <div th:replace="fragments/header::header"></div>
+  <div th:replace="fragments/sidebar::sidebar"></div>
+
+  <div class="content-wrapper">
+    <section class="content-header">
+      <h2>Chọn loại phòng</h2>
+      <div id="roomTypeSelector">
+        <div class="room-type" onclick="loadRooms('NORMAL')">Phòng thường</div>
+        <div class="room-type" onclick="loadRooms('PLUS')">Phòng Plus</div>
+      </div>
+    </section>
+
+    <section class="content">
+      <div class="room-list" id="roomList">
+        <!-- Danh sách phòng sẽ hiển thị ở đây -->
+      </div>
+      <button id="backButton" style="display:none;" onclick="backToSelector()">Quay lại</button>
+    </section>
+  </div>
+</div>
+
+<div th:replace="fragments/script::script"></div>
+
+<script>
+
+  async function loadRooms(type) {
+
+
+    const roomListEl = document.getElementById('roomList');
+    const selectorEl = document.getElementById('roomTypeSelector');
+    const backBtn = document.getElementById('backButton');
+
+    // Ẩn selector, hiện nút quay lại
+    selectorEl.style.display = 'none';
+    backBtn.style.display = 'inline-block';
+
+    // Hiển thị loading
+    roomListEl.innerHTML = '<p>Đang tải...</p>';
+
+    try {
+      const response = await fetch(`http://localhost:8080/api/student/rooms/available-by-type?type=${type}`, {
+        method: "GET",
+        credentials: "include"
+      });
+      if (!response.ok) throw new Error('Lỗi khi lấy dữ liệu phòng');
+
+      const rooms = await response.json();
+
+      if (rooms.length === 0) {
+        roomListEl.innerHTML = '<p>Không có phòng trống</p>';
+      } else {
+        // Render phòng
+        roomListEl.innerHTML = rooms.map(room => `
+          <div class="room-card">
+            <p><strong>Tên phòng:</strong> ${room.name}</p>
+            <p><strong>Sức chứa:</strong> ${room.capacity}</p>
+            <p><strong>Số người hiện tại:</strong> ${room.current_people}</p>
+            <p><strong>Giá:</strong> ${room.price}</p>
+          </div>
+        `).join('');
+      }
+
+    } catch (error) {
+      roomListEl.innerHTML = `<p>${error.message}</p>`;
+    } finally {
+      isLoading = false;
+    }
+  }
+
+  function backToSelector() {
+    const roomListEl = document.getElementById('roomList');
+    const selectorEl = document.getElementById('roomTypeSelector');
+    const backBtn = document.getElementById('backButton');
+
+    roomListEl.innerHTML = ''; // Xóa danh sách
+    selectorEl.style.display = 'block'; // Hiện selector
+    backBtn.style.display = 'none';
+  }
+</script>
+
+</body>
+</html>
