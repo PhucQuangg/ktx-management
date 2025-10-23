@@ -13,7 +13,7 @@
 	</parent>
 
 	<groupId>com.stu.edu</groupId>
-	<artifactId>ktx_management</artifactId>
+	<artifactId>frontend_student</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>frontend_student</name>
 	<description>Demo project for Spring Boot</description>

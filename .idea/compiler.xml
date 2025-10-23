@@ -9,17 +9,13 @@
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="false">
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.34/lombok-1.18.34.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.34/lombok-1.18.34.jar" />
         </processorPath>
-        <module name="frontend_student" />
         <module name="frontend_admin" />
         <module name="backend" />
+        <module name="frontend_student" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="backend" target="17" />
-      <module name="frontend_admin" target="17" />
-      <module name="frontend_student" target="17" />
-    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">

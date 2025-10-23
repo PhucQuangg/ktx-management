@@ -1,115 +1,239 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Thông tin cá nhân</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Thông tin cá nhân — Sinh viên</title>
+
+  <!-- Bootstrap CSS + Bootstrap Icons + Google Font -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --accent: #2563eb;       /* blue */
+      --accent-2: #f59e0b;     /* amber */
+      --card-bg: #ffffff;
+      --muted: #64748b;
+    }
+    body{
+      font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg,#f6f8fb 0%, #eef2f6 100%);
+      color:#0f172a;
+      -webkit-font-smoothing:antialiased;
+    }
+
+    /* Top header */
+    .topbar{
+      background: linear-gradient(90deg, rgba(37,99,235,0.09), rgba(245,158,11,0.06));
+      border-radius: 12px;
+      padding: 20px;
+      display:flex;
+      align-items:center;
+      gap:16px;
+      box-shadow: 0 6px 18px rgba(15,23,42,0.06);
+    }
+    .brand {
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+    .brand .logo {
+      width:56px; height:56px;
+      background: linear-gradient(135deg,var(--accent), #7c3aed);
+      border-radius:12px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:white;
+      font-weight:700;
+      box-shadow: 0 6px 18px rgba(37,99,235,0.12);
+    }
+
+    /* Card */
+    .card-modern{
+      border:0;
+      border-radius:12px;
+      overflow:hidden;
+      background: linear-gradient(180deg, rgba(255,255,255,0.95), var(--card-bg));
+      box-shadow: 0 12px 30px rgba(2,6,23,0.08);
+    }
+
+    /* Labels + inputs */
+    .form-label strong{font-weight:600; color:#0b1220}
+    .info-row .form-control[readonly], .info-row .form-select[disabled]{
+      background:#fbfdff;
+      border:1px solid #e6eef9;
+    }
+
+    /* Avatar & meta */
+    .profile-meta{
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+    .avatar {
+      width:84px; height:84px;
+      border-radius:14px;
+      background:linear-gradient(135deg,#60a5fa,#7c3aed);
+      display:flex; align-items:center; justify-content:center; color:white; font-weight:700;
+      box-shadow: inset 0 -6px 20px rgba(0,0,0,0.08), 0 8px 18px rgba(2,6,23,0.06);
+    }
+    .stu-logo {
+        width: 150px;       /* nhỏ gọn hơn */
+        height: auto;
+        object-fit: contain;
+        margin-left: 10px;  /* đẩy nhẹ về trong */
+    }
+
+
+    /* small helper text */
+    .muted { color:var(--muted); font-size:0.95rem; }
+
+    /* buttons */
+    .btn-accent { background:var(--accent); border:0; color:white; }
+    .btn-outline-accent { border-color: rgba(37,99,235,0.12); color:var(--accent); }
+
+    /* transition popup */
+    .fade-in { transform: translateY(0); opacity:1; transition:all .25s ease; }
+    .fade-out { opacity:0; transform: translateY(-6px); transition:all .25s ease; }
+
+    @media (max-width:767px){
+      .avatar { width:64px; height:64px; }
+    }
+  </style>
 </head>
-<body class="bg-light">
+<body>
 
-<div class="container mt-5">
-  <h2 class="text-center mb-4">Thông tin cá nhân sinh viên</h2>
-
-  <div id="profile" class="card p-4 shadow-sm">
-    <div class="mb-3">
-      <label class="form-label"><strong>Họ và tên:</strong></label>
-      <input type="text" id="fullName" class="form-control" readonly>
+<div class="container py-5">
+  <!-- Header / intro -->
+  <div class="topbar mb-4 ">
+    <div class="brand">
+      <img th:src="@{/assets/images/small-logos/Logo_STU.png}" alt="STU Logo" class="stu-logo img-fluid">
+      <div class="t">
+        <h1 class="mt-5 ms-5 fs-1 fst-italic text-uppercase  ">Đại Học công nghệ Sài Gòn</h1>
+      </div>
     </div>
 
-    <div class="mb-3">
-      <label class="form-label"><strong>Email:</strong></label>
-      <input type="email" id="email" class="form-control" readonly>
+  </div>
+
+  <!-- Main card -->
+  <div class="card card-modern p-4 ">
+    <div class="row g-4 align-items-center ms-5 mt-3 ">
+      <div class="col-md-3 col-12 d-flex justify-content-start ">
+        <div class="profile-meta text-center mb-5">
+          <i class="bi bi-person-circle" style="font-size: 13rem; color: #0055ff;"></i>
+
+        </div>
+      </div>
+      <div class="col-md-8">
+        <!-- Form: two columns -->
+        <form id="profile" class="info-row">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label"><strong>Họ và tên:</strong></label>
+              <input type="text" id="fullName" class="form-control" readonly>
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label class="form-label"><strong>Email:</strong></label>
+              <input type="email" id="email" class="form-control" readonly >
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label class="form-label"><strong>Giới tính:</strong></label>
+              <select id="gender" class="form-select" disabled>
+                <option value="true">Nữ</option>
+                <option value="false" selected>Nam</option>
+              </select>
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label class="form-label"><strong>Ngày sinh:</strong></label>
+              <input type="date" id="dob" class="form-control" readonly >
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label class="form-label"><strong>Số điện thoại:</strong></label>
+              <input type="text" id="phone" class="form-control" readonly>
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label class="form-label"><strong>Lớp:</strong></label>
+              <input type="text" id="className" class="form-control" readonly>
+            </div>
+          </div>
+
+          <!-- actions -->
+          <div class="d-flex justify-content-center gap-3 mt-4">
+            <button type="button" id="updateBtn" class="btn btn-warning fw-bold"> Cập nhật thông tin</button>
+            <button type="button" id="saveBtn" class="btn btn-success d-none"> Lưu</button>
+            <button type="button" id="cancelBtn" class="btn btn-outline-secondary d-none">Hủy</button>
+            <button type="button" id="changePasswordBtn" class="btn  btn-danger fw-bold"> Đổi mật khẩu</button>
+          </div>
+        </form>
+      </div>
     </div>
 
-    <div class="mb-3">
-      <label class="form-label"><strong>Giới tính:</strong></label>
-      <select id="gender" class="form-select" disabled>
-        <option value="true">Nữ</option>
-        <option value="false">Nam</option>
-      </select>
-    </div>
+    <!-- collapse đổi mật khẩu -->
+    <div id="passwordChangeSection" class="mt-4" style="display:none;">
 
-    <div class="mb-3">
-      <label class="form-label"><strong>Ngày sinh:</strong></label>
-      <input type="date" id="dob" class="form-control" readonly>
-    </div>
+      <div class="card border-0 p-3" style="background:#fbfdff">
+        <h6 class="mb-3 text-primary fw-bold"><i class="bi bi-key me-2"></i>Đổi mật khẩu</h6>
+        <div class="row g-3">
+          <div class="col-md-4">
+            <input type="password" id="oldPassword" class="form-control" placeholder=" Nhập Mật khẩu hiện tại">
+          </div>
+          <div class="col-md-4">
+            <input type="password" id="newPassword" class="form-control" placeholder=" Nhập Mật khẩu mới">
+          </div>
+          <div class="col-md-4 d-flex">
+            <input type="password" id="confirmPassword" class="form-control" placeholder="Xác nhận mật khẩu">
+          </div>
 
-    <div class="mb-3">
-      <label class="form-label"><strong>Số điện thoại:</strong></label>
-      <input type="text" id="phone" class="form-control" readonly>
-    </div>
 
-    <div class="mb-3">
-      <label class="form-label"><strong>Lớp:</strong></label>
-      <input type="text" id="className" class="form-control" readonly>
-    </div>
 
-    <!-- Nút đổi mật khẩu tách riêng -->
-    <div class="text-center mt-3">
-      <button id="updateBtn" class="btn btn-primary">Cập nhật thông tin</button>
-      <button id="saveBtn" class="btn btn-success d-none">Lưu</button>
-      <button id="cancelBtn" class="btn btn-secondary d-none">Hủy</button>
-      <button id="changePasswordBtn" class="btn btn-warning">Đổi mật khẩu</button>
+        </div>
+
+        <div class="mt-3 d-flex justify-content-end gap-2">
+          <button type="button" id="toggleShowPassword" class="btn btn-outline-secondary btn-sm"><i class="bi bi-eye"></i></button>
+          <button type="button" id="savePasswordBtn" class="btn btn-success btn-sm">Xác nhận</button>
+          <button type="button" id="cancelPasswordBtn" class="btn btn-secondary btn-sm">Hủy</button>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- Khu vực đổi mật khẩu -->
-  <div id="passwordChangeSection" class="card p-4 shadow-sm mt-4" style="display:none;">
-    <h5 class="text-primary mb-3">Đổi mật khẩu</h5>
-
-    <div class="mb-3">
-      <label>Mật khẩu hiện tại:</label>
-      <input type="password" id="oldPassword" class="form-control" placeholder="Nhập mật khẩu hiện tại">
-    </div>
-
-    <div class="mb-3">
-      <label>Mật khẩu mới:</label>
-      <input type="password" id="newPassword" class="form-control" placeholder="Nhập mật khẩu mới">
-    </div>
-
-    <div class="mb-3">
-      <label>Xác nhận mật khẩu mới:</label>
-      <input type="password" id="confirmPassword" class="form-control" placeholder="Nhập lại mật khẩu mới">
-    </div>
-
-    <button id="toggleShowPassword" class="btn btn-outline-secondary btn-sm mb-3">Hiện mật khẩu</button>
-
-    <div class="text-center">
-      <button id="savePasswordBtn" class="btn btn-success">Xác nhận đổi</button>
-      <button id="cancelPasswordBtn" class="btn btn-secondary">Hủy</button>
-    </div>
-  </div>
-</div><!-- Popup thông báo -->
+</div> <!-- end card -->
+</div> <!-- end container -->
 <div id="popupOverlay"
      style="
-       display:none;
-       position:fixed;
-       top:0; left:0;
-       width:100%; height:100%;
-       background:rgba(0,0,0,0.5);
-       z-index:2000;
-       justify-content:center;
-       align-items:center;">
+        display:none;
+        position:fixed;
+        top:0; left:0;
+        width:100%; height:100%;
+        background:rgba(0,0,0,0.5);
+        z-index:2000;
+        justify-content:center;
+        align-items:center;">
   <div id="popupBox"
        style="
-         background:#fff;
-         border-radius:10px;
-         width:350px;
-         max-width:90%;
-         padding:20px 25px;
-         box-shadow:0 4px 10px rgba(0,0,0,0.3);
-         text-align:center;
-         transform:scale(0.8);
-         opacity:0;
-         transition:all 0.3s ease;">
+            background:#fff;
+            border-radius:10px;
+            width:350px;
+            max-width:90%;
+            padding:20px 25px;
+            box-shadow:0 4px 10px rgba(0,0,0,0.3);
+            text-align:center;
+            transform:scale(0.8);
+            opacity:0;
+            transition:all 0.3s ease;">
     <h5 id="popupTitle" style="font-weight:600;">Thông báo</h5>
     <p id="popupMessage" style="margin-top:10px; color:#333;"></p>
     <button id="popupCloseBtn">Đóng</button>
   </div>
 </div>
-
-
 <script>
   function showPopup(message, isError = false) {
     const overlay = document.getElementById("popupOverlay");
@@ -311,3 +435,4 @@
 </script>
 </body>
 </html>
+
