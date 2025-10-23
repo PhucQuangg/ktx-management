@@ -4,8 +4,10 @@ import com.stu.edu.ktx_management.config.jwt.JwtUtil;
 import com.stu.edu.ktx_management.dto.AuthRequestDTO;
 import com.stu.edu.ktx_management.entity.PasswordResetToken;
 import com.stu.edu.ktx_management.entity.Role;
+import com.stu.edu.ktx_management.entity.Student;
 import com.stu.edu.ktx_management.entity.User;
 import com.stu.edu.ktx_management.repository.PasswordResetTokenRepository;
+import com.stu.edu.ktx_management.repository.StudentRepository;
 import com.stu.edu.ktx_management.service.ForgotPasswordService;
 import com.stu.edu.ktx_management.service.user.UserService;
 import jakarta.servlet.http.Cookie;
@@ -37,6 +39,7 @@ public class AuthController {
     @Autowired private JwtUtil jwtUtil;
     @Autowired private ForgotPasswordService forgotPasswordService;
     @Autowired private PasswordResetTokenRepository tokenRepository;
+    @Autowired private StudentRepository studentRepository;
 
 
     // Register
@@ -45,17 +48,22 @@ public class AuthController {
         if (userService.findByUsername(user.getUsername()).isPresent()) {
             return ResponseEntity.badRequest().body("Username already exists");
         }
-        if (userService.findByEmail(user.getEmail()).isPresent()){
+        if (userService.findByEmail(user.getEmail()).isPresent()) {
             return ResponseEntity.badRequest().body("Email already exists");
         }
-        user.setUsername(user.getUsername());
-        user.setEmail(user.getEmail());
-        user.setFullName(user.getFullName());
+
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole(Role.STUDENT);
-        userService.createUser(user);
-        return ResponseEntity.ok("User registered");
+
+        User savedUser = userService.createUser(user);
+
+        Student student = new Student();
+        student.setUser(savedUser);
+        studentRepository.save(student);
+
+        return ResponseEntity.ok("Student registered successfully");
     }
+
     @PostMapping("/login")
     @ResponseBody
     public Object login(@RequestBody AuthRequestDTO req, HttpServletResponse response) {

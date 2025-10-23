@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="admin/fragments/head::head"></head>
+
+<body class="g-sidenav-show  bg-gray-100">
+<div th:replace="admin/fragments/sidebar::sidebar"></div>
+<main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
+  <!-- Navbar -->
+  <nav class="navbar navbar-main navbar-expand-lg px-0 mx-3 shadow-none border-radius-xl" id="navbarBlur" data-scroll="true">
+    <div class="container-fluid py-1 px-3">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
+          <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="javascript:;">Trang</a></li>
+          <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Danh sách sinh viên</li>
+        </ol>
+      </nav>
+
+      <ul class="navbar-nav d-flex align-items-center  justify-content-end">
+
+        <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
+          <a href="javascript:;" class="nav-link text-body p-0" id="iconNavbarSidenav">
+            <div class="sidenav-toggler-inner">
+              <i class="sidenav-toggler-line"></i>
+              <i class="sidenav-toggler-line"></i>
+              <i class="sidenav-toggler-line"></i>
+            </div>
+          </a>
+        </li>
+        <li class="nav-item px-3 d-flex align-items-center">
+          <a href="javascript:;" class="nav-link text-body p-0">
+            <i class="material-symbols-rounded fixed-plugin-button-nav">settings</i>
+          </a>
+        </li>
+
+        <li class="nav-item d-flex align-items-center">
+          <a href="../pages/sign-in.html" class="nav-link text-body font-weight-bold px-0">
+            <i class="material-symbols-rounded">account_circle</i>
+          </a>
+        </li>
+      </ul>
+    </div>
+    </div>
+  </nav>
+  <!-- End Navbar -->
+  <div class="container-fluid py-2">
+    <div class="row">
+      <div class="col-12">
+        <div class="card my-4">
+          <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+            <div class="bg-gradient-dark shadow-dark border-radius-lg pt-4 pb-3">
+              <h6 class="text-white text-capitalize ps-3">Bảng sinh viên</h6>
+            </div>
+          </div>
+          <div class="card-body px-0 pb-2">
+            <div class="table-responsive p-0">
+              <table class="table align-items-center mb-0">
+                <thead>
+                <tr>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Họ và tên</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Tên đăng nhập</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Email</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Số điện thoại</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Giới tính</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Ngày sinh</th>
+                  <th class="text-secondary opacity-7"></th>
+                </tr>
+                </thead>
+                <tbody id="studentTableBody">
+
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+</main>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const token = localStorage.getItem("admin_token");
+    console.log(token);
+
+    fetch("http://localhost:8080/api/admin/students", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+      }
+    })
+            .then(response => {
+              if (!response.ok) throw new Error("Không thể tải danh sách sinh viên");
+              return response.json();
+            })
+            .then(data => {
+              const tbody = document.getElementById("studentTableBody");
+              tbody.innerHTML = "";
+
+              data.forEach(student => {
+                const genderText = student.gender ? "Nữ" : "Nam";
+                const dob = student.dateOfBirth || "Chưa cập nhật";
+                const sdt = student.phone || "Chưa cập nhật";
+                const row = document.createElement("tr");
+                row.innerHTML = `
+        <td>${student.fullName}</td>
+        <td>${student.username}</td>
+        <td>${student.email}</td>
+        <td>${sdt}</td>
+        <td>${genderText}</td>
+        <td>${dob}</td>
+        <td class="text-center">Active</td>
+      `;
+                tbody.appendChild(row);
+              });
+            })
+            .catch(error => {
+              console.error("Lỗi khi tải dữ liệu:", error);
+            });
+  });
+</script>
+
+
+
+
+
+
+<div th:replace="admin/fragments/settingUI::UI"></div>
+<div th:replace="admin/fragments/script::script"></div>
+
+
+</body>
+
+</html>

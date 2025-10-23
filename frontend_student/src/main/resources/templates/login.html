@@ -106,6 +106,8 @@
 
             if (data.role === "ADMIN") {
                 window.location.href = `http://localhost:8082/admin/dashboard?token=${data.token}`;
+                localStorage.removeItem("token", data.token);
+                localStorage.removeItem("role", data.role);
             } else {
                 window.location.href = "http://localhost:8081/";
             }

@@ -1,3 +1,25 @@
 
 H
 frontend_student/pom.xml,a\4\a4de14605cfdfbb2d1764b70574447b3e026996a
+É
+Sbackend/src/main/java/com/stu/edu/ktx_management/service/ForgotPasswordService.java,f\3\f31264dd08b5b0776cc4104f876fc172604a6157
+y
+Ibackend/src/main/java/com/stu/edu/ktx_management/service/RoomService.java,b\5\b5fc868d3e3558efa14e86bf1b98256260ef4581
+I
+frontend_admin/.gitignore,2\b\2b00f3a251a39a4fe7294a255f3850b38ee1532f
+B
+backend/.gitignore,7\e\7e16691a9fc60084a157565ec422c8094d3df67c
+~
+Nbackend/src/main/java/com/stu/edu/ktx_management/KtxManagementApplication.java,b\a\ba35066ef325f98f00dccda8a2417ee7c3c58998
+?
+backend/pom.xml,f\9\f9590cd73598b6f2427c8b1327d922c50d1dc504
+F
+frontend_admin/pom.xml,0\e\0eeed22e0ee61d7ee646b00e321aa7cd6a144248
+x
+Hbackend/src/main/java/com/stu/edu/ktx_management/config/jwt/JwtUtil.java,4\8\4858ee89e56b8a1530886b1869750f975e8ce308
+{
+Kbackend/src/main/java/com/stu/edu/ktx_management/config/SecurityConfig.java,a\b\ab1e09fb47164146f96aedfdae3c763bd9e5535b
+Å
+Qbackend/src/main/java/com/stu/edu/ktx_management/config/jwt/JwtRequestFilter.java,3\3\33b502487e9aa7f45818d5b39b97a69c645238b0
+ë
+afrontend_student/src/main/java/com/stu/edu/frontend_student/controller/StudentViewController.java,d\7\d76e6e092eccce4e041fe1c6ff36bbca53c9bc62

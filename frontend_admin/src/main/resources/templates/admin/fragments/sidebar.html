@@ -10,33 +10,39 @@
   <div class="collapse navbar-collapse  w-auto " id="sidenav-collapse-main">
     <ul class="navbar-nav">
       <li class="nav-item">
-        <a class="nav-link active bg-gradient-dark text-white" href="../pages/dashboard.html">
+        <a class="nav-link text-dark" th:href="@{/admin/dashboard}">
           <i class="material-symbols-rounded opacity-5">dashboard</i>
-          <span class="nav-link-text ms-1">Dashboard</span>
+          <span class="nav-link-text ms-1">Thống kê</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link text-dark" th:href="@{/admin/users}">
+          <i class="material-symbols-rounded opacity-5">table_view</i>
+          <span class="nav-link-text ms-1">Danh sách người dùng</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link text-dark" th:href="@{/admin/student}">
+          <i class="material-symbols-rounded opacity-5">table_view</i>
+          <span class="nav-link-text ms-1">Danh sách sinh viên</span>
         </a>
       </li>
       <li class="nav-item">
         <a class="nav-link text-dark" href="../pages/tables.html">
           <i class="material-symbols-rounded opacity-5">table_view</i>
-          <span class="nav-link-text ms-1">Tables</span>
+          <span class="nav-link-text ms-1">Phòng</span>
         </a>
       </li>
       <li class="nav-item">
         <a class="nav-link text-dark" href="../pages/billing.html">
           <i class="material-symbols-rounded opacity-5">receipt_long</i>
-          <span class="nav-link-text ms-1">Billing</span>
+          <span class="nav-link-text ms-1">Hóa đơn điện </span>
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link text-dark" href="../pages/virtual-reality.html">
-          <i class="material-symbols-rounded opacity-5">view_in_ar</i>
-          <span class="nav-link-text ms-1">Virtual Reality</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link text-dark" href="../pages/rtl.html">
-          <i class="material-symbols-rounded opacity-5">format_textdirection_r_to_l</i>
-          <span class="nav-link-text ms-1">RTL</span>
+        <a class="nav-link text-dark" href="../pages/billing.html">
+          <i class="material-symbols-rounded opacity-5">receipt_long</i>
+          <span class="nav-link-text ms-1">Hóa đơn nước </span>
         </a>
       </li>
       <li class="nav-item">
@@ -51,22 +57,33 @@
       <li class="nav-item">
         <a class="nav-link text-dark" href="../pages/profile.html">
           <i class="material-symbols-rounded opacity-5">person</i>
-          <span class="nav-link-text ms-1">Profile</span>
+          <span class="nav-link-text ms-1">Thông tin cá nhân</span>
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link text-dark" href="../pages/sign-in.html">
-          <i class="material-symbols-rounded opacity-5">login</i>
-          <span class="nav-link-text ms-1">Sign In</span>
+        <a class="nav-link text-dark" href="" onclick="logout()">
+          <i class="material-symbols-rounded opacity-5">logout</i>
+          <span class="nav-link-text ms-1">Đăng xuất</span>
         </a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link text-dark" href="../pages/sign-up.html">
-          <i class="material-symbols-rounded opacity-5">assignment</i>
-          <span class="nav-link-text ms-1">Sign Up</span>
-        </a>
-      </li>
+
     </ul>
   </div>
+  <script>
+    function logout() {
+      fetch("http://localhost:8080/api/auth/logout", {
+        method: "POST",
+      })
+              .then(response => {
+                if (response.ok) {
+                  localStorage.removeItem("admin_token");
+                  window.location.href = "http://localhost:8081/login";
+                } else {
+                  alert("Logout failed: " + response.status);
+                }
+              })
+              .catch(() => alert("Không thể kết nối tới server!"));
+    }
+  </script>
 
 </aside>

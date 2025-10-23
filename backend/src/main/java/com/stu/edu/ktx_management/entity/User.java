@@ -1,5 +1,6 @@
 package com.stu.edu.ktx_management.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,6 +25,7 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date created_at = new Date();
 
 }
