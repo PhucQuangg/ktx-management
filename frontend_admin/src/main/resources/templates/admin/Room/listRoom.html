@@ -11,7 +11,7 @@
       <nav aria-label="breadcrumb">
         <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
           <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="javascript:;">Trang</a></li>
-          <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Danh sách người dùng</li>
+          <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Danh sách phòng</li>
         </ol>
       </nav>
 
@@ -48,7 +48,7 @@
         <div class="card my-4">
           <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
             <div class="bg-gradient-dark shadow-dark border-radius-lg pt-4 pb-3">
-              <h6 class="text-white text-capitalize ps-3">Bảng người dùng</h6>
+              <h6 class="text-white text-capitalize ps-3">Bảng phòng</h6>
             </div>
           </div>
           <div class="card-body px-0 pb-2">
@@ -56,24 +56,24 @@
               <div class="d-flex justify-content-between align-items-center px-4 pt-3">
                 <select id="roleFilter" class="form-select w-auto">
                   <option value="ALL">Tất cả</option>
-                  <option value="ADMIN">Admin</option>
-                  <option value="STUDENT">Student</option>
+                  <option value="NORMAL">Tiêu chuẩn</option>
+                  <option value="PLUS">Tiện nghi</option>
                 </select>
               </div>
 
               <table class="table align-items-center mb-0">
                 <thead>
                 <tr>
-                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Họ và tên</th>
-                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Tên đăng nhập</th>
-                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Email</th>
-                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Số điện thoại</th>
-                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Ngày tạo</th>
-                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Vai trò</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Tên phòng</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Sức chứa</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">SL hiện tại</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Giá</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Tình trạng</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Loại phòng</th>
                   <th class="text-secondary opacity-7"></th>
                 </tr>
                 </thead>
-                <tbody id="userTableBody">
+                <tbody id="roomTableBody">
 
                 </tbody>
               </table>
@@ -85,14 +85,15 @@
 
 
   </div>
-</main><script>
+</main>
+<script>
   document.addEventListener("DOMContentLoaded", function() {
     const token = localStorage.getItem("admin_token");
-    const tbody = document.getElementById("userTableBody");
+    const tbody = document.getElementById("roomTableBody");
     const roleFilter = document.getElementById("roleFilter");
-    let allUsers = [];
+    let allrooms = [];
 
-    fetch("http://localhost:8080/api/admin/users", {
+    fetch("http://localhost:8080/api/admin/rooms", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -100,30 +101,28 @@
       }
     })
             .then(response => {
-              if (!response.ok) throw new Error("Không thể tải danh sách người dùng");
+              if (!response.ok) throw new Error("Không thể tải danh sách phòng");
               return response.json();
             })
             .then(data => {
-              allUsers = data;
-              renderTable(allUsers);
+              allrooms = data;
+              renderTable(allrooms);
             })
             .catch(error => {
               console.error("Lỗi khi tải dữ liệu:", error);
             });
 
-    function renderTable(users) {
+    function renderTable(rooms) {
       tbody.innerHTML = "";
-      users.forEach(user => {
-        const createdAt = user.created_at || "Chưa cập nhật";
-        const sdt = user.phone || "Chưa cập nhật";
+      rooms.forEach(r => {
         const row = document.createElement("tr");
         row.innerHTML = `
-          <td>${user.fullName}</td>
-          <td>${user.username}</td>
-          <td>${user.email}</td>
-          <td>${sdt}</td>
-          <td>${createdAt}</td>
-          <td>${user.role}</td>
+          <td>${r.name}</td>
+          <td>${r.capacity}</td>
+          <td>${r.current_people}</td>
+          <td>${r.price}</td>
+          <td>${r.status}</td>
+          <td>${r.type}</td>
           <td class="text-center">Active</td>
         `;
         tbody.appendChild(row);
@@ -133,9 +132,9 @@
     roleFilter.addEventListener("change", function() {
       const selectedRole = roleFilter.value;
       if (selectedRole === "ALL") {
-        renderTable(allUsers);
+        renderTable(allrooms);
       } else {
-        const filtered = allUsers.filter(u => u.role === selectedRole);
+        const filtered = allrooms.filter(r => r.type === selectedRole);
         renderTable(filtered);
       }
     });
