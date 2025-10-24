@@ -13,14 +13,8 @@ Hbackend/src/main/java/com/stu/edu/ktx_management/config/jwt/JwtUtil.java,4\8\4
 Kbackend/src/main/java/com/stu/edu/ktx_management/config/SecurityConfig.java,a\b\ab1e09fb47164146f96aedfdae3c763bd9e5535b
 Å
 Qbackend/src/main/java/com/stu/edu/ktx_management/config/jwt/JwtRequestFilter.java,3\3\33b502487e9aa7f45818d5b39b97a69c645238b0
-ë
-afrontend_student/src/main/java/com/stu/edu/frontend_student/controller/StudentViewController.java,d\7\d76e6e092eccce4e041fe1c6ff36bbca53c9bc62
-à
-Xbackend/src/main/java/com/stu/edu/ktx_management/controller/admin/StudentController.java,f\4\f43fba65f8a94fe6412ccc1fea366ced780bfe7b
 q
 Abackend/src/main/java/com/stu/edu/ktx_management/entity/User.java,2\0\20dccaf6eb3a16c2201fef3c4a874958678cb91b
-ã
-[frontend_admin/src/main/java/com/stu/edu/frontend_admin/controller/AdminViewController.java,2\7\27c9b58ee86e98d37ffb370f11c7ce63b5edd180
 
 Obackend/src/main/java/com/stu/edu/ktx_management/controller/AuthController.java,1\1\11b87daf1fe0b8004647541cf5a3e07b9425f0d4
 {
