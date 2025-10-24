@@ -70,7 +70,7 @@
 
     // Hiển thị loading
     roomListEl.innerHTML = '<p>Đang tải...</p>';
-    const token =  localStorage.getItem("token");
+    const token =  sessionStorage.getItem("token");
     try {
       const response = await fetch(`http://localhost:8080/api/student/rooms/available-by-type?type=${type}`, {
         method: "GET",

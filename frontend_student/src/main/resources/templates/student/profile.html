@@ -263,15 +263,15 @@
   }
 
   function getToken() {
-    return localStorage.getItem("token");
+    return sessionStorage.getItem("token");
   }
 
   // --- TẢI THÔNG TIN CÁ NHÂN ---
   async function loadProfile() {
     const token = getToken();
     if (!token) {
-      alert("Vui lòng đăng nhập lại!");
-      window.location.href = "/login.html";
+      showPopup("Vui lòng đăng nhập lại!",true);
+      window.location.href = "http://localhost:8081/login";
       return;
     }
 

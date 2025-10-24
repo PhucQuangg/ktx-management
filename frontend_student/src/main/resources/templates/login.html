@@ -85,37 +85,40 @@
     </div>
 </div>
 <script>
-    document.getElementById("loginForm").addEventListener("submit", async function (e) {
-        e.preventDefault();
+    document.addEventListener("DOMContentLoaded", () => {
+        sessionStorage.removeItem("token");
+        sessionStorage.removeItem("role");
 
-        const username = document.getElementById("username").value;
-        const password = document.getElementById("password").value;
+        const form = document.getElementById("loginForm");
 
-        const response = await fetch("http://localhost:8080/api/auth/login", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({username, password}),
-    });
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
 
-        if (response.ok) {
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            const response = await fetch("http://localhost:8080/api/auth/login", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({ username, password }),
+            });
+
             const data = await response.json();
 
-            localStorage.setItem("token", data.token);
-            localStorage.setItem("role", data.role);
+            if (response.ok && data.role === "STUDENT") {
+                sessionStorage.setItem("token", data.token);
+                sessionStorage.setItem("role", data.role);
 
-
-            if (data.role === "ADMIN") {
+                window.location.href = `http://localhost:8081/?fromLogin=true&role=${data.role}`;
+            } else if (response.ok && data.role === "ADMIN") {
                 window.location.href = `http://localhost:8082/admin/dashboard?token=${data.token}`;
-                localStorage.removeItem("token", data.token);
-                localStorage.removeItem("role", data.role);
-            } else {
-                window.location.href = "http://localhost:8081/";
+            }else {
+                document.getElementById("error").textContent = "Sai tên đăng nhập hoặc mật khẩu!";
             }
-        } else {
-            document.getElementById("error").textContent = "Sai tên đăng nhập hoặc mật khẩu!";
-        }
+        });
     });
 </script>
+
 
 
 <!-- Bootstrap Icons + JS -->

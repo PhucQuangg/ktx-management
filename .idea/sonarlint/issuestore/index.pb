@@ -1,6 +1,4 @@
 
-H
-frontend_student/pom.xml,a\4\a4de14605cfdfbb2d1764b70574447b3e026996a
 ƒ
 Sbackend/src/main/java/com/stu/edu/ktx_management/service/ForgotPasswordService.java,f\3\f31264dd08b5b0776cc4104f876fc172604a6157
 y
@@ -9,12 +7,6 @@ I
 frontend_admin/.gitignore,2\b\2b00f3a251a39a4fe7294a255f3850b38ee1532f
 B
 backend/.gitignore,7\e\7e16691a9fc60084a157565ec422c8094d3df67c
-~
-Nbackend/src/main/java/com/stu/edu/ktx_management/KtxManagementApplication.java,b\a\ba35066ef325f98f00dccda8a2417ee7c3c58998
-?
-backend/pom.xml,f\9\f9590cd73598b6f2427c8b1327d922c50d1dc504
-F
-frontend_admin/pom.xml,0\e\0eeed22e0ee61d7ee646b00e321aa7cd6a144248
 x
 Hbackend/src/main/java/com/stu/edu/ktx_management/config/jwt/JwtUtil.java,4\8\4858ee89e56b8a1530886b1869750f975e8ce308
 {
@@ -23,3 +15,13 @@ Kbackend/src/main/java/com/stu/edu/ktx_management/config/SecurityConfig.java,a\
 Qbackend/src/main/java/com/stu/edu/ktx_management/config/jwt/JwtRequestFilter.java,3\3\33b502487e9aa7f45818d5b39b97a69c645238b0
 ‘
 afrontend_student/src/main/java/com/stu/edu/frontend_student/controller/StudentViewController.java,d\7\d76e6e092eccce4e041fe1c6ff36bbca53c9bc62
+ˆ
+Xbackend/src/main/java/com/stu/edu/ktx_management/controller/admin/StudentController.java,f\4\f43fba65f8a94fe6412ccc1fea366ced780bfe7b
+q
+Abackend/src/main/java/com/stu/edu/ktx_management/entity/User.java,2\0\20dccaf6eb3a16c2201fef3c4a874958678cb91b
+‹
+[frontend_admin/src/main/java/com/stu/edu/frontend_admin/controller/AdminViewController.java,2\7\27c9b58ee86e98d37ffb370f11c7ce63b5edd180
+
+Obackend/src/main/java/com/stu/edu/ktx_management/controller/AuthController.java,1\1\11b87daf1fe0b8004647541cf5a3e07b9425f0d4
+{
+Kbackend/src/main/java/com/stu/edu/ktx_management/dto/StudentProfileDTO.java,3\1\31141186e6824b4bb5e2cde25ed6708d633f2ea9

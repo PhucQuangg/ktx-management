@@ -16,7 +16,7 @@
                 }
             }
 
-            const token = localStorage.getItem("token");
+            const token = sessionStorage.getItem("token");
             if (token) {
                 const decoded = parseJwt(token);
                 if (decoded && decoded.username) {
@@ -34,8 +34,7 @@
             })
                 .then(response => {
                     if (response.ok) {
-                        localStorage.removeItem("token");
-                        localStorage.removeItem("role");
+                        sessionStorage.clear();
                         window.location.href = "http://localhost:8081/login";
                     } else {
                         alert("Logout failed: " + response.status);
@@ -46,10 +45,9 @@
 
 
         const userMenu = document.getElementById("userMenu");
-        const token = localStorage.getItem("token");
+        const token = sessionStorage.getItem("token");
 
         if (token) {
-            // Đã login
             userMenu.innerHTML = `
             <div class="pull-left">
                 <a href="/profile" class="btn btn-default btn-flat">Profile</a>
@@ -59,12 +57,23 @@
             </div>
         `;
         } else {
-            // Chưa login
             userMenu.innerHTML = `
             <div class="text-center" style="width:100%">
                 <a href="/login" class="btn btn-default btn-flat">Sign in</a>
             </div>
         `;
         }
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const params = new URLSearchParams(window.location.search);
+            const fromLogin = params.get("fromLogin");
+            const role = params.get("role");
+
+            if (fromLogin && role === "STUDENT") {
+                window.history.replaceState({}, document.title, window.location.pathname);
+                location.reload();
+            }
+        });
     </script>
 </div>
