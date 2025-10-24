@@ -1,6 +1,6 @@
 package com.stu.edu.ktx_management.config.jwt;
 
-import com.stu.edu.ktx_management.service.user.CustomUserDetailsService;
+import com.stu.edu.ktx_management.service.CustomUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

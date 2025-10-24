@@ -1,9 +1,9 @@
 package com.stu.edu.ktx_management.service;
 
 import com.stu.edu.ktx_management.entity.PasswordResetToken;
-import com.stu.edu.ktx_management.entity.User;
+import com.stu.edu.ktx_management.entity.Student;
 import com.stu.edu.ktx_management.repository.PasswordResetTokenRepository;
-import com.stu.edu.ktx_management.repository.UserRepository;
+import com.stu.edu.ktx_management.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -13,8 +13,9 @@ import java.util.UUID;
 
 @Service
 public class ForgotPasswordService {
+
     @Autowired
-    private UserRepository userRepository;
+    private StudentRepository studentRepository;
 
     @Autowired
     private PasswordResetTokenRepository tokenRepository;
@@ -25,48 +26,54 @@ public class ForgotPasswordService {
     @Autowired
     private EmailService emailService;
 
-    public void createPasswordResetToken(String email){
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(()-> new RuntimeException("Email không tồn tại !"));
+    // Gửi email reset mật khẩu
+    public void createPasswordResetToken(String email) {
+        Student student = studentRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Email không tồn tại!"));
 
         String token = UUID.randomUUID().toString();
+
         PasswordResetToken resetToken = new PasswordResetToken();
         resetToken.setToken(token);
-        resetToken.setUser(user);
+        resetToken.setStudent(student);
         resetToken.setExpiryDate(LocalDateTime.now().plusMinutes(15));
 
         tokenRepository.save(resetToken);
 
         String resetLink = "http://localhost:8081/reset-password?token=" + token;
         emailService.sendMail(
-                user.getEmail(),
+                student.getEmail(),
                 "Reset mật khẩu tài khoản ký túc xá",
                 "Nhấn vào link sau để reset mật khẩu (hạn 15 phút): " + resetLink
         );
     }
 
-    public void resetPassword(String token, String newPassword){
+    // Xử lý khi người dùng nhập mật khẩu mới qua link reset
+    public void resetPassword(String token, String newPassword) {
         PasswordResetToken resetToken = tokenRepository.findByToken(token)
-                .orElseThrow(()-> new RuntimeException("Token không hợp lệ"));
+                .orElseThrow(() -> new RuntimeException("Token không hợp lệ!"));
 
-        if(resetToken.getExpiryDate().isBefore(LocalDateTime.now()))
-                throw new RuntimeException("Token đã hết hạn");
+        if (resetToken.getExpiryDate().isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("Token đã hết hạn!");
+        }
 
-        User user = resetToken.getUser();
-        user.setPassword(passwordEncoder.encode(newPassword));
-        userRepository.save(user);
+        Student student = resetToken.getStudent();
+        student.setPassword(passwordEncoder.encode(newPassword));
+        studentRepository.save(student);
 
         tokenRepository.delete(resetToken);
     }
 
-    public void updatePassword (String username, String oldPassword, String newPassword){
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(()-> new RuntimeException("Không tìm thấy user"));
-        if(!passwordEncoder.matches(oldPassword, user.getPassword())){
-            throw new RuntimeException("Mật khẩu cũ không đúng !");
-        }
-        user.setPassword(passwordEncoder.encode(newPassword));
-        userRepository.save(user);
-    }
+    // Đổi mật khẩu từ trang cá nhân
+    public void updatePassword(String username, String oldPassword, String newPassword) {
+        Student student = studentRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng!"));
 
+        if (!passwordEncoder.matches(oldPassword, student.getPassword())) {
+            throw new RuntimeException("Mật khẩu cũ không đúng!");
+        }
+
+        student.setPassword(passwordEncoder.encode(newPassword));
+        studentRepository.save(student);
+    }
 }

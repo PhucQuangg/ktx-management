@@ -19,7 +19,7 @@ public class StudentController {
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public List<StudentProfileDTO> getAllStudents() {
+    public List<Student> getAllStudents() {
         return studentService.getAllStudents();
     }
 
