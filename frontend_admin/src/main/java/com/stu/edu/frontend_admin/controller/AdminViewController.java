@@ -13,9 +13,9 @@ public class AdminViewController {
     public String ListStudent() {
         return "admin/Student/listStudent";
     }
-    @GetMapping("/admin/users")
+    @GetMapping("/admin/rooms")
     public String ListUser() {
-        return "admin/User/listUser";
+        return "admin/Room/listRoom";
     }
 
 }

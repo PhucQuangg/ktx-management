@@ -5,25 +5,18 @@ import com.stu.edu.ktx_management.dto.AuthRequestDTO;
 import com.stu.edu.ktx_management.entity.PasswordResetToken;
 import com.stu.edu.ktx_management.entity.Role;
 import com.stu.edu.ktx_management.entity.Student;
-import com.stu.edu.ktx_management.entity.User;
 import com.stu.edu.ktx_management.repository.PasswordResetTokenRepository;
 import com.stu.edu.ktx_management.repository.StudentRepository;
 import com.stu.edu.ktx_management.service.ForgotPasswordService;
-import com.stu.edu.ktx_management.service.user.UserService;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -33,73 +26,91 @@ import java.util.Map;
 @RequestMapping("/api/auth")
 @CrossOrigin(origins = "http://localhost:8081", allowCredentials = "true")
 public class AuthController {
-    @Autowired private UserService userService;
-    @Autowired private PasswordEncoder passwordEncoder;
-    @Autowired private AuthenticationManager authenticationManager;
-    @Autowired private JwtUtil jwtUtil;
-    @Autowired private ForgotPasswordService forgotPasswordService;
-    @Autowired private PasswordResetTokenRepository tokenRepository;
-    @Autowired private StudentRepository studentRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
-    // Register
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @Autowired
+    private ForgotPasswordService forgotPasswordService;
+
+    @Autowired
+    private PasswordResetTokenRepository tokenRepository;
+
+    @Autowired
+    private StudentRepository studentRepository;
+
+    // ==========================
+    // Đăng ký
+    // ==========================
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody User user) {
-        if (userService.findByUsername(user.getUsername()).isPresent()) {
-            return ResponseEntity.badRequest().body("Username already exists");
+    public ResponseEntity<?> register(@RequestBody Student student) {
+        if (studentRepository.findByUsername(student.getUsername()).isPresent()) {
+            return ResponseEntity.badRequest().body("Tên đăng nhập đã tồn tại!");
         }
-        if (userService.findByEmail(user.getEmail()).isPresent()) {
-            return ResponseEntity.badRequest().body("Email already exists");
+        if (studentRepository.findByEmail(student.getEmail()).isPresent()) {
+            return ResponseEntity.badRequest().body("Email đã được sử dụng!");
         }
 
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRole(Role.STUDENT);
+        student.setPassword(passwordEncoder.encode(student.getPassword()));
+        if (student.getRole() == null) {
+            student.setRole(Role.STUDENT);
+        }
 
-        User savedUser = userService.createUser(user);
-
-        Student student = new Student();
-        student.setUser(savedUser);
         studentRepository.save(student);
-
-        return ResponseEntity.ok("Student registered successfully");
+        return ResponseEntity.ok("Đăng ký tài khoản thành công!");
     }
 
+    // ==========================
+    // Đăng nhập
+    // ==========================
     @PostMapping("/login")
     @ResponseBody
     public Object login(@RequestBody AuthRequestDTO req, HttpServletResponse response) {
-
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(req.getUsername(), req.getPassword())
             );
         } catch (BadCredentialsException ex) {
-            return ResponseEntity.status(401).body("Invalid credentials");
+            return ResponseEntity.status(401).body("Sai tên đăng nhập hoặc mật khẩu!");
         }
 
-        User user = userService.findByUsername(req.getUsername()).orElseThrow();
-        String role = user.getRole().name();
-        String token = jwtUtil.generateToken(user.getUsername(), role);
+        Student student = studentRepository.findByUsername(req.getUsername())
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy tài khoản!"));
+
+        String role = student.getRole().name();
+        String token = jwtUtil.generateToken(student.getUsername(), role);
 
         return Map.of(
                 "token", token,
                 "role", role
-
         );
     }
 
+    // ==========================
+    // Quên mật khẩu
+    // ==========================
     @PostMapping("/forgot-password")
-    public ResponseEntity<String> forgotPassword(@RequestParam String email){
+    public ResponseEntity<String> forgotPassword(@RequestParam String email) {
         try {
             forgotPasswordService.createPasswordResetToken(email);
-            return ResponseEntity.ok("Email reset password đã được gửi tới: " + email);
+            return ResponseEntity.ok("Đã gửi email đặt lại mật khẩu tới: " + email);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
-        }    }
+        }
+    }
 
+    // ==========================
+    // Kiểm tra token đặt lại mật khẩu
+    // ==========================
     @GetMapping("/reset-password")
     public ResponseEntity<?> showResetPasswordPage(@RequestParam String token) {
-        PasswordResetToken resetToken = tokenRepository.findByToken(token)
-                .orElse(null);
+        PasswordResetToken resetToken = tokenRepository.findByToken(token).orElse(null);
 
         if (resetToken == null || resetToken.getExpiryDate().isBefore(LocalDateTime.now())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -116,15 +127,16 @@ public class AuthController {
         ));
     }
 
-
+    // ==========================
+    // Đặt lại mật khẩu
+    // ==========================
     @PostMapping("/reset-password")
-    public ResponseEntity<String> resetPassword(@RequestParam String token, @RequestParam String newPassword){
+    public ResponseEntity<String> resetPassword(@RequestParam String token, @RequestParam String newPassword) {
         try {
-            forgotPasswordService.resetPassword(token,newPassword);
-            return ResponseEntity.ok("Mật khẩu đã được cập nhật thành công !");
+            forgotPasswordService.resetPassword(token, newPassword);
+            return ResponseEntity.ok("Mật khẩu đã được cập nhật thành công!");
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
-
     }
 }

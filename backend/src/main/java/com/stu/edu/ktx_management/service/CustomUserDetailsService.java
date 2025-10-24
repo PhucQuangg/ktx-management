@@ -1,7 +1,7 @@
-package com.stu.edu.ktx_management.service.user;
+package com.stu.edu.ktx_management.service;
 
-import com.stu.edu.ktx_management.entity.User;
-import com.stu.edu.ktx_management.repository.UserRepository;
+import com.stu.edu.ktx_management.entity.Student;
+import com.stu.edu.ktx_management.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -14,18 +14,18 @@ import java.util.Collections;
 public class CustomUserDetailsService implements UserDetailsService {
 
     @Autowired
-    private UserRepository userRepository;
+    private StudentRepository studentRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User u = userRepository.findByUsername(username)
+        Student student = studentRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        GrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + u.getRole().name());
+        GrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + student.getRole().name());
 
         return new org.springframework.security.core.userdetails.User(
-                u.getUsername(),
-                u.getPassword(), // password đã mã hóa
+                student.getUsername(),
+                student.getPassword(), // password đã mã hóa
                 Collections.singletonList(authority) // danh sách authorities
         );
     }
