@@ -5,7 +5,9 @@ import com.stu.edu.ktx_management.entity.RoomStatus;
 import com.stu.edu.ktx_management.entity.TypeRoom;
 import com.stu.edu.ktx_management.repository.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -46,6 +48,10 @@ public class RoomService {
     }
     public Room deleteRoom(Integer id){
         Room room= roomRepository.findById(id).orElseThrow(()->new RuntimeException("Không tìm thấy phòng với id: "+id));
+        if (room.getCurrent_people() > 0) {
+            throw new RuntimeException("Không thể xoá phòng vì hiện có người đang ở!");
+        }
+
         roomRepository.delete(room);
         return room;
     }
@@ -53,6 +59,14 @@ public class RoomService {
         Room room = roomRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy phòng với id: " + id));
 
+        if (roomDetails.getName() != null) {
+            boolean duplicate = roomRepository.existsByName(roomDetails.getName())
+                    && !roomDetails.getName().equalsIgnoreCase(room.getName());
+            if (duplicate) {
+                throw new RuntimeException("Tên phòng đã tồn tại!");
+            }
+            room.setName(roomDetails.getName());
+        }
         if (roomDetails.getName() != null) {
             room.setName(roomDetails.getName());
         }
@@ -73,7 +87,6 @@ public class RoomService {
     }
     public List<Room> getAvailableRoomsByType(TypeRoom type) {
         List<Room> rooms = roomRepository.findByStatusAndType(RoomStatus.AVAILABLE, type);
-        System.out.println("Rooms size: " + rooms.size());
         return rooms;
     }
 

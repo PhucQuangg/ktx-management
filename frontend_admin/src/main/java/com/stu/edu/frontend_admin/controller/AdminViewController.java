@@ -17,5 +17,13 @@ public class AdminViewController {
     public String ListUser() {
         return "admin/Room/listRoom";
     }
+    @GetMapping("/admin/add-room")
+    public String addRoom() {
+        return "admin/Room/addRoom";
+    }
+    @GetMapping("/admin/update-room")
+    public String updateRoom() {
+        return "admin/Room/updateRoom";
+    }
 
 }

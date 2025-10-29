@@ -269,6 +269,55 @@
             .then(data => console.log("Admin data:", data))
             .catch(e => console.error("Lỗi:", e));
   </script>
+
+  <script>
+    function showPopup(message, isError = false, isConfirm = false, onConfirm = null) {
+      const overlay = document.getElementById("popupOverlay");
+      const box = document.getElementById("popupBox");
+      const msg = document.getElementById("popupMessage");
+      const title = document.getElementById("popupTitle");
+      const closeBtn = document.getElementById("popupCloseBtn");
+
+      let confirmBtn = document.getElementById("popupConfirmBtn");
+      if (!confirmBtn) {
+        confirmBtn = document.createElement("button");
+        confirmBtn.id = "popupConfirmBtn";
+        confirmBtn.className = "btn btn-primary mt-2 me-2";
+        confirmBtn.textContent = "Xác nhận";
+        closeBtn.parentNode.insertBefore(confirmBtn, closeBtn);
+      }
+
+      msg.textContent = message;
+      title.textContent = isError ? "Lỗi" : "Thông báo";
+      title.style.color = isError ? "#dc3545" : "#198754";
+      closeBtn.className = isError ? "btn btn-danger mt-2" : "btn btn-success mt-2";
+
+      confirmBtn.style.display = isConfirm ? "inline-block" : "none";
+      // Hiện overlay và hiệu ứng bật
+      overlay.style.display = "flex";
+      setTimeout(() => {
+        box.style.opacity = "1";
+        box.style.transform = "scale(1)";
+      }, 50);
+
+      // Đóng khi bấm nút
+      const closePopup = () => {
+        box.style.opacity = "0";
+        box.style.transform = "scale(0.8)";
+        setTimeout(() => (overlay.style.display = "none"), 1000);
+      };
+      closeBtn.onclick = closePopup;
+      confirmBtn.onclick = async () => {
+        if (onConfirm) {
+          const result = await onConfirm();
+          if (result === true) closePopup();
+        } else {
+          closePopup();
+        }
+      };
+
+    }
+  </script>
   <!-- Github buttons -->
   <script async defer src="https://buttons.github.io/buttons.js"></script>
   <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->

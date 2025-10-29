@@ -6,7 +6,7 @@ import com.stu.edu.ktx_management.entity.PasswordResetToken;
 import com.stu.edu.ktx_management.entity.Role;
 import com.stu.edu.ktx_management.entity.Student;
 import com.stu.edu.ktx_management.repository.PasswordResetTokenRepository;
-import com.stu.edu.ktx_management.repository.StudentRepository;
+import com.stu.edu.ktx_management.service.student.StudentService;
 import com.stu.edu.ktx_management.service.ForgotPasswordService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,17 +43,14 @@ public class AuthController {
     private PasswordResetTokenRepository tokenRepository;
 
     @Autowired
-    private StudentRepository studentRepository;
+    private StudentService studentService;
 
-    // ==========================
-    // Đăng ký
-    // ==========================
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody Student student) {
-        if (studentRepository.findByUsername(student.getUsername()).isPresent()) {
+        if (studentService.findByUsername(student.getUsername()).isPresent()) {
             return ResponseEntity.badRequest().body("Tên đăng nhập đã tồn tại!");
         }
-        if (studentRepository.findByEmail(student.getEmail()).isPresent()) {
+        if (studentService.findByEmail(student.getEmail()).isPresent()) {
             return ResponseEntity.badRequest().body("Email đã được sử dụng!");
         }
 
@@ -62,13 +59,10 @@ public class AuthController {
             student.setRole(Role.STUDENT);
         }
 
-        studentRepository.save(student);
+        studentService.createStudent(student);
         return ResponseEntity.ok("Đăng ký tài khoản thành công!");
     }
 
-    // ==========================
-    // Đăng nhập
-    // ==========================
     @PostMapping("/login")
     @ResponseBody
     public Object login(@RequestBody AuthRequestDTO req, HttpServletResponse response) {
@@ -80,7 +74,7 @@ public class AuthController {
             return ResponseEntity.status(401).body("Sai tên đăng nhập hoặc mật khẩu!");
         }
 
-        Student student = studentRepository.findByUsername(req.getUsername())
+        Student student = studentService.findByUsername(req.getUsername())
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy tài khoản!"));
 
         String role = student.getRole().name();
@@ -92,9 +86,6 @@ public class AuthController {
         );
     }
 
-    // ==========================
-    // Quên mật khẩu
-    // ==========================
     @PostMapping("/forgot-password")
     public ResponseEntity<String> forgotPassword(@RequestParam String email) {
         try {
@@ -105,9 +96,7 @@ public class AuthController {
         }
     }
 
-    // ==========================
-    // Kiểm tra token đặt lại mật khẩu
-    // ==========================
+
     @GetMapping("/reset-password")
     public ResponseEntity<?> showResetPasswordPage(@RequestParam String token) {
         PasswordResetToken resetToken = tokenRepository.findByToken(token).orElse(null);
@@ -127,9 +116,7 @@ public class AuthController {
         ));
     }
 
-    // ==========================
-    // Đặt lại mật khẩu
-    // ==========================
+
     @PostMapping("/reset-password")
     public ResponseEntity<String> resetPassword(@RequestParam String token, @RequestParam String newPassword) {
         try {
