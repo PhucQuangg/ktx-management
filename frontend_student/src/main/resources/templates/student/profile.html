@@ -311,6 +311,9 @@
     document.getElementById("saveBtn").classList.remove("d-none");
     document.getElementById("cancelBtn").classList.remove("d-none");
     document.getElementById("changePasswordBtn").classList.add("d-none");
+    document.getElementById("backBtn").classList.add("d-none");
+
+
   });
 
   document.getElementById("cancelBtn").addEventListener("click", () => {
@@ -322,6 +325,8 @@
     document.getElementById("saveBtn").classList.add("d-none");
     document.getElementById("cancelBtn").classList.add("d-none");
     document.getElementById("changePasswordBtn").classList.remove("d-none");
+    document.getElementById("backBtn").classList.remove("d-none");
+
     loadProfile();
   });
 

@@ -59,6 +59,8 @@
                   <option value="NORMAL">Tiêu chuẩn</option>
                   <option value="PLUS">Tiện nghi</option>
                 </select>
+
+                <a th:href="@{/admin/add-room}" class="btn btn-dark" type="button">+ Thêm phòng</a>
               </div>
 
               <table class="table align-items-center mb-0">
@@ -82,13 +84,15 @@
         </div>
       </div>
     </div>
-
-
   </div>
 </main>
 <script>
+  function getToken() {
+      return localStorage.getItem("admin_token");
+    }
+
   document.addEventListener("DOMContentLoaded", function() {
-    const token = localStorage.getItem("admin_token");
+    const token = getToken();
     const tbody = document.getElementById("roomTableBody");
     const roleFilter = document.getElementById("roleFilter");
     let allrooms = [];
@@ -100,9 +104,12 @@
         "Authorization": "Bearer " + token
       }
     })
-            .then(response => {
-              if (!response.ok) throw new Error("Không thể tải danh sách phòng");
-              return response.json();
+            .then(async response => {
+              if (!response.ok) {
+                const err = await response.text();
+                showPopup(err, true);
+                return;
+              }
             })
             .then(data => {
               allrooms = data;
@@ -123,9 +130,49 @@
           <td>${r.price}</td>
           <td>${r.status}</td>
           <td>${r.type}</td>
-          <td class="text-center">Active</td>
+          <td class="text-center">
+            <i class="fa-regular fa-pen-to-square text-secondary edit-room" data-id="${r.id}" style="cursor:pointer;"></i>
+            <i class="fa-solid fa-trash text-danger delete-room" style="cursor:pointer;" data-id="${r.id}"></i>
+          </td>
         `;
         tbody.appendChild(row);
+      });
+
+      document.querySelectorAll(".edit-room").forEach(btn => {
+        btn.addEventListener("click", function() {
+          const roomId = this.getAttribute("data-id");
+          window.location.href = `/admin/update-room?id=${roomId}`;
+        });
+      });
+
+      document.querySelectorAll(".delete-room").forEach(btn => {
+        btn.addEventListener("click", function() {
+          const roomId = this.getAttribute("data-id");
+
+          showPopup("Bạn có chắc chắn muốn xoá phòng này không?", false, true, async () => {
+            try {
+              const token = getToken();
+              const response = await fetch(`http://localhost:8080/api/admin/rooms/delete/${roomId}`, {
+                method: "DELETE",
+                headers: { "Authorization": "Bearer " + token }
+              });
+
+              if (response.ok) {
+                showPopup("Xoá phòng thành công!");
+                setTimeout(() => location.reload(), 1000);
+                return true;
+              } else {
+                  const  err = await response.text();
+                  showPopup(err,true);
+                  return;
+              }
+
+            } catch (error) {
+              console.error(error);
+              showPopup("Có lỗi xảy ra khi xoá phòng!", true);
+            }
+          });
+        });
       });
     }
 
@@ -142,11 +189,7 @@
 </script>
 
 
-
-
-
-
-
+<div th:replace="admin/fragments/showPopup::showPopup"></div>
 <div th:replace="admin/fragments/settingUI::UI"></div>
 <div th:replace="admin/fragments/script::script"></div>
 
