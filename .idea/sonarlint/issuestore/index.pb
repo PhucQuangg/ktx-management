@@ -7,12 +7,6 @@ B
 backend/.gitignore,7\e\7e16691a9fc60084a157565ec422c8094d3df67c
 x
 Hbackend/src/main/java/com/stu/edu/ktx_management/config/jwt/JwtUtil.java,4\8\4858ee89e56b8a1530886b1869750f975e8ce308
-{
-Kbackend/src/main/java/com/stu/edu/ktx_management/config/SecurityConfig.java,a\b\ab1e09fb47164146f96aedfdae3c763bd9e5535b
-Å
-Qbackend/src/main/java/com/stu/edu/ktx_management/config/jwt/JwtRequestFilter.java,3\3\33b502487e9aa7f45818d5b39b97a69c645238b0
-{
-Kbackend/src/main/java/com/stu/edu/ktx_management/dto/StudentProfileDTO.java,3\1\31141186e6824b4bb5e2cde25ed6708d633f2ea9
 F
 frontend_admin/pom.xml,0\e\0eeed22e0ee61d7ee646b00e321aa7cd6a144248
 H
@@ -29,3 +23,9 @@ Ufrontend_admin/src/main/java/com/stu/edu/frontend_admin/FrontendAdminApplicatio
 Obackend/src/main/java/com/stu/edu/ktx_management/entity/PasswordResetToken.java,7\d\7d2199c8c947d07822fb725048efcd9d4b76efbd
 ç
 ]backend/src/main/java/com/stu/edu/ktx_management/repository/PasswordResetTokenRepository.java,9\d\9d46ddb195b6a672c6f51661239486dbdb1a8424
+ë
+afrontend_student/src/main/java/com/stu/edu/frontend_student/controller/StudentViewController.java,d\7\d76e6e092eccce4e041fe1c6ff36bbca53c9bc62
+ã
+[frontend_admin/src/main/java/com/stu/edu/frontend_admin/controller/AdminViewController.java,2\7\27c9b58ee86e98d37ffb370f11c7ce63b5edd180
+q
+Abackend/src/main/java/com/stu/edu/ktx_management/entity/Room.java,a\6\a6c27342e203cf238c5e28cab573bbb2213fa3c0

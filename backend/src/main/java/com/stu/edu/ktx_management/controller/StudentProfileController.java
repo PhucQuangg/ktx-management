@@ -4,7 +4,7 @@ import com.stu.edu.ktx_management.dto.PasswordChangeRequest;
 import com.stu.edu.ktx_management.dto.StudentProfileDTO;
 import com.stu.edu.ktx_management.entity.Student;
 import com.stu.edu.ktx_management.service.ForgotPasswordService;
-import com.stu.edu.ktx_management.service.student.StudentService;
+import com.stu.edu.ktx_management.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

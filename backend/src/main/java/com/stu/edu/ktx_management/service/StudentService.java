@@ -1,5 +1,4 @@
-package com.stu.edu.ktx_management.service.student;
-
+package com.stu.edu.ktx_management.service;
 import com.stu.edu.ktx_management.dto.StudentProfileDTO;
 import com.stu.edu.ktx_management.entity.Student;
 import com.stu.edu.ktx_management.repository.StudentRepository;
@@ -34,9 +33,14 @@ public class StudentService {
     }
 
     public Student createStudent(Student student) {
-        // Mã hóa mật khẩu khi tạo tài khoản mới
         if (student.getPassword() != null) {
             student.setPassword(passwordEncoder.encode(student.getPassword()));
+        }
+        if (studentRepository.findByUsername(student.getUsername()).isPresent()){
+            throw new RuntimeException("Sinh viên đã tồn tại");
+        }
+        if (studentRepository.findByEmail(student.getEmail()).isPresent()){
+            throw new RuntimeException("Email đã tồn tại");
         }
         return studentRepository.save(student);
     }
@@ -44,8 +48,30 @@ public class StudentService {
     public Student updateStudent(Integer id, Student studentDetails) {
         Student s = getStudentById(id);
 
-        if (studentDetails.getFullName() != null) s.setFullName(studentDetails.getFullName());
-        if (studentDetails.getEmail() != null) s.setEmail(studentDetails.getEmail());
+
+        if (studentDetails.getFullName() != null) {
+            s.setFullName(studentDetails.getFullName());
+        }
+        if (studentDetails.getEmail() != null) {
+            checkEmailExists(studentDetails.getEmail(),s);
+            s.setEmail(studentDetails.getEmail());
+        }
+
+        if (studentDetails.getUsername() != null) {
+            Optional<Student> existingStudent = studentRepository.findByUsername(studentDetails.getUsername());
+
+            if (existingStudent.isPresent() &&
+                    !existingStudent.get().getUsername().equalsIgnoreCase(s.getUsername())) {
+                throw new RuntimeException("Tên đăng nhập đã tồn tại!");
+            }
+
+            s.setUsername(studentDetails.getUsername());
+        }
+
+        if (studentDetails.getUsername() != null) {
+            s.setUsername(studentDetails.getUsername());
+        }
+
         if (studentDetails.getPhone() != null) s.setPhone(studentDetails.getPhone());
         if (studentDetails.getClassName() != null) s.setClassName(studentDetails.getClassName());
         if (studentDetails.getDateOfBirth() != null) s.setDateOfBirth(studentDetails.getDateOfBirth());
@@ -54,8 +80,10 @@ public class StudentService {
         return studentRepository.save(s);
     }
 
-    public void deleteStudent(Integer id) {
-        studentRepository.deleteById(id);
+    public Student deleteStudent(Integer id) {
+        Student room= studentRepository.findById(id).orElseThrow(()->new RuntimeException("Không tìm thấy sinh viên với id: "+id));
+        studentRepository.delete(room);
+        return room;
     }
 
     public StudentProfileDTO getStudentByUsername(String username) {
@@ -72,9 +100,11 @@ public class StudentService {
         if (request.getFullName() != null && !request.getFullName().isEmpty()) {
             student.setFullName(request.getFullName());
         }
-        if (request.getEmail() != null && !request.getEmail().isEmpty()) {
+        if (request.getEmail() != null) {
+           checkEmailExists(request.getEmail(),student);
             student.setEmail(request.getEmail());
         }
+
         if (request.getPhone() != null && !request.getPhone().isEmpty()) {
             student.setPhone(request.getPhone());
         }
@@ -97,4 +127,12 @@ public class StudentService {
     public Optional<Student> findByEmail(String email){
         return studentRepository.findByEmail(email);
     }
+    private void checkEmailExists(String email, Student student) {
+        Optional<Student> existingStudent = studentRepository.findByEmail(email);
+        if (existingStudent.isPresent() &&
+                !existingStudent.get().getEmail().equalsIgnoreCase(student.getEmail())) {
+            throw new RuntimeException("Email đã tồn tại!");
+        }
+    }
+
 }

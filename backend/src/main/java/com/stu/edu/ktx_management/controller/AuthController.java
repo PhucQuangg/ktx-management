@@ -6,7 +6,7 @@ import com.stu.edu.ktx_management.entity.PasswordResetToken;
 import com.stu.edu.ktx_management.entity.Role;
 import com.stu.edu.ktx_management.entity.Student;
 import com.stu.edu.ktx_management.repository.PasswordResetTokenRepository;
-import com.stu.edu.ktx_management.service.student.StudentService;
+import com.stu.edu.ktx_management.service.StudentService;
 import com.stu.edu.ktx_management.service.ForgotPasswordService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;

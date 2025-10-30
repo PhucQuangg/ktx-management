@@ -99,9 +99,12 @@
         "Authorization": "Bearer " + token
       }
     })
-            .then(response => {
-              if (!response.ok) throw new Error("Không thể tải danh sách người dùng");
-              return response.json();
+            .then(async response => {
+              if (!response.ok) {
+                const err = await response.text();
+                showPopup(err, true);
+                return;
+              }
             })
             .then(data => {
               allstudents = data;
