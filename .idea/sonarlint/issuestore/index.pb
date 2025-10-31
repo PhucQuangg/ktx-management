@@ -29,3 +29,15 @@ afrontend_student/src/main/java/com/stu/edu/frontend_student/controller/StudentV
 [frontend_admin/src/main/java/com/stu/edu/frontend_admin/controller/AdminViewController.java,2\7\27c9b58ee86e98d37ffb370f11c7ce63b5edd180
 q
 Abackend/src/main/java/com/stu/edu/ktx_management/entity/Room.java,a\6\a6c27342e203cf238c5e28cab573bbb2213fa3c0
+‚
+Rbackend/src/main/java/com/stu/edu/ktx_management/repository/StudentRepository.java,e\c\ec7455a6279fc4952d117831f3b4f1972b574105
+†
+Vbackend/src/main/java/com/stu/edu/ktx_management/controller/StudentRoomController.java,c\1\c1bbd806b5b8b80d58fe0114afb80fb72bf2b039
+y
+Ibackend/src/main/java/com/stu/edu/ktx_management/service/RoomService.java,b\5\b5fc868d3e3558efa14e86bf1b98256260ef4581
+
+Obackend/src/main/java/com/stu/edu/ktx_management/repository/RoomRepository.java,b\3\b318105359fb911a7128056ce9e98cff8f59dbbd
+{
+Kbackend/src/main/java/com/stu/edu/ktx_management/dto/StudentProfileDTO.java,3\1\31141186e6824b4bb5e2cde25ed6708d633f2ea9
+‰
+Ybackend/src/main/java/com/stu/edu/ktx_management/controller/StudentProfileController.java,0\5\057e4677cdb31a663eddbe55c70bed6fd15d2b98

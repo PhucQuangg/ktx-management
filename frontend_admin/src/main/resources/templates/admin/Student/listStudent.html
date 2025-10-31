@@ -105,6 +105,7 @@
                 showPopup(err, true);
                 return;
               }
+              return response.json();
             })
             .then(data => {
               allstudents = data;

@@ -108,8 +108,9 @@
               if (!response.ok) {
                 const err = await response.text();
                 showPopup(err, true);
-                return;
+                return ;
               }
+              return response.json();
             })
             .then(data => {
               allrooms = data;
@@ -164,7 +165,7 @@
               } else {
                   const  err = await response.text();
                   showPopup(err,true);
-                  return;
+                  return ;
               }
 
             } catch (error) {
