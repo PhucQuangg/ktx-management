@@ -1,5 +1,7 @@
 package com.stu.edu.ktx_management.controller.admin;
 
+import com.stu.edu.ktx_management.entity.ApprovalStatus;
+import com.stu.edu.ktx_management.entity.Role;
 import com.stu.edu.ktx_management.entity.Student;
 import com.stu.edu.ktx_management.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/admin/students")
-public class StudentController {
+public class AdminStudentController {
 
     @Autowired
     private StudentService studentService;
@@ -20,7 +22,8 @@ public class StudentController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> getAllStudents() {
         try {
-            return ResponseEntity.ok(studentService.getAllStudents());
+            return ResponseEntity.ok(studentService.getAllStudents().stream()
+            .filter(s -> s.getApprovalStatus() == ApprovalStatus.APPROVED || s.getRole() == Role.ADMIN));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Lỗi khi tải danh sách sinh viên: " + e.getMessage());

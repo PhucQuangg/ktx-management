@@ -11,10 +11,7 @@ public class StudentViewController {
     public String loginPage() {
         return "login";
     }
-    @GetMapping("/register")
-    public String Register() {
-        return "register";
-    }
+
     @GetMapping("/forgot-password")
     public String forgotpassword() {
         return "forgotPassword";
@@ -41,4 +38,10 @@ public class StudentViewController {
     public String homePage() {
         return "student/index";
     }
+
+    @GetMapping("/dorm-register")
+    public String DormRegister() {
+        return "registerDorm";
+    }
+
 }

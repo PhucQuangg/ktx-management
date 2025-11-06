@@ -53,11 +53,22 @@
   </div>
 </div>
 
-<div th:replace="fragments/script::script"></div>
+<div th:replace="fragments/showPopup :: showPopup"></div>
+<div th:replace="fragments/script :: script"></div>
 
 <script>
 
-  async function loadRooms(type) {
+    document.addEventListener("DOMContentLoaded", function() {
+    const token = sessionStorage.getItem("token");
+    if (!token) {
+    showPopup("Vui lòng đăng nhập để truy cập trang này!",true);
+    setTimeout(() => window.location.href = "/login", 3000);
+  }
+  });
+
+
+
+async function loadRooms(type) {
 
 
     const roomListEl = document.getElementById('roomList');

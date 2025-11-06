@@ -26,6 +26,10 @@ public class Student {
     private String email;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "approval_status")
+
+    private ApprovalStatus approvalStatus = ApprovalStatus.PENDING;
+    @Enumerated(EnumType.STRING)
     private Role role;
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date created_at = new Date();

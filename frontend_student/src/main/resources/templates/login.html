@@ -78,7 +78,6 @@
             </form>
             <div class="login-links mt-4">
                 <a th:href="@{/forgot-password}" class="text-decoration-none text-primary fw-semibold">Quên mật khẩu?</a><br>
-                <span class="mt-4">Chưa có tài khoản? <a th:href="@{/register}" class="text-decoration-none text-primary fw-semibold">Đăng ký</a></span>
             </div>
 
         </div>
@@ -96,12 +95,19 @@
 
             const username = document.getElementById("username").value;
             const password = document.getElementById("password").value;
+            const errorEl = document.getElementById("error");
+            errorEl.textContent = "";
 
             const response = await fetch("http://localhost:8080/api/auth/login", {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify({ username, password }),
             });
+            if (!response.ok) {
+                const errText = await response.text();
+                errorEl.textContent = errText || "Đăng nhập thất bại!";
+                return;
+            }
 
             const data = await response.json();
 
@@ -111,9 +117,9 @@
 
                 window.location.href = `http://localhost:8081/?fromLogin=true&role=${data.role}`;
             } else if (response.ok && data.role === "ADMIN") {
-                window.location.href = `http://localhost:8082/admin/dashboard?token=${data.token}`;
+                window.location.href = `http://localhost:8082/?token=${data.token}`;
             }else {
-                document.getElementById("error").textContent = "Sai tên đăng nhập hoặc mật khẩu!";
+                errorEl.textContent = "Không xác định được vai trò tài khoản!";
             }
         });
     });

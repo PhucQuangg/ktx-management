@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="admin/fragments/head::head"></head>
+
+<body class="g-sidenav-show bg-gray-100">
+<div th:replace="admin/fragments/sidebar::sidebar"></div>
+
+<main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
+  <!-- Navbar -->
+  <nav class="navbar navbar-main navbar-expand-lg px-0 mx-3 shadow-none border-radius-xl" id="navbarBlur" data-scroll="true">
+    <div class="container-fluid py-1 px-3">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
+          <li class="breadcrumb-item text-sm"><a class="opacity-5 text-dark" href="javascript:;">Trang</a></li>
+          <li class="breadcrumb-item text-sm text-dark active" aria-current="page">Quản lý đăng ký nội trú</li>
+        </ol>
+      </nav>
+
+      <ul class="navbar-nav d-flex align-items-center justify-content-end">
+        <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
+          <a href="javascript:;" class="nav-link text-body p-0" id="iconNavbarSidenav">
+            <div class="sidenav-toggler-inner">
+              <i class="sidenav-toggler-line"></i>
+              <i class="sidenav-toggler-line"></i>
+              <i class="sidenav-toggler-line"></i>
+            </div>
+          </a>
+        </li>
+        <li class="nav-item px-3 d-flex align-items-center">
+          <a href="javascript:;" class="nav-link text-body p-0">
+            <i class="material-symbols-rounded fixed-plugin-button-nav">settings</i>
+          </a>
+        </li>
+        <li class="nav-item d-flex align-items-center">
+          <a href="http://localhost:8081/login" class="nav-link text-body font-weight-bold px-0">
+            <i class="material-symbols-rounded">account_circle</i>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  <!-- End Navbar -->
+
+  <div class="container-fluid py-2">
+    <div class="row">
+      <div class="col-12">
+        <div class="card my-4">
+          <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+            <div class="bg-gradient-dark shadow-dark border-radius-lg pt-4 pb-3">
+              <h6 class="text-white text-capitalize ps-3">Danh sách sinh viên đăng ký nội trú</h6>
+            </div>
+          </div>
+          <div class="card-body px-0 pb-2">
+            <div class="table-responsive p-0">
+              <table class="table align-items-center mb-0">
+                <thead>
+                <tr>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Họ và tên</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">MSSV</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Lớp</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Email</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Số điện thoại</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Giới tính</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Ngày sinh</th>
+                  <th class="text-secondary opacity-7"></th>
+                </tr>
+                </thead>
+                <tbody id="stuTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Modal nhập lý do từ chối -->
+<div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="rejectModalLabel">Từ chối đăng ký nội trú</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body">
+        <label for="rejectReasonSelect" class="form-label fw-bold">Chọn lý do từ chối</label>
+        <select id="rejectReasonSelect" class="form-select mb-3">
+          <option value="">-- Chọn lý do --</option>
+          <option value="Không đủ điều kiện nội trú">Không đủ điều kiện nội trú</option>
+          <option value="Ký túc xá đã hết chỗ">Ký túc xá đã hết chỗ</option>
+          <option value="Thiếu hoặc sai thông tin hồ sơ">Thiếu hoặc sai thông tin hồ sơ</option>
+          <option value="Sinh viên đã từng vi phạm nội quy KTX">Sinh viên đã từng vi phạm nội quy KTX</option>
+          <option value="Đăng ký quá hạn">Đăng ký quá hạn</option>
+          <option value="Khác">Khác</option>
+        </select>
+
+        <textarea id="rejectReason" class="form-control" rows="3" placeholder="Nhập lý do khác..." style="display:none;"></textarea>
+        <input type="hidden" id="rejectStudentId">
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+        <button type="button" id="confirmRejectBtn" class="btn btn-danger">Xác nhận từ chối</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  function getToken() {
+    return localStorage.getItem("admin_token");
+  }
+
+  document.addEventListener("DOMContentLoaded", function() {
+    const token = getToken();
+    const tbody = document.getElementById("stuTableBody");
+
+    fetch("http://localhost:8080/api/admin/dorm/pending", {
+      headers: { "Authorization": "Bearer " + token }
+    })
+            .then(r => r.json())
+            .then(data => renderTable(data))
+            .catch(err => console.error(err));
+
+    function renderTable(students) {
+      tbody.innerHTML = "";
+
+      if (!students || students.length === 0) {
+        const emptyRow = document.createElement("tr");
+        emptyRow.innerHTML = `
+      <td colspan="8" class="text-center text-muted py-4">
+        <i class="fa-solid fa-circle-info me-2"></i>
+        Hiện chưa có sinh viên nào đăng ký nội trú.
+      </td>`;
+        tbody.appendChild(emptyRow);
+        return;
+      }
+
+      students.forEach(s => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+      <td>${s.fullName}</td>
+      <td>${s.username}</td>
+      <td>${s.className}</td>
+      <td>${s.email}</td>
+      <td>${s.phone}</td>
+      <td>${s.gender ? "Nữ" : "Nam"}</td>
+      <td>${s.dateOfBirth}</td>
+      <td class="text-center">
+        <i class="fa-solid fa-circle-check text-success me-2 approve-btn" style="cursor:pointer;" data-id="${s.id}" title="Duyệt"></i>
+        <i class="fa-solid fa-circle-xmark text-danger reject-btn" style="cursor:pointer;" data-id="${s.id}" title="Từ chối"></i>
+      </td>`;
+        tbody.appendChild(row);
+      });
+
+      document.querySelectorAll(".approve-btn").forEach(btn => {
+        btn.addEventListener("click", () => approveStudent(btn.dataset.id));
+      });
+
+      document.querySelectorAll(".reject-btn").forEach(btn => {
+        btn.addEventListener("click", () => openRejectModal(btn.dataset.id));
+      });
+    }
+
+
+    async function approveStudent(id) {
+      try {
+        const token = getToken();
+        const response = await fetch(`http://localhost:8080/api/admin/dorm/approve/${id}`, {
+          method: "POST",
+          headers: {"Authorization": "Bearer " + token}
+        });
+
+        if (response.ok) {
+          showPopup("Email thông báo đã được gửi cho sinh viên.");
+          setTimeout(() => location.reload(), 1000);
+          return true;
+        } else {
+          const err = await response.text();
+          showPopup(err, true);
+          return;
+        }
+
+      } catch (error) {
+        console.error(error);
+        showPopup("Lỗi khi duyệt sinh viên", true);
+      }
+    }
+
+    document.getElementById("rejectReasonSelect").addEventListener("change", function () {
+      const textarea = document.getElementById("rejectReason");
+      if (this.value === "Khác") {
+        textarea.style.display = "block";
+      } else {
+        textarea.style.display = "none";
+      }
+    });
+
+    function openRejectModal(id) {
+      document.getElementById("rejectStudentId").value = id;
+
+      // Mở modal Bootstrap
+      const modal = new bootstrap.Modal(document.getElementById("rejectModal"));
+      modal.show();
+    }
+
+    document.getElementById("confirmRejectBtn").addEventListener("click", async function() {
+      const id = document.getElementById("rejectStudentId").value;
+      const selectValue = document.getElementById("rejectReasonSelect").value;
+      const customReason = document.getElementById("rejectReason").value.trim();
+
+      const reason = selectValue === "Khác" ? customReason : selectValue;
+
+      if (!reason) {
+        showPopup("Vui lòng chọn hoặc nhập lý do từ chối!", true);
+        return;
+      }
+
+      if (!reason) {
+        showPopup("Vui lòng nhập lý do từ chối!", true);
+        return;
+      }
+
+      try {
+        const token = getToken();
+        const response = await fetch(`http://localhost:8080/api/admin/dorm/reject/${id}?reason=${encodeURIComponent(reason)}`, {
+          method: "POST",
+          headers: { "Authorization": "Bearer " + token }
+        });
+
+        const modalEl = document.getElementById("rejectModal");
+        const modal = bootstrap.Modal.getInstance(modalEl);
+
+        if (response.ok) {
+          showPopup("Đã gửi thông báo từ chối đến sinh viên.");
+          const modal = bootstrap.Modal.getInstance(document.getElementById("rejectModal"));
+          modal.hide();
+          setTimeout(() => location.reload(), 2000);
+        } else {
+          const err = await response.text();
+          modal.hide();
+          showPopup(err, true);
+        }
+
+      } catch (error) {
+        showPopup("Lỗi khi từ chối sinh viên!", true);
+      }
+    });
+
+  });
+</script>
+
+<div th:replace="admin/fragments/showPopup::showPopup"></div>
+<div th:replace="admin/fragments/settingUI::UI"></div>
+<div th:replace="admin/fragments/script::script"></div>
+</body>
+</html>
