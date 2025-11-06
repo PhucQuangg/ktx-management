@@ -1,5 +1,7 @@
 package com.stu.edu.ktx_management.service;
 import com.stu.edu.ktx_management.dto.StudentProfileDTO;
+import com.stu.edu.ktx_management.entity.ApprovalStatus;
+import com.stu.edu.ktx_management.entity.Role;
 import com.stu.edu.ktx_management.entity.Student;
 import com.stu.edu.ktx_management.repository.StudentRepository;
 import org.modelmapper.ModelMapper;
@@ -20,12 +22,46 @@ public class StudentService {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
+    private EmailService emailService;
+
+    @Autowired
     private ModelMapper modelMapper;
 
 
     public List<Student> getAllStudents() {
         return studentRepository.findAll();
     }
+
+    public Student approveStudent(Integer studentId) {
+        Student student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy sinh viên!"));
+
+        if (student.getRole() == Role.ADMIN) {
+            throw new RuntimeException("Tài khoản admin không cần duyệt!");
+        }
+
+        student.setApprovalStatus(ApprovalStatus.APPROVED);
+        student.setUsername(student.getUsername());
+        student.setPassword(passwordEncoder.encode("12345678"));
+        studentRepository.save(student);
+
+
+        emailService.sendApprovalEmail(student);
+        return student;
+    }
+
+    // ✅ Từ chối hồ sơ sinh viên
+    public Student rejectStudent(Integer studentId, String reason) {
+        Student student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy sinh viên!"));
+
+        student.setApprovalStatus(ApprovalStatus.REJECTED);
+        studentRepository.delete(student);
+
+        emailService.sendRejectionEmail(student, reason);
+        return student;
+    }
+
 
     public Student getStudentById(Integer id) {
         return studentRepository.findById(id)

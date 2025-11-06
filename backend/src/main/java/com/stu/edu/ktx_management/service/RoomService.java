@@ -16,9 +16,14 @@ public class RoomService {
     @Autowired
     private RoomRepository roomRepository;
 
-    public List<Room> getAllRoom(){
-        return roomRepository.findAll();
+    public List<Room> getAllRoom() {
+        List<Room> rooms = roomRepository.findAll();
+        if (rooms.isEmpty()) {
+            throw new RuntimeException("Không có phòng nào trong hệ thống!");
+        }
+        return rooms;
     }
+
     public Room getRoomById(int id){
         return roomRepository.findById(id).orElseThrow(()->new RuntimeException("Không tìm thấy phòng với id: "+id));
     }

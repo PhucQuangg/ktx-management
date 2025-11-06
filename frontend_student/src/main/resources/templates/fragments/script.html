@@ -76,4 +76,33 @@
             }
         });
     </script>
+
+    <script>
+        function showPopup(message, isError = false) {
+            const overlay = document.getElementById("popupOverlay");
+            const box = document.getElementById("popupBox");
+            const msg = document.getElementById("popupMessage");
+            const title = document.getElementById("popupTitle");
+            const closeBtn = document.getElementById("popupCloseBtn");
+
+            msg.textContent = message;
+            title.textContent = isError ? "Lỗi" : "Thông báo";
+            title.style.color = isError ? "#dc3545" : "#198754";
+            closeBtn.className = isError ? "btn btn-danger mt-2" : "btn btn-success mt-2";
+
+            // Hiện overlay và hiệu ứng bật
+            overlay.style.display = "flex";
+            setTimeout(() => {
+                box.style.opacity = "1";
+                box.style.transform = "scale(1)";
+            }, 50);
+
+            // Đóng khi bấm nút
+            closeBtn.onclick = () => {
+                box.style.opacity = "0";
+                box.style.transform = "scale(0.8)";
+                setTimeout(() => (overlay.style.display = "none"), 300);
+            };
+        }
+    </script>
 </div>

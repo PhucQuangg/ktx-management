@@ -2,6 +2,7 @@ package com.stu.edu.ktx_management.controller;
 
 import com.stu.edu.ktx_management.config.jwt.JwtUtil;
 import com.stu.edu.ktx_management.dto.AuthRequestDTO;
+import com.stu.edu.ktx_management.entity.ApprovalStatus;
 import com.stu.edu.ktx_management.entity.PasswordResetToken;
 import com.stu.edu.ktx_management.entity.Role;
 import com.stu.edu.ktx_management.entity.Student;
@@ -45,22 +46,38 @@ public class AuthController {
     @Autowired
     private StudentService studentService;
 
+//    @PostMapping("/register")
+//    public ResponseEntity<?> register(@RequestBody Student student) {
+//        if (studentService.findByUsername(student.getUsername()).isPresent()) {
+//            return ResponseEntity.badRequest().body("Tên đăng nhập đã tồn tại!");
+//        }
+//        if (studentService.findByEmail(student.getEmail()).isPresent()) {
+//            return ResponseEntity.badRequest().body("Email đã được sử dụng!");
+//        }
+//
+//        student.setPassword(passwordEncoder.encode(student.getPassword()));
+//        if (student.getRole() == null) {
+//            student.setRole(Role.STUDENT);
+//        }
+//
+//        studentService.createStudent(student);
+//        return ResponseEntity.ok("Đăng ký tài khoản thành công!");
+//    }
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody Student student) {
         if (studentService.findByUsername(student.getUsername()).isPresent()) {
-            return ResponseEntity.badRequest().body("Tên đăng nhập đã tồn tại!");
+            return ResponseEntity.badRequest().body("Mã số sinh viên đã tồn tại!");
         }
         if (studentService.findByEmail(student.getEmail()).isPresent()) {
             return ResponseEntity.badRequest().body("Email đã được sử dụng!");
         }
 
         student.setPassword(passwordEncoder.encode(student.getPassword()));
-        if (student.getRole() == null) {
-            student.setRole(Role.STUDENT);
-        }
+        student.setRole(Role.STUDENT);
+        student.setApprovalStatus(ApprovalStatus.PENDING);
 
         studentService.createStudent(student);
-        return ResponseEntity.ok("Đăng ký tài khoản thành công!");
+        return ResponseEntity.ok("Đăng ký thành công! Hồ sơ của bạn đang chờ xét duyệt.");
     }
 
     @PostMapping("/login")
