@@ -40,7 +40,7 @@ public class ForgotPasswordService {
 
         tokenRepository.save(resetToken);
 
-        String resetLink = "http://localhost:8081/reset-password?token=" + token;
+        String resetLink = "http://localhost:3000/reset-password?token=" + token;
         emailService.sendMail(
                 student.getEmail(),
                 "Reset mật khẩu tài khoản ký túc xá",

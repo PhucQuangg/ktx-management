@@ -25,7 +25,7 @@ import java.util.Map;
 
 @Controller
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:8081", allowCredentials = "true")
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class AuthController {
 
     @Autowired
