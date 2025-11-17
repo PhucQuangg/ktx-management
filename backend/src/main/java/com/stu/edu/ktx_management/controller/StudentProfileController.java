@@ -16,7 +16,6 @@ import java.security.Principal;
 
 @RestController
 @RequestMapping("/api/student")
-@CrossOrigin(origins = "http://localhost:8081", allowCredentials = "true")
 public class StudentProfileController {
 
     @Autowired

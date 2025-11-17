@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/admin/contracts")
-@CrossOrigin(origins = "http://localhost:8081", allowCredentials = "true")
 public class AdminContractController {
     @Autowired
     private ContractService contractService;

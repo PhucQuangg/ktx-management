@@ -1,4 +1,13 @@
+import { useEffect } from "react";
+
+
 export default function Sidebar() {
+  useEffect(() => {
+    setTimeout(() => {
+      window.$('.sidebar-menu').tree();
+    }, 200);
+  }, []);
+  
     return (
       <aside className="main-sidebar">
         <section className="sidebar">
@@ -36,7 +45,7 @@ export default function Sidebar() {
             </li>
   
             <li className="treeview">
-              <a href="#">
+              <a>
                 <i className="fa fa-th"></i> <span>Thanh Toán</span>
                 <span className="pull-right-container">
                   <i className="fa fa-angle-left pull-right"></i>

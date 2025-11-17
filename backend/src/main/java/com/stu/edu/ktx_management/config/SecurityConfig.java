@@ -37,7 +37,7 @@
                 @Override
                 public void addCorsMappings(CorsRegistry registry) {
                     registry.addMapping("/**")
-                            .allowedOrigins("http://localhost:3000", "http://localhost:8081")
+                            .allowedOrigins("http://localhost:3000", "http://localhost:3001")
                             .allowedMethods("GET", "POST", "PUT", "DELETE")
                             .allowedHeaders("*")
                             .exposedHeaders("*")
@@ -50,7 +50,7 @@
             http
                     .cors(cors -> cors.configurationSource(request -> {
                         var config = new org.springframework.web.cors.CorsConfiguration();
-                        config.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:8081"));
+                        config.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:3001"));
                         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                         config.setAllowedHeaders(List.of("*"));
                         config.setAllowCredentials(true);
