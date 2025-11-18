@@ -1,0 +1,11 @@
+
+<
+java:S1452"&Remove usage of generic wildcard type.(ÎïÃå
+o
+java:S6204"RReplace this usage of 'Stream.collect(Collectors.toList())' with 'Stream.toList()'(ª™¨¹8¦ýìµ©3
+<
+java:S1452 "&Remove usage of generic wildcard type.(—êÕ
+H
+java:S1452*"&Remove usage of generic wildcard type.(Ï‹ã½üÿÿÿÿ8ªýìµ©3
+j
+java:S1128"MRemove this unused import 'com.stu.edu.ktx_management.entity.ApprovalStatus'.(Žžý¦8¬ýìµ©3

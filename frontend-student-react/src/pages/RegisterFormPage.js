@@ -86,7 +86,7 @@ export default function DormitoryRegistration() {
   };
 
   return (
-    <div className="wrapper">
+    <div >
       <Header />
       <Sidebar />
 

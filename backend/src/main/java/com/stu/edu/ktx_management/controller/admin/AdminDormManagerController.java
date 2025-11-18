@@ -19,13 +19,14 @@ public class AdminDormManagerController {
     @Autowired
     private StudentService studentService;
 
-    @GetMapping("/pending")
-    public ResponseEntity<?> getPendingStudents() {
-        List<Student> pending = studentService.getAllStudents().stream()
-                .filter(s -> s.getRole() == Role.STUDENT && s.getApprovalStatus() == ApprovalStatus.PENDING)
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllDormStudents() {
+        List<Student> all = studentService.getAllStudents().stream()
+                .filter(s -> s.getRole() == Role.STUDENT) // tất cả sinh viên
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(pending);
+        return ResponseEntity.ok(all);
     }
+
 
     @PostMapping("/approve/{id}")
     public ResponseEntity<?> approveStudent(@PathVariable Integer id) {

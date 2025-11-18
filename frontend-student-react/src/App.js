@@ -20,7 +20,6 @@ function App() {
         <Route path="/register-dorm" element={<RegisterForm />} />
       </Routes>
 
-      {/* Popup để hiển thị thông báo toàn cục */}
       <Popup />
     </Router>
   );

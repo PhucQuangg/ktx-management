@@ -1,6 +1,7 @@
 package com.stu.edu.ktx_management.controller.admin;
 
 import com.stu.edu.ktx_management.dto.ContractDTO;
+import com.stu.edu.ktx_management.dto.StudentProfileDTO;
 import com.stu.edu.ktx_management.dto.mapper.ContractMapper;
 import com.stu.edu.ktx_management.entity.Contract;
 import com.stu.edu.ktx_management.entity.Room;
@@ -18,6 +19,12 @@ import java.util.stream.Collectors;
 public class AdminContractController {
     @Autowired
     private ContractService contractService;
+
+    @GetMapping("/room/{roomId}")
+    public ResponseEntity<List<StudentProfileDTO>> getStudentsInRoom(@PathVariable Integer roomId) {
+        List<StudentProfileDTO> students = contractService.getStudentsInRoom(roomId);
+        return ResponseEntity.ok(students);
+    }
 
     @GetMapping
     public ResponseEntity<?> getAllContract(){

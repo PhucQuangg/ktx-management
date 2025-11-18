@@ -1,5 +1,6 @@
 package com.stu.edu.ktx_management.service;
 
+import com.stu.edu.ktx_management.dto.StudentProfileDTO;
 import com.stu.edu.ktx_management.entity.*;
 import com.stu.edu.ktx_management.repository.ContractRepository;
 import com.stu.edu.ktx_management.repository.RoomRepository;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ContractService {
@@ -31,6 +33,17 @@ public class ContractService {
     public List<Contract> getContractsByStudentId() {
         Student student = getLoggedInStudent(); // lấy sinh viên đang đăng nhập
         return contractRepository.findByStudent(student);
+    }
+    public List<StudentProfileDTO> getStudentsInRoom(Integer roomId) {
+        List<Contract> contracts = contractRepository.findByRoomId(roomId);
+        return contracts.stream()
+                .filter(c->c.getStatus() == ContractStatus.ACTIVE)
+                .map(c -> new StudentProfileDTO(
+                        c.getStudent().getUsername(),
+                        c.getStudent().getFullName(),
+                        c.getStudent().getClassName()
+                ))
+                .collect(Collectors.toList());
     }
 
     private Student getLoggedInStudent() {
