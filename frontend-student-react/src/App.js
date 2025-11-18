@@ -6,6 +6,8 @@ import ForgotPassword from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import StudentProfile from "./pages/StudentProfilePage";
 import RegisterForm from "./pages/RegisterFormPage"
+import RoomPage from "./pages/RoomPage"
+
 
 function App() {
   return (
@@ -18,6 +20,7 @@ function App() {
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/profile" element={<StudentProfile />} />
         <Route path="/register-dorm" element={<RegisterForm />} />
+        <Route path="/rooms" element={<RoomPage />} />
       </Routes>
 
       <Popup />

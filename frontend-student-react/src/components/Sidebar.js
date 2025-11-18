@@ -38,7 +38,7 @@ export default function Sidebar() {
               <ul className="treeview-menu">
                 <li><a href="/register-dorm"><i className="fa fa-circle-o"></i> Đăng ký nội trú</a></li>
                 <li><a href="#"><i className="fa fa-circle-o"></i> Hóa đơn</a></li>
-                <li><a href="#"><i className="fa fa-circle-o"></i> Phòng</a></li>
+                <li><a href="/rooms"><i className="fa fa-circle-o"></i> Phòng</a></li>
                 <li><a href="#"><i className="fa fa-circle-o"></i> Liên hệ</a></li>
                 <li><a href="#"><i className="fa fa-circle-o"></i> Quy định</a></li>
               </ul>
