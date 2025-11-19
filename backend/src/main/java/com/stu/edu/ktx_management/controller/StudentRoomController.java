@@ -4,6 +4,8 @@ import com.stu.edu.ktx_management.entity.Room;
 import com.stu.edu.ktx_management.entity.TypeRoom;
 import com.stu.edu.ktx_management.service.RoomService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,5 +28,10 @@ public class StudentRoomController {
         }
 
         return roomService.getAvailableRoomsByType(roomType);
+    }
+
+    @GetMapping("/{id}")
+    public Room getRoom(@PathVariable("id") Integer id) {
+        return roomService.getRoomById(id);
     }
 }

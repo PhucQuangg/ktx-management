@@ -1,17 +1,0 @@
-
-g	java:S112"FDefine and throw a dedicated exception instead of using a generic one.(¬è÷îÿÿÿÿÿ8éÌ©Ê¥3
-Z	java:S112'"FDefine and throw a dedicated exception instead of using a generic one.(öõˆJ
-[	java:S112+"FDefine and throw a dedicated exception instead of using a generic one.(–ú¿é
-[	java:S1120"FDefine and throw a dedicated exception instead of using a generic one.(´ÓÏ
-[	java:S1129"FDefine and throw a dedicated exception instead of using a generic one.(ÿêÅ€
-g	java:S112G"FDefine and throw a dedicated exception instead of using a generic one.(¥Ÿ…¹şÿÿÿÿ8óÕãÀ¥3
-‚
-java:S1192"eDefine a constant instead of duplicating this literal "KhÃ´ng tÃ¬m tháº¥y phÃ²ng vá»›i id: " 4 times.(¹Ğû“8¨²ãÀ¥3
-s
-java:S1488^"]Immediately return this expression instead of assigning it to the temporary variable "rooms".(¶çş
-b
-java:S1128"@Remove this unused import 'org.springframework.http.HttpStatus'.(íŸ¤Šúÿÿÿÿ8ê²ãÀ¥3
-o
-java:S1128
-"SRemove this unused import 'org.springframework.web.server.ResponseStatusException'.(¢‡‚
-8ê²ãÀ¥3
