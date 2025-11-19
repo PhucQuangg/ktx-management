@@ -87,7 +87,7 @@ body {
 }
 .content-wrapper {
   height: auto !important;
-  background-color: #ecf0f5;
+  background-color: #fff;
   z-index: 800;
 }
 .main-footer {

@@ -7,6 +7,7 @@ import ResetPasswordPage from "./pages/ResetPasswordPage";
 import StudentProfile from "./pages/StudentProfilePage";
 import RegisterForm from "./pages/RegisterFormPage"
 import RoomPage from "./pages/RoomPage"
+import RoomDetailPage from "./pages/RoomDetailPage"
 
 
 function App() {
@@ -21,6 +22,8 @@ function App() {
         <Route path="/profile" element={<StudentProfile />} />
         <Route path="/register-dorm" element={<RegisterForm />} />
         <Route path="/rooms" element={<RoomPage />} />
+        <Route path="/room-detail" element={<RoomDetailPage />} />
+
       </Routes>
 
       <Popup />

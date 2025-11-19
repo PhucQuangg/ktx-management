@@ -90,7 +90,7 @@ export default function DormitoryRegistration() {
       <Header />
       <Sidebar />
 
-      <div className="content-wrapper" style={{ backgroundColor: "#ecf0f5" }}>
+      <div className="content-wrapper">
         <section className="content-header" style={{ textAlign: "center", marginBottom: "10px" }}>
           <h1 className="text-danger text-uppercase">
             Biểu mẫu đăng ký nội trú ký túc xá
