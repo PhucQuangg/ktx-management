@@ -33,9 +33,9 @@ Jbackend/src/main/java/com/stu/edu/ktx_management/service/EmailService.java,f\8
 Ybackend/src/main/java/com/stu/edu/ktx_management/controller/StudentProfileController.java,0\5\057e4677cdb31a663eddbe55c70bed6fd15d2b98
 è
 _backend/src/main/java/com/stu/edu/ktx_management/controller/admin/AdminDashboardController.java,4\1\41053913892a1343e82dfb60736088d4fc3e21ab
-u
-Ebackend/src/main/java/com/stu/edu/ktx_management/entity/Contract.java,e\a\eae8372f57f9fd72d256e01e4d60de5ed04d1725
-ä
-Zbackend/src/main/java/com/stu/edu/ktx_management/controller/StudentContractController.java,5\7\5731fb0f6068874a37dd25204973875ef912b2ae
 Ü
 Vbackend/src/main/java/com/stu/edu/ktx_management/service/CustomUserDetailsService.java,3\8\382bd34b6e56ac05bf94c9af0bda026f5f28f244
+{
+Kbackend/src/main/java/com/stu/edu/ktx_management/entity/ApprovalStatus.java,6\6\66e195f3b8f64f82355b60a9a88585428470b605
+É
+Sbackend/src/main/java/com/stu/edu/ktx_management/repository/ContractRepository.java,5\9\590ac5b53815a65a1128a1c75443d1282953f15e

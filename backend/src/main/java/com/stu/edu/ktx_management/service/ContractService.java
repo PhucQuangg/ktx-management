@@ -1,5 +1,6 @@
 package com.stu.edu.ktx_management.service;
 
+import com.stu.edu.ktx_management.dto.ContractDTO;
 import com.stu.edu.ktx_management.dto.StudentProfileDTO;
 import com.stu.edu.ktx_management.entity.*;
 import com.stu.edu.ktx_management.repository.ContractRepository;
@@ -195,5 +196,20 @@ public class ContractService {
     public void autoExpireContracts() {
         expireContracts();
     }
+    public ContractDTO getContractDetail(Integer contractId) {
+        Contract contract = contractRepository.findById(contractId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy hợp đồng"));
+
+        return new ContractDTO(
+                contract.getStudent().getId(),
+                contract.getStudent().getFullName(),
+                contract.getStudent().getEmail(),
+                contract.getRoom().getName(),
+                contract.getStartDate(),
+                contract.getEndDate(),
+                contract.getStatus().name() // trả string trạng thái
+        );
+    }
+
 }
 

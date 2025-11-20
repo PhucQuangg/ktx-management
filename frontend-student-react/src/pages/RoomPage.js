@@ -15,8 +15,7 @@ export default function RoomType() {
   useEffect(() => {
     const token = sessionStorage.getItem("token");
     if (!token) {
-      window.showPopup("Vui lòng đăng nhập để truy cập trang này!", true);
-      setTimeout(() => (window.location.href = "/login"), 3000);
+      window.location.href = "/login"; // Chuyển hướng về trang đăng nhập nếu không có token
     }
   }, []);
 
