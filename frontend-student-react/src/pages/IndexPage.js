@@ -10,7 +10,7 @@ export default function IndexPage() {
 
       <div className="content-wrapper">
         <section className="content-header" style={{ textAlign: "center", marginBottom: "10px" }}>
-          <h1 className="text-danger text-uppercase">
+          <h1 className="text-uppercase" style={{ color: "#C9982A", fontWeight: "bold" }}>
             Chào mừng đến với ký túc xá sinh viên
           </h1>
         </section>

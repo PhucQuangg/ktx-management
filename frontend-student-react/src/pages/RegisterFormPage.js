@@ -9,14 +9,13 @@ export default function DormitoryRegistration() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [className, setClassName] = useState("");
-  const [gender, setGender] = useState(false); // false = Nam, true = Nữ
+  const [gender, setGender] = useState(false);
   const [dateOfBirth, setDateOfBirth] = useState("");
   const [message, setMessage] = useState("");
   const [messageColor, setMessageColor] = useState("red");
   const [disabled, setDisabled] = useState(false);
 
   useEffect(() => {
-    // Nếu token đã lưu trong sessionStorage, disable form
     const token = sessionStorage.getItem("token");
     if (token) {
       setDisabled(true);
@@ -29,7 +28,6 @@ export default function DormitoryRegistration() {
     e.preventDefault();
     setMessage("");
 
-    // Validate
     if (!fullName || !username || !email || !phone || !className || !dateOfBirth) {
       setMessage("Vui lòng nhập đầy đủ tất cả các trường!");
       setMessageColor("red");
@@ -52,7 +50,7 @@ export default function DormitoryRegistration() {
       gender,
       dateOfBirth,
       password: "12345678",
-      role: "STUDENT"
+      role: "STUDENT",
     };
 
     try {
@@ -65,7 +63,7 @@ export default function DormitoryRegistration() {
       if (response.ok) {
         setMessage("Đăng ký thành công! Vui lòng chờ admin duyệt và gửi thông báo qua email.");
         setMessageColor("green");
-        // reset form
+
         setFullName("");
         setUsername("");
         setEmail("");
@@ -86,132 +84,193 @@ export default function DormitoryRegistration() {
   };
 
   return (
-    <div >
+    <div className="wrapper">
       <Header />
       <Sidebar />
 
-      <div className="content-wrapper">
-        <section className="content-header" style={{ textAlign: "center", marginBottom: "10px" }}>
-          <h1 className="text-danger text-uppercase">
-            Biểu mẫu đăng ký nội trú ký túc xá
-          </h1>
-        </section>
+      <div
+        className="content-wrapper"
+        style={{
+          background: "#FFF8E7",
 
-        <section className="content">
-          <div className="container mt-3 mb-5 p-4 shadow rounded bg-white">
-            <form onSubmit={handleSubmit}>
-              <div className="row mb-3">
-                <div className="col">
-                  <label className="form-label">Họ và tên</label>
+          minHeight: "100vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",        }}
+      >
+        <div
+          className="form-container"
+          style={{
+            background: "rgba(255,255,255,0.2)",
+            padding: "40px",
+            borderRadius: "10px",
+            width: "70%",
+            maxWidth: "900px",
+            boxShadow: "0 0 20px rgba(0,0,0,0.1)",
+            fontFamily: "Arial",
+          }}
+        >
+          <h2
+            style={{
+              textAlign: "center",
+              marginBottom: "30px",
+              fontWeight: "600",
+              color: "#2d4f7c",
+            }}
+          >
+            Biểu mẫu đăng ký nội trú ký túc xá
+          </h2>
+
+          <form onSubmit={handleSubmit}>
+            {/* Row 1 */}
+            <div className="row">
+              <div className="col-sm-6">
+                <div className="form-group">
+                  <label>Họ và Tên</label>
                   <input
                     type="text"
-                    className="form-control"
+                    className="form-control custom-input"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     disabled={disabled}
+                    style={inputStyle}
                   />
                 </div>
-                <div className="col">
-                  <label className="form-label">Mã sinh viên (MSSV)</label>
+              </div>
+
+              <div className="col-sm-6">
+                <div className="form-group">
+                  <label>MSSV</label>
                   <input
                     type="text"
-                    className="form-control"
+                    className="form-control custom-input"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     disabled={disabled}
+                    style={inputStyle}
                   />
                 </div>
               </div>
+            </div>
 
-              <div className="row mb-3">
-                <div className="col">
-                  <label className="form-label">Email</label>
-                  <input
-                    type="email"
-                    className="form-control"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    disabled={disabled}
-                  />
-                </div>
-                <div className="col">
-                  <label className="form-label">Số điện thoại</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    disabled={disabled}
-                  />
-                </div>
-              </div>
-
-              <div className="row mb-3">
-                <div className="col">
-                  <label className="form-label">Ngày sinh</label>
+            {/* Row 2 */}
+            <div className="row">
+              <div className="col-sm-6">
+                <div className="form-group">
+                  <label>Ngày sinh</label>
                   <input
                     type="date"
-                    className="form-control"
+                    className="form-control custom-input"
                     value={dateOfBirth}
                     onChange={(e) => setDateOfBirth(e.target.value)}
                     disabled={disabled}
+                    style={inputStyle}
                   />
-                </div>
-                <div className="col">
-                  <label className="form-label d-block">Giới tính</label>
-                  <div className="form-check form-check-inline">
-                    <input
-                      className="form-check-input"
-                      type="radio"
-                      name="gender"
-                      checked={gender === false}
-                      onChange={() => setGender(false)}
-                      disabled={disabled}
-                    />
-                    <label className="form-check-label">Nam</label>
-                  </div>
-                  <div className="form-check form-check-inline">
-                    <input
-                      className="form-check-input"
-                      type="radio"
-                      name="gender"
-                      checked={gender === true}
-                      onChange={() => setGender(true)}
-                      disabled={disabled}
-                    />
-                    <label className="form-check-label">Nữ</label>
-                  </div>
                 </div>
               </div>
 
-              <div className="row mb-3">
-                <div className="col">
-                  <label className="form-label">Lớp</label>
+              <div className="col-sm-6">
+                <div className="form-group">
+                  <label>Lớp</label>
                   <input
                     type="text"
-                    className="form-control"
+                    className="form-control custom-input"
                     value={className}
                     onChange={(e) => setClassName(e.target.value)}
                     disabled={disabled}
+                    style={inputStyle}
                   />
                 </div>
               </div>
+            </div>
 
-              <button type="submit" className="btn btn-primary w-100" disabled={disabled}>
-                Gửi đăng ký
-              </button>
+            {/* Email */}
+            <div className="form-group">
+              <label>Email</label>
+              <input
+                type="email"
+                className="form-control custom-input"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={disabled}
+                style={inputStyle}
+              />
+            </div>
 
-              {message && (
-                <div className="mt-3 text-center fw-bold" style={{ color: messageColor }}>
-                  {message}
-                </div>
-              )}
-            </form>
-          </div>
-        </section>
+            {/* Phone */}
+            <div className="form-group">
+              <label>Số điện thoại</label>
+              <input
+                type="text"
+                className="form-control custom-input"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                disabled={disabled}
+                style={inputStyle}
+              />
+            </div>
+
+            {/* Gender */}
+            <div className="form-group">
+              <label>Giới tính</label> <br />
+              <label className="radio-inline">
+                <input
+                  type="radio"
+                  name="gender"
+                  checked={gender === false}
+                  onChange={() => setGender(false)}
+                  disabled={disabled}
+                />{" "}
+                Nam
+              </label>
+              <label className="radio-inline" style={{ marginLeft: "20px" }}>
+                <input
+                  type="radio"
+                  name="gender"
+                  checked={gender === true}
+                  onChange={() => setGender(true)}
+                  disabled={disabled}
+                />{" "}
+                Nữ
+              </label>
+            </div>
+
+            <button type="submit" className="btn submit-btn" style={submitStyle} disabled={disabled}>
+              Gửi đăng ký
+            </button>
+
+            {message && (
+              <div className="mt-3 text-center fw-bold" style={{ color: messageColor }}>
+                {message}
+              </div>
+            )}
+          </form>
+        </div>
       </div>
 
       <Script />
     </div>
   );
 }
+
+/* Style tách riêng giống HTML */
+const inputStyle = {
+  border: "none",
+  borderBottom: "1px solid #555",
+  borderRadius: 0,
+  background: "transparent",
+  boxShadow: "none",
+  paddingLeft: 0,
+  fontSize: "16px",
+};
+
+const submitStyle = {
+  width: "200px",
+  margin: "20px auto 0",
+  display: "block",
+  background: "#4ba3ff",
+  color: "#fff",
+  fontSize: "18px",
+  padding: "10px",
+  borderRadius: "6px",
+};
