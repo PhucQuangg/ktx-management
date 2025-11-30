@@ -1,0 +1,12 @@
+
+b	java:S112^"FDefine and throw a dedicated exception instead of using a generic one.(ôö¥8ØüËˆª3
+b	java:S112b"FDefine and throw a dedicated exception instead of using a generic one.(İ³8ØüËˆª3
+g	java:S112f"FDefine and throw a dedicated exception instead of using a generic one.(—À¬ùÿÿÿÿ8ØüËˆª3
+g	java:S112y"FDefine and throw a dedicated exception instead of using a generic one.(ÖØôÁùÿÿÿÿ8ØüËˆª3
+b	java:S112"FDefine and throw a dedicated exception instead of using a generic one.(ïëòÈ8ØüËˆª3
+h	java:S112‘"FDefine and throw a dedicated exception instead of using a generic one.(îıê“ûÿÿÿÿ8ØüËˆª3
+h	java:S112"FDefine and throw a dedicated exception instead of using a generic one.(Üùô³şÿÿÿÿ8ØüËˆª3
+~
+java:S1192v"aDefine a constant instead of duplicating this literal "KhÃ´ng tÃ¬m tháº¥y há»£p Ä‘á»“ng" 4 times.(åŞÔë8ÚüËˆª3
+o
+java:S6204/"RReplace this usage of 'Stream.collect(Collectors.toList())' with 'Stream.toList()'(ª™¨¹8“ıËˆª3

@@ -1,0 +1,15 @@
+
+e
+java:S1192!"HDefine a constant instead of duplicating this literal "message" 5 times.(àòÒÓ8˜¯®†ª3
+C
+java:S1452"&Remove usage of generic wildcard type.(ïŒ•‡8¾¯®†ª3
+H
+java:S1452'"&Remove usage of generic wildcard type.(™ƒ×Àýÿÿÿÿ8É¯®†ª3
+C
+java:S14528"&Remove usage of generic wildcard type.(ÍÁô²8Í¯®†ª3
+o
+java:S6204="RReplace this usage of 'Stream.collect(Collectors.toList())' with 'Stream.toList()'(ª™¨¹8Î¯®†ª3
+C
+java:S1452F"&Remove usage of generic wildcard type.(»õ‚€8Ì˜¹ˆª3
+C
+java:S1452R"&Remove usage of generic wildcard type.(‘ðÿŠ8¤½Ùˆª3

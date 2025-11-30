@@ -1,0 +1,15 @@
+
+A
+java:S1452"&Remove usage of generic wildcard type.(•‚äªüÿÿÿÿ
+o
+java:S6204""RReplace this usage of 'Stream.collect(Collectors.toList())' with 'Stream.toList()'(ª™¨¹8ìï‡´©3
+<
+java:S1452'"&Remove usage of generic wildcard type.(Ó½à•
+<
+java:S14521"&Remove usage of generic wildcard type.(õ¢–Î
+<
+java:S1452:"&Remove usage of generic wildcard type.(»õ‚€
+<
+java:S1452D"&Remove usage of generic wildcard type.(«—ãð
+`
+java:S1128"CRemove this unused import 'com.stu.edu.ktx_management.entity.Room'.(òÒžƒ8ôï‡´©3
