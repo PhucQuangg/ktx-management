@@ -1,0 +1,265 @@
+.box-tools .breadcrumb{
+	margin-bottom: 0;
+	padding: 5px;
+	background: none;
+}
+.box-tools .breadcrumb li{
+	margin-right: 15px;
+	float: left
+}
+.box-tools .breadcrumb li a{
+	color: #333
+}
+.content-header > .breadcrumb{
+	padding: 0 7px
+}
+.content .panel-body{
+	padding: 5px
+}
+.table-form .form-inline .input-group>.form-control{
+	width: 300px;
+}
+.panel-pagination .panel-body{
+	padding-top: 0;
+	padding-bottom: 0;
+}
+.post-category{
+	padding-left: 0
+}
+.post-category ul{
+	padding-left: 15px
+}
+.btn-social{
+	padding-left: 32px
+}
+.btn-social > :first-child {
+    width: 32px;
+    line-height: 32px;
+    font-size: 16px;
+}
+.table-action a.label{
+	margin-left: 5px
+}
+/* Đảm bảo các cột có độ rộng cố định */
+.table-fixed {
+    width: 100%;
+    table-layout: fixed;
+}
+
+/* Cố định cột đầu tiên */
+.table-fixed thead th:first-child,
+.table-fixed tbody td:first-child {
+    position: sticky;
+    left: 0;
+    background-color: #f9f9f9; /* Để tạo sự phân biệt */
+    z-index: 1; /* Giữ cột cố định ở phía trước */
+}
+
+/* Cố định phần đầu của bảng khi cuộn dọc */
+.table-fixed thead th {
+    position: sticky;
+    top: 0;
+    background-color: #f9f9f9; /* Màu nền cho tiêu đề */
+    z-index: 2; /* Đảm bảo tiêu đề luôn nằm trên cùng */
+}
+
+/* Thêm một số phong cách để dễ nhìn */
+.table-fixed th, .table-fixed td {
+    text-align: left;
+    padding: 8px;
+    white-space: nowrap; /* Ngăn chặn xuống dòng trong các cột */
+}
+
+/* Thiết lập chiều rộng cột cố định */
+.table-fixed th:nth-child(1), .table-fixed td:nth-child(1) {
+    width: 10%;
+}
+
+.table-fixed th:nth-child(2), .table-fixed td:nth-child(2) {
+    width: 10%;
+}
+
+.table-fixed th:nth-child(3), .table-fixed td:nth-child(3) {
+    width: 20%;
+}
+
+.table-fixed th:nth-child(4), .table-fixed td:nth-child(4) {
+    width: 13%;
+}
+
+.table-fixed th:nth-child(5), .table-fixed td:nth-child(5) {
+    width: 10%;
+}
+
+.table-fixed th:nth-child(6), .table-fixed td:nth-child(6) {
+    width: 15%;
+}
+
+.table-fixed th:nth-child(7), .table-fixed td:nth-child(7) {
+    width: 15%;
+}
+
+
+/* Thiết lập scroll cho bảng */
+.table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    max-height: 400px; /* Giới hạn chiều cao bảng và cho phép cuộn dọc */
+}
+
+@media (max-width: 768px) {
+    .table-fixed th, .table-fixed td {
+        padding: 4px;
+        font-size: 12px;
+    }
+
+    .table-wrapper {
+        max-height: 300px;
+    }
+}
+/* Đảm bảo các cột có độ rộng cố định và nội dung có thể cuộn hoặc xuống dòng */
+.table-fixed {
+    width: 100%;
+    table-layout: fixed;
+}
+
+/* Cố định cột đầu tiên */
+.table-fixed thead th:first-child,
+.table-fixed tbody td:first-child {
+    position: sticky;
+    left: 0;
+    background-color: #f9f9f9; /* Để tạo sự phân biệt */
+    z-index: 1; /* Giữ cột cố định ở phía trước */
+}
+
+/* Cố định phần đầu của bảng khi cuộn dọc */
+.table-fixed thead th {
+    position: sticky;
+    top: 0;
+    background-color: #f9f9f9; /* Màu nền cho tiêu đề */
+    z-index: 2; /* Đảm bảo tiêu đề luôn nằm trên cùng */
+}
+
+/* Thêm một số phong cách để dễ nhìn */
+.table-fixed th, .table-fixed td {
+    text-align: left;
+    padding: 8px;
+    white-space: normal; /* Đảm bảo nội dung có thể xuống dòng */
+    word-wrap: break-word; /* Đảm bảo từ dài không tràn ra ngoài */
+    overflow: hidden; /* Ẩn phần tràn */
+}
+
+/* Thiết lập chiều rộng cột cố định */
+.table-fixed th:nth-child(1), .table-fixed td:nth-child(1) {
+    width: 7%;
+}
+
+.table-fixed th:nth-child(2), .table-fixed td:nth-child(2) {
+    width: 20%;
+}
+
+.table-fixed th:nth-child(3), .table-fixed td:nth-child(3) {
+    width: 20%;
+}
+
+.table-fixed th:nth-child(4), .table-fixed td:nth-child(4) {
+    width: 15%;
+}
+
+.table-fixed th:nth-child(5), .table-fixed td:nth-child(5) {
+    width: 10%;
+}
+
+.table-fixed th:nth-child(6), .table-fixed td:nth-child(6) {
+    width: 20%;
+}
+
+.table-fixed th:nth-child(7), .table-fixed td:nth-child(7) {
+    width: 15%;
+}
+
+
+/* Thiết lập scroll cho bảng */
+.table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    max-height: 400px; /* Giới hạn chiều cao bảng và cho phép cuộn dọc */
+}
+
+/* Đảm bảo rằng hình ảnh có thể thu nhỏ và không tràn cột */
+.table-fixed td img {
+    max-width: 100%;  /* Đảm bảo hình ảnh không vượt quá cột */
+    height: auto;  /* Tự động điều chỉnh chiều cao */
+}
+
+/* Media Query cho các màn hình nhỏ */
+@media (max-width: 768px) {
+    .table-fixed th, .table-fixed td {
+        padding: 4px;
+        font-size: 12px;
+    }
+
+    .table-wrapper {
+        max-height: 300px;
+    }
+
+    /* Điều chỉnh chiều rộng cột để phù hợp với màn hình nhỏ */
+    .table-fixed th:nth-child(1), .table-fixed td:nth-child(1) {
+        width: 10%;
+    }
+
+    .table-fixed th:nth-child(2), .table-fixed td:nth-child(2) {
+        width: 20%;
+    }
+
+    .table-fixed th:nth-child(3), .table-fixed td:nth-child(3) {
+        width: 25%;
+    }
+
+    .table-fixed th:nth-child(4), .table-fixed td:nth-child(4) {
+        width: 20%;
+    }
+
+    .table-fixed th:nth-child(5), .table-fixed td:nth-child(5) {
+        width: 30%;
+    }
+
+    .table-fixed th:nth-child(6), .table-fixed td:nth-child(6) {
+        width: 35%;
+    }
+
+    .table-fixed th:nth-child(7), .table-fixed td:nth-child(7) {
+        width: 20%;
+    }
+
+    .table-fixed th:nth-child(8), .table-fixed td:nth-child(8) {
+        width: 20%;
+    }
+}
+
+/* Điều chỉnh chiều rộng và padding của các nút khi màn hình nhỏ */
+.btn {
+    font-size: 14px;  /* Đặt font-size nhỏ hơn cho màn hình nhỏ */
+    padding: 8px 16px; /* Đảm bảo padding vừa phải */
+}
+
+/* Cải thiện độ rộng của nút khi màn hình nhỏ hơn 768px */
+@media (max-width: 768px) {
+    .btn {
+        font-size: 12px; /* Giảm kích thước chữ */
+        padding: 6px 12px; /* Giảm padding */
+        width: 100%;  /* Nút sẽ chiếm toàn bộ chiều rộng của cột */
+        margin-bottom: 10px; /* Thêm khoảng cách dưới nút */
+    }
+
+    /* Đặc biệt cho các nút 'Add new' và 'Action' */
+    .btn-success, .btn-danger {
+        width: auto;  /* Nếu muốn nút 'Add new' và 'Action' không chiếm toàn bộ chiều rộng */
+    }
+}
+.center-bold {
+      text-align: center;
+      font-weight: bold;
+    }
+
+
