@@ -17,8 +17,6 @@ x
 Hbackend/src/main/java/com/stu/edu/ktx_management/dto/AuthRequestDTO.java,f\f\ff26d1525821872e615254769b18ffb5ce413104
 Å
 Qbackend/src/main/java/com/stu/edu/ktx_management/config/jwt/JwtRequestFilter.java,3\3\33b502487e9aa7f45818d5b39b97a69c645238b0
-]
--target/classes/templates/admin/dashboard.html,6\7\6738f794e41626352fad796ee26890bcf92e9287
 t
 Dbackend/src/main/java/com/stu/edu/ktx_management/entity/Student.java,6\9\6927e2aa21722c5829a21e471eceab379e2bf6f8
 É
@@ -57,6 +55,8 @@ Zbackend/src/main/java/com/stu/edu/ktx_management/controller/StudentContractCont
 Obackend/src/main/java/com/stu/edu/ktx_management/dto/mapper/ContractMapper.java,6\0\603c9aa991e2d5657094d4a32e4cb49107104939
 u
 Ebackend/src/main/java/com/stu/edu/ktx_management/entity/Contract.java,e\a\eae8372f57f9fd72d256e01e4d60de5ed04d1725
+Ü
+Vbackend/src/main/java/com/stu/edu/ktx_management/service/CustomUserDetailsService.java,3\8\382bd34b6e56ac05bf94c9af0bda026f5f28f244
 é
 ^backend/src/main/java/com/stu/edu/ktx_management/controller/admin/AdminContractController.java,1\8\18070989039840354c89473c717cb10933381a8a
 }
@@ -69,7 +69,5 @@ Kbackend/src/main/java/com/stu/edu/ktx_management/dto/StudentProfileDTO.java,3\
 Obackend/src/main/java/com/stu/edu/ktx_management/controller/AuthController.java,1\1\11b87daf1fe0b8004647541cf5a3e07b9425f0d4
 |
 Lbackend/src/main/java/com/stu/edu/ktx_management/service/StudentService.java,6\1\61738405aa89648d9a081f8930739039779e9ab4
-Ü
-Vbackend/src/main/java/com/stu/edu/ktx_management/service/CustomUserDetailsService.java,3\8\382bd34b6e56ac05bf94c9af0bda026f5f28f244
 Ç
 Rbackend/src/main/java/com/stu/edu/ktx_management/repository/StudentRepository.java,e\c\ec7455a6279fc4952d117831f3b4f1972b574105
