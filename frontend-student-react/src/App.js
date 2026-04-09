@@ -26,7 +26,7 @@ function App() {
         <Route path="/rooms" element={<RoomPage />} />
         <Route path="/room-detail" element={<RoomDetailPage />} />
         <Route path="/my-contracts" element={<MyContractPage />} />
-        <Route path="/contract" element={<ContractDetailPage />} />
+        <Route path="/contract-detail" element={<ContractDetailPage />} />
       </Routes>
 
       <Popup />

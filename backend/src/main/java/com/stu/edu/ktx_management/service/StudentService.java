@@ -1,14 +1,16 @@
 package com.stu.edu.ktx_management.service;
+import com.stu.edu.ktx_management.dto.StudentDTO;
 import com.stu.edu.ktx_management.dto.StudentProfileDTO;
-import com.stu.edu.ktx_management.entity.ApprovalStatus;
-import com.stu.edu.ktx_management.entity.Role;
-import com.stu.edu.ktx_management.entity.Student;
+import com.stu.edu.ktx_management.entity.*;
+import com.stu.edu.ktx_management.repository.ContractRepository;
 import com.stu.edu.ktx_management.repository.StudentRepository;
+import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,6 +28,9 @@ public class StudentService {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    private ContractRepository contractRepository;
 
 
     public List<Student> getAllStudents() {
@@ -68,17 +73,57 @@ public class StudentService {
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy sinh viên với id: " + id));
     }
 
-    public Student createStudent(Student student) {
+    public Student registerStudent(Student student) {
+
+        if (studentRepository.findByUsername(student.getUsername()).isPresent()) {
+            throw new RuntimeException("Mã số sinh viên đã tồn tại!");
+        }
+
+        if (studentRepository.findByEmail(student.getEmail()).isPresent()) {
+            throw new RuntimeException("Email đã được sử dụng!");
+        }
+
         if (student.getPassword() != null) {
             student.setPassword(passwordEncoder.encode(student.getPassword()));
         }
-        if (studentRepository.findByUsername(student.getUsername()).isPresent()){
+
+        student.setRole(Role.STUDENT);
+        student.setApprovalStatus(ApprovalStatus.PENDING);
+
+        return studentRepository.save(student);
+    }
+
+    // dành cho admin tạo thủ công
+    public Student createStudentByAdmin(StudentDTO studentDTO){
+        if (studentRepository.findByUsername(studentDTO.getUsername()).isPresent()){
             throw new RuntimeException("Sinh viên đã tồn tại");
         }
-        if (studentRepository.findByEmail(student.getEmail()).isPresent()){
+        if (studentRepository.findByEmail(studentDTO.getEmail()).isPresent()){
             throw new RuntimeException("Email đã tồn tại");
         }
-        return studentRepository.save(student);
+        Student student = new Student();
+        student.setFullName(studentDTO.getFullName());
+        student.setUsername(studentDTO.getUsername());
+        student.setEmail(studentDTO.getEmail());
+        student.setPhone(studentDTO.getPhone());
+        student.setClassName(studentDTO.getClassName());
+        student.setDateOfBirth(studentDTO.getDateOfBirth());
+        student.setGender(studentDTO.getGender());
+
+        if (studentDTO.getRole() != null) {
+            try {
+                student.setRole(Role.valueOf(studentDTO.getRole().toUpperCase()));
+            } catch (IllegalArgumentException e) {
+                throw new RuntimeException("Role không hợp lệ (ADMIN hoặc STUDENT)");
+            }
+        } else {
+            student.setRole(Role.STUDENT);
+        }
+        student.setApprovalStatus(ApprovalStatus.APPROVED);
+        student.setPassword(passwordEncoder.encode("12345678"));
+        studentRepository.save(student);
+        emailService.sendCreatedEmail(student);
+        return student;
     }
 
     public Student updateStudent(Integer id, Student studentDetails) {
@@ -117,10 +162,29 @@ public class StudentService {
     }
 
     public Student deleteStudent(Integer id) {
-        Student room= studentRepository.findById(id).orElseThrow(()->new RuntimeException("Không tìm thấy sinh viên với id: "+id));
-        studentRepository.delete(room);
-        return room;
+        Student student = studentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy sinh viên với id: " + id));
+
+        List<Contract> contracts = contractRepository.findByStudent(student);
+
+        boolean hasActiveContract = contracts.stream()
+                .anyMatch(c -> c.getStatus() == ContractStatus.ACTIVE &&
+                        c.getEndDate().isAfter(LocalDate.now()));
+
+        if (hasActiveContract) {
+            throw new RuntimeException("Không thể xóa sinh viên vì đang có hợp đồng còn hiệu lực.");
+        }
+
+        try {
+            studentRepository.delete(student);
+        } catch (Exception e) {
+            throw new RuntimeException("Không thể xóa sinh viên do liên kết dữ liệu khác.");
+        }
+
+        return student;
     }
+
+
 
     public StudentProfileDTO getStudentByUsername(String username) {
         Student student = studentRepository.findByUsername(username)
@@ -160,9 +224,7 @@ public class StudentService {
     public Optional<Student> findByUsername(String username){
         return studentRepository.findByUsername(username);
     }
-    public Optional<Student> findByEmail(String email){
-        return studentRepository.findByEmail(email);
-    }
+
     private void checkEmailExists(String email, Student student) {
         Optional<Student> existingStudent = studentRepository.findByEmail(email);
         if (existingStudent.isPresent() &&

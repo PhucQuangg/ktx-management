@@ -36,7 +36,11 @@ export default function RoomList() {
     }
   }, [roomType, rooms]);
 
-  const handleDelete = async (roomId) => {
+  const handleDelete = async (roomId,current_people) => {
+    if(current_people > 0 ){
+      window.showPopup("Không thể xoá phòng vì hiện có người đang ở!", true);
+      return;
+    }
     window.showPopup(
       "Bạn có chắc chắn muốn xoá phòng này không?",
       false,
@@ -82,7 +86,7 @@ export default function RoomList() {
                   className="breadcrumb-item text-sm text-dark active"
                   aria-current="page"
                 >
-                  Danh sách phòng
+                  Quản lý phòng
                 </li>
               </ol>
             </nav>
@@ -124,7 +128,7 @@ export default function RoomList() {
               <div className="card my-4">
                 <div className="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
                   <div className="bg-gradient-dark shadow-dark border-radius-lg pt-4 pb-3">
-                    <h6 className="text-white text-capitalize ps-3">Bảng phòng</h6>
+                    <h6 className="text-white text-capitalize ps-3">Danh sách phòng</h6>
                   </div>
                 </div>
 
@@ -181,7 +185,7 @@ export default function RoomList() {
                                 <i
                                   className="fa-solid fa-trash text-danger"
                                   style={{ cursor: "pointer" }}
-                                  onClick={() => handleDelete(r.id)}
+                                  onClick={() => handleDelete(r.id,r.current_people)}
                                 ></i>
                               </td>
                             </tr>

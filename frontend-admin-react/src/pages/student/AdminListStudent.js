@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
-import Sidebar from "../components/Sidebar";
-import SettingsPanel from "../components/SettingsPanel";
-import Script from "../components/Script";
+import { useNavigate } from "react-router-dom";
+import Sidebar from "../../components/Sidebar";
+import SettingsPanel from "../../components/SettingsPanel";
+import Script from "../../components/Script";
 
 export default function UserList() {
   const [students, setStudents] = useState([]);
-  const [filteredStudents, setFilteredStudents] = useState([]);
-  const [selectedRole, setSelectedRole] = useState("ALL");
+  const navigate = useNavigate();
   const [sidebarColor, setSidebarColor] = useState("bg-white");
+  const token = localStorage.getItem("admin_token");
 
   useEffect(() => {
-    const token = localStorage.getItem("admin_token");
     if (!token) return;
 
     fetch("http://localhost:8080/api/admin/students", {
@@ -30,19 +30,58 @@ export default function UserList() {
       })
       .then((data) => {
         setStudents(data);
-        setFilteredStudents(data);
       })
       .catch((err) => console.error("Lỗi khi tải dữ liệu:", err));
-  }, []);
+  }, [token]);
 
-  // Lọc danh sách khi thay đổi role
-  useEffect(() => {
-    if (selectedRole === "ALL") {
-      setFilteredStudents(students);
-    } else {
-      setFilteredStudents(students.filter((u) => u.role === selectedRole));
-    }
-  }, [selectedRole, students]);
+  
+  const handleDelete = async (studentId) => {
+    window.showPopup(
+      "Bạn có chắc chắn muốn xoá sinh viên này không?",
+      false,
+      true,
+      async () => {
+        try {
+          const res = await fetch(
+            `http://localhost:8080/api/admin/students/${studentId}`,
+            {
+              method: "DELETE",
+              headers: {
+                Authorization: "Bearer " + token,
+              },
+            }
+          );
+  
+          const message = await res.text();
+  
+          console.log("STATUS:", res.status);
+          console.log("MESSAGE:", message);
+  
+          if (res.ok) {
+            setStudents((prev) => prev.filter((s) => s.id !== studentId));
+  
+            setTimeout(() => {
+              window.showPopup("Xoá sinh viên thành công!");
+            }, 200);
+  
+          } else {
+            setTimeout(() => {
+              window.showPopup(
+                message || "Không thể xoá sinh viên!",
+                true
+              );
+            }, 200);
+          }
+        } catch (err) {
+          console.error(err);
+          setTimeout(() => {
+            window.showPopup("Lỗi kết nối server!", true);
+          }, 200);
+        }
+      }
+    );
+  };
+  
 
   return (
     <div className="g-sidenav-show">
@@ -69,7 +108,7 @@ export default function UserList() {
                   className="breadcrumb-item text-sm text-dark active"
                   aria-current="page"
                 >
-                  Danh sách người dùng
+                  Quản lý sinh viên
                 </li>
               </ol>
             </nav>
@@ -113,7 +152,7 @@ export default function UserList() {
                 <div className="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
                   <div className="bg-gradient-dark shadow-dark border-radius-lg pt-4 pb-3">
                     <h6 className="text-white text-capitalize ps-3">
-                      Bảng người dùng
+                      Danh sách sinh viên
                     </h6>
                   </div>
                 </div>
@@ -121,15 +160,13 @@ export default function UserList() {
                 <div className="card-body px-0 pb-2">
                   <div className="table-responsive p-0">
                     <div className="d-flex justify-content-between align-items-center px-4 pt-3">
-                      <select
-                        value={selectedRole}
-                        onChange={(e) => setSelectedRole(e.target.value)}
-                        className="form-select w-auto"
+                      
+                      <button
+                        className="btn btn-dark ms-auto"
+                        onClick={() => navigate("/admin/students/add")}
                       >
-                        <option value="ALL">Tất cả</option>
-                        <option value="ADMIN">Admin</option>
-                        <option value="STUDENT">Student</option>
-                      </select>
+                        + Thêm sinh viên
+                      </button>
                     </div>
 
                     <table className="table align-middle mb-0">
@@ -139,7 +176,13 @@ export default function UserList() {
                             Họ và tên
                           </th>
                           <th>
-                            Tên đăng nhập
+                            Ngày sinh
+                          </th>
+                          <th>
+                            Lớp
+                          </th>
+                          <th>
+                            Giới tính
                           </th>
                           <th>
                             Email
@@ -150,24 +193,34 @@ export default function UserList() {
                           <th>
                             Ngày tạo
                           </th>
-                          <th>
-                            Vai trò
-                          </th>
-                          <th className="text-secondary opacity-7"></th>
+                    
+                          <th style={{ width: "100px" }}>Hành động</th>
                         </tr>
                       </thead>
 
                       <tbody>
-                        {filteredStudents.length > 0 ? (
-                          filteredStudents.map((stu, idx) => (
+                        {students.length > 0 ? (
+                          students.map((stu, idx) => (
                             <tr key={idx}  className="text-center">
                               <td>{stu.fullName}</td>
-                              <td>{stu.username}</td>
+                              <td>{stu.dateOfBirth}</td>
+                              <td>{stu.className}</td>
+                              <td>{stu.gender ? "Nữ" : "Nam"}</td>
                               <td>{stu.email}</td>
                               <td>{stu.phone || "Chưa cập nhật"}</td>
                               <td>{stu.created_at || "Chưa cập nhật"}</td>
-                              <td>{stu.role}</td>
-                              <td className="text-center">Active</td>
+                              <td>
+                                <i
+                                  className="fa-regular fa-pen-to-square text-secondary me-2"
+                                  style={{ cursor: "pointer" }}
+                                  onClick={() => navigate(`/admin/update-student?id=${stu.id}`)}
+                                ></i>
+                               <i
+                                  className="fa-solid fa-trash text-danger"
+                                  style={{ cursor: "pointer" }}
+                                  onClick={() => handleDelete(stu.id)}
+                                ></i>
+                              </td>
                             </tr>
                           ))
                         ) : (

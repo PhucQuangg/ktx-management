@@ -7,8 +7,8 @@ import Script from "../components/Script";
 export default function ContractDetail() {
   const location = useLocation();
   const navigate = useNavigate();
-  const queryParams = new URLSearchParams(location.search);
-  const id = queryParams.get("id"); // lấy id từ query string
+  const id = location.state?.id;
+
 
   const [contract, setContract] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -27,7 +27,13 @@ export default function ContractDetail() {
   };
 
   useEffect(() => {
-    if (id) fetchContract();
+    if (!id) {
+      window.showPopup("Không tìm thấy hợp đồng!", true);
+      navigate("/my-contracts");
+      return;
+    }
+  
+    fetchContract();
   }, [id]);
 
   const cancelContract = () => {
@@ -56,46 +62,163 @@ export default function ContractDetail() {
       <Header />
       <Sidebar />
       <div className="content-wrapper">
-        <div className="container" style={{ padding: 20 }}>
-          <h2>Chi tiết hợp đồng</h2>
-          <div className="contract-detail-card">
-            <div><strong>ID:</strong> {contract.id}</div>
-            <div><strong>Sinh viên:</strong> {contract.studentName} ({contract.studentEmail})</div>
-            <div><strong>Phòng:</strong> {contract.roomName}</div>
-            <div><strong>Ngày bắt đầu:</strong> {contract.startDate}</div>
-            <div><strong>Ngày kết thúc:</strong> {contract.endDate}</div>
-            <div>
-              <strong>Trạng thái:</strong> 
-              <span className={`status status-${contract.status.toLowerCase()}`}>{contract.status}</span>
-            </div>
-          </div>
+      <div className="container" style={{ padding: 20 }}>
+  <div className="paper">
 
-          {contract.status === "PENDING" && (
-            <button onClick={cancelContract} disabled={loadingCancel}>
-              {loadingCancel ? "Đang hủy..." : "Hủy hợp đồng"}
-            </button>
-          )}
+    {/* HEADER */}
+    <div className="header">
+  <div className="left text-center">
+  <strong>TRƯỜNG ĐẠI HỌC CÔNG NGHÊ SÀI GÒN</strong><br />
+  <span>Ký túc xá sinh viên</span>
+  </div>
+  <div className="right">
+    <div>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>
+    <div className="sub">Độc lập - Tự do - Hạnh phúc</div>
+  </div>
+</div>
 
-          <button style={{ marginLeft: 12 }} onClick={() => navigate("/my-contracts")}>Quay lại</button>
-        </div>
+
+    {/* TITLE */}
+    <h2 className="title">
+      {contract.status === "PENDING"
+        ? "ĐƠN ĐĂNG KÝ NỘI TRÚ KÝ TÚC XÁ"
+        : "HỢP ĐỒNG NỘI TRÚ KÝ TÚC XÁ"}
+    </h2>
+
+    {/* STATUS */}
+    <div className={`status-badge ${contract.status.toLowerCase()}`}>
+      {contract.status === "PENDING" && "⏳ Chờ duyệt"}
+      {contract.status === "ACTIVE" && "✅ Đã duyệt"}
+      {contract.status === "CANCELED" && "❌ Đã hủy"}
+    </div>
+
+    {/* INFO */}
+    <div className="section">
+      <p><strong>Sinh viên:</strong> {contract.studentName}</p>
+      <p><strong>Email:</strong> {contract.studentEmail}</p>
+      <p><strong>Phòng:</strong> {contract.roomName}</p>
+      <p><strong>Ngày bắt đầu:</strong> {contract.startDate}</p>
+      <p><strong>Ngày kết thúc:</strong> {contract.endDate}</p>
+    </div>
+
+    {/* CONTENT */}
+    <div className="section">
+      {contract.status === "PENDING" ? (
+        <>
+          <p>
+            Tôi xin đăng ký ở nội trú tại phòng <b>{contract.roomName}</b>.
+          </p>
+          <p>
+            Thời gian từ ngày <b>{contract.startDate}</b> đến <b>{contract.endDate}</b>.
+          </p>
+          <p>
+            Tôi cam kết tuân thủ các quy định của ký túc xá và chờ phê duyệt từ quản lý.
+          </p>
+        </>
+      ) : (
+        <>
+          <p>
+            Bên A đồng ý cho Bên B thuê phòng <b>{contract.roomName}</b>.
+          </p>
+          <p>
+            Thời gian từ ngày <b>{contract.startDate}</b> đến <b>{contract.endDate}</b>.
+          </p>
+          <p>
+            Hai bên cam kết thực hiện đúng các điều khoản của hợp đồng.
+          </p>
+        </>
+      )}
+    </div>
+
+    {/* SIGNATURE */}
+    <div className="signature">
+      <div>
+        <p>Người đăng ký</p>
+        <p>(Ký tên)</p>
+      </div>
+      <div>
+        <p>Quản lý KTX</p>
+        <p>(Ký tên)</p>
+      </div>
+    </div>
+
+    {/* ACTION */}
+    {contract.status === "PENDING" && (
+      <button className="btn-cancel" onClick={cancelContract}>
+        Hủy đăng ký
+      </button>
+    )}
+  </div>
+</div>
+
       </div>
 
       <Script />
       <style>{`
-        .contract-detail-card {
-          padding: 20px;
-          border-radius: 12px;
+        .paper {
           background: #fff;
-          box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-          margin-bottom: 20px;
+          padding: 40px;
+          max-width: 800px;
+          margin: auto;
+          border: 1px solid #ccc;
+          font-family: "Times New Roman", serif;
+          line-height: 1.6;
         }
-        .status { font-weight: 700; }
-        .status-pending { color: #f59e0b; }
-        .status-active { color: #10b981; }
-        .status-canceled { color: #ef4444; }
-        .status-expired { color: #9ca3af; }
-        button { padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; background: #4f46e5; color: #fff; }
-        button:disabled { background: #a5b4fc; cursor: not-allowed; }
+
+        .header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.right {
+  text-align: center;
+}
+
+        .title {
+          text-align: center;
+          margin: 20px 0;
+        }
+
+        .section {
+          margin-top: 20px;
+        }
+
+        .signature {
+          display: flex;
+          justify-content: space-between;
+          margin-top: 50px;
+          text-align: center;
+        }
+
+        .status-badge {
+          text-align: center;
+          margin-top: 10px;
+          font-weight: bold;
+        }
+
+        .status-badge.pending { color: orange; }
+        .status-badge.active { color: green; }
+        .status-badge.canceled { color: red; }
+
+        .btn-cancel {
+          margin-top: 20px;
+          background: red;
+          color: white;
+          padding: 10px 20px;
+          border: none;
+          cursor: pointer;
+          border-radius: 8px;
+        }
+
+        button {
+          margin-top: 15px;
+          padding: 8px 16px;
+          border-radius: 8px;
+          border: none;
+          background: #4f46e5;
+          color: #fff;
+          cursor: pointer;
+        }
       `}</style>
     </div>
   );

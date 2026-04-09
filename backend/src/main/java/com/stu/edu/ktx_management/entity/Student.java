@@ -11,18 +11,22 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "students")
+@Table(name = "users")
 public class Student {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
     @Column(name = "username",nullable = false,unique = true)
     private String username;
+
     @Column(name = "password",nullable = false)
     private String password;
+
     @Column(name = "full_name")
     private String fullName;
+
     private String email;
 
     @Enumerated(EnumType.STRING)
@@ -31,6 +35,7 @@ public class Student {
     private ApprovalStatus approvalStatus = ApprovalStatus.PENDING;
     @Enumerated(EnumType.STRING)
     private Role role;
+
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date created_at = new Date();
 
@@ -41,6 +46,7 @@ public class Student {
     private Boolean gender;
 
     private String phone;
+
     @Column(name = "class_name")
     private String className;
 }

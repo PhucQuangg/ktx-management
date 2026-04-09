@@ -35,4 +35,6 @@ public class Contract {
     @Column(name = "status")
     private ContractStatus status;
 
+    private String reason;
+
 }

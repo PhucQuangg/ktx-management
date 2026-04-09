@@ -10,20 +10,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/admin/dorm")
-public class AdminDormManagerController {
+@RequestMapping("/api/admin/accounts")
+public class AdminAccountManagerController {
 
     @Autowired
     private StudentService studentService;
 
     @GetMapping("/all")
-    public ResponseEntity<?> getAllDormStudents() {
-        List<Student> all = studentService.getAllStudents().stream()
-                .filter(s -> s.getRole() == Role.STUDENT) // tất cả sinh viên
-                .collect(Collectors.toList());
+    public ResponseEntity<?> getAllAccounts() {
+        List<Student> all = studentService.getAllStudents();
         return ResponseEntity.ok(all);
     }
 

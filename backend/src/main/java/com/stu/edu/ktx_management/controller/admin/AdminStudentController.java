@@ -1,7 +1,9 @@
 package com.stu.edu.ktx_management.controller.admin;
 
+import com.stu.edu.ktx_management.dto.StudentDTO;
 import com.stu.edu.ktx_management.entity.ApprovalStatus;
 import com.stu.edu.ktx_management.entity.Role;
+import com.stu.edu.ktx_management.entity.Room;
 import com.stu.edu.ktx_management.entity.Student;
 import com.stu.edu.ktx_management.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,18 +25,28 @@ public class AdminStudentController {
     public ResponseEntity<?> getAllStudents() {
         try {
             return ResponseEntity.ok(studentService.getAllStudents().stream()
-            .filter(s -> s.getApprovalStatus() == ApprovalStatus.APPROVED || s.getRole() == Role.ADMIN));
+            .filter(s -> s.getApprovalStatus() == ApprovalStatus.APPROVED)
+            .filter(s -> s.getRole() == Role.STUDENT));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Lỗi khi tải danh sách sinh viên: " + e.getMessage());
         }
     }
+    @GetMapping("/edit/{id}")
+    public ResponseEntity<?> getStudentById(@PathVariable Integer id) {
+        try {
+            Student student = studentService.getStudentById(id);
+            return ResponseEntity.ok(student);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> createStudent(@RequestBody Student student) {
+    public ResponseEntity<?> createStudent(@RequestBody StudentDTO studentDTO) {
         try {
-            Student savedStudent = studentService.createStudent(student);
+            Student savedStudent = studentService.createStudentByAdmin(studentDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(savedStudent);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -58,9 +70,11 @@ public class AdminStudentController {
     public ResponseEntity<String> deleteStudent(@PathVariable Integer id) {
         try {
             studentService.deleteStudent(id);
-            return ResponseEntity.ok("Xoá sinh viên thành công với id: " + id);
+            return ResponseEntity.ok("Xoá sinh viên thành công");
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+
+
 }

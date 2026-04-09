@@ -6,7 +6,6 @@ import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
 
@@ -16,5 +15,17 @@ public class StudentContractDTO {
     private LocalDate startDate;
     private LocalDate endDate;
     private String status;
-    private Double price;
+
+    public StudentContractDTO(Integer id, String roomName,
+                              LocalDate startDate, LocalDate endDate,
+                              String status) {
+        this.id = id;
+        this.roomName = roomName;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.status = status;
+    }
+
+    // getter
 }
+

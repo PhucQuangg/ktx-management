@@ -15,15 +15,9 @@ public class StudentProfileDTO {
     private String fullName;
     private String email;
     private String password;
-
     private String phone;
     private String className;
     private LocalDate dateOfBirth;
     private Boolean gender;
 
-    public StudentProfileDTO(String username, String fullName, String className) {
-        this.username = username;
-        this.fullName = fullName;
-        this.className = className;
-    }
 }

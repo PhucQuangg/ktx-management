@@ -10,7 +10,7 @@ export default function Sidebar() {
   
     return (
       <aside className="main-sidebar">
-        <section className="sidebar">
+        <section className="sidebar" style={{ minHeight: "110vh" }}>
           <div className="user-panel">
             <div className="pull-left image">
               <img
@@ -41,7 +41,7 @@ export default function Sidebar() {
                 <li><a href="/rooms"><i className="fa fa-circle-o"></i> Phòng</a></li>
                 <li><a href="#"><i className="fa fa-circle-o"></i> Liên hệ</a></li>
                 <li><a href="#"><i className="fa fa-circle-o"></i> Quy định</a></li>
-                <li><a href="/my-contract"><i className="fa fa-circle-o"></i> Hợp đồng</a></li>
+                <li><a href="/my-contracts"><i className="fa fa-circle-o"></i> Hợp đồng</a></li>
               </ul>
             </li>
   

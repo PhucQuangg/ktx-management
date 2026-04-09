@@ -65,7 +65,9 @@ export default function MyContracts() {
                   </div>
                 </div>
                 <div className="actions">
-                  <button onClick={() => navigate(`/contract?id=${c.id}`)}>Xem chi tiết</button>
+                <button onClick={() => navigate("/contract-detail", { state: { id: c.id } })}>
+  Xem chi tiết
+</button>
                   {c.status === "PENDING" && (
                     <button className="btn-cancel" onClick={() => cancelContract(c.id)}>Hủy hợp đồng</button>
                   )}

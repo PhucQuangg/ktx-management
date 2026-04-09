@@ -50,33 +50,28 @@ const Sidebar = ({ color }) => {
             </a>
           </li>
           <li className="nav-item">
-            <a className="nav-link text-dark" href="/admin/dorms">
+            <a className="nav-link text-dark" href="/admin/accounts">
               <i className="material-symbols-rounded opacity-5">table_view</i>
-              <span className="nav-link-text ms-1">Quản lý đăng ký nội trú</span>
+              <span className="nav-link-text ms-1">Quản lý tài khoản</span>
             </a>
           </li>
+     
           <li className="nav-item">
             <a className="nav-link text-dark" href="/admin/students">
               <i className="material-symbols-rounded opacity-5">table_view</i>
-              <span className="nav-link-text ms-1">Danh sách người dùng</span>
+              <span className="nav-link-text ms-1">Quản lý sinh viên</span>
             </a>
           </li>
           <li className="nav-item">
             <a className="nav-link text-dark" href="/admin/rooms">
               <i className="material-symbols-rounded opacity-5">table_view</i>
-              <span className="nav-link-text ms-1">Phòng</span>
+              <span className="nav-link-text ms-1">Quản lý phòng</span>
             </a>
           </li>
           <li className="nav-item">
-            <a className="nav-link text-dark" href="/billing/electric">
+            <a className="nav-link text-dark" href="/admin/contracts">
               <i className="material-symbols-rounded opacity-5">receipt_long</i>
-              <span className="nav-link-text ms-1">Hóa đơn điện</span>
-            </a>
-          </li>
-          <li className="nav-item">
-            <a className="nav-link text-dark" href="/billing/water">
-              <i className="material-symbols-rounded opacity-5">receipt_long</i>
-              <span className="nav-link-text ms-1">Hóa đơn nước</span>
+              <span className="nav-link-text ms-1">Quản lý hợp đồng</span>
             </a>
           </li>
           <li className="nav-item">

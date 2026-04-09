@@ -7,6 +7,11 @@
   margin-top: 70px;
   flex-wrap: wrap;     
 }
+.content-wrapper {
+  min-height: auto !important;
+}
+
+
 
 /* Card hình vuông */
 .type-card {

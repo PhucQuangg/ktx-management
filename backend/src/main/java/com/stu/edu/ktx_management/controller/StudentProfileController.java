@@ -23,7 +23,6 @@ public class StudentProfileController {
     @Autowired
     private ForgotPasswordService passwordService;
 
-    // Student xem thông tin cá nhân
     @GetMapping("/profile")
     @PreAuthorize("hasRole('STUDENT')")
     public StudentProfileDTO getMyProfile(@AuthenticationPrincipal UserDetails userDetails) {

@@ -1,5 +1,7 @@
 package com.stu.edu.ktx_management.service;
 
+import com.stu.edu.ktx_management.entity.Contract;
+import com.stu.edu.ktx_management.entity.ContractStatus;
 import com.stu.edu.ktx_management.entity.Student;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
@@ -35,6 +37,44 @@ public class EmailService {
 
         sendMail(student.getEmail(), subject, content);
     }
+
+    @Async
+    public void sendCreatedEmail(Student student){
+        String subject = "Thông báo tạo thành công hồ sơ nội trú";
+        String content = String.format(
+                "Chào %s,\n\nHồ sơ nội trú của bạn đã được tạo thành công!\n\n" +
+                        "Tài khoản đăng nhập: %s\nMật khẩu mặc định: 12345678\n" +
+                        "Vui lòng đăng nhập và đổi mật khẩu sau khi truy cập hệ thống.\n\nTrân trọng,\nBan quản lý KTX",
+                student.getFullName(), student.getUsername()
+        );
+
+        sendMail(student.getEmail(), subject, content);
+    }
+    @Async
+    public void sendRejectionContract(Contract contract, String reason) {
+        Student student= contract.getStudent();
+        String subject = "Thông báo từ chối hợp đồng đăng ký nội trú";
+        String content = String.format(
+                "Chào %s,\n\nRất tiếc, hợp đồng đăng ký nội trú của bạn đã bị từ chối.\nLý do: %s\n\nTrân trọng,\nBan quản lý KTX",
+                student.getFullName(), reason
+        );
+
+        sendMail(student.getEmail(), subject, content);
+    }
+
+    @Async
+    public void sendCancelContract(Contract contract, String reason) {
+        Student student= contract.getStudent();
+        String subject = "Thông báo hủy hợp đồng đăng ký nội trú";
+        String content = String.format(
+                "Chào %s,\n\nRất tiếc, hợp đồng đăng ký nội trú của bạn đã bị hủy.\nLý do: %s\n\nTrân trọng,\nBan quản lý KTX",
+                student.getFullName(), reason
+        );
+
+        sendMail(student.getEmail(), subject, content);
+    }
+
+
 
 
     @Async

@@ -131,7 +131,7 @@ export default function RoomDetail() {
       <Header />
       <Sidebar />
       <div className="content-wrapper">
-        <div className="container" style={{ padding: 20 }}>
+        <div className="container" style={{ paddingTop: 20 }}        >
           <div className="card">
             <div className="room-header">
               <div className="photo">
