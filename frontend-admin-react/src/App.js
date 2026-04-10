@@ -7,7 +7,7 @@ import UpdateRoomPage from "./pages/room/AdminUpdateRoom"
 import UpdateStudent from "./pages/student/AdminUpdateStudent";  
 import ContractList from "./pages/contract/AdminListContract.js";  
 import ContractDetail from "./pages/contract/AdminContractDetail.js";
-
+import InvoiceList from "./pages/invoice/AdminInvoice.js";  
 import Popup from "./components/Popup";
 import Account from "./pages/AdminAccountManagement";
 
@@ -26,6 +26,7 @@ function App() {
         <Route path="/admin/update-student" element={<UpdateStudent />} />
         <Route path="/admin/contracts" element={<ContractList />} />
         <Route path="/admin/contract-detail" element={<ContractDetail />} />
+        <Route path="/admin/invoices" element={<InvoiceList />} />
       </Routes>
       <Popup />
     </Router>

@@ -75,6 +75,12 @@ const Sidebar = ({ color }) => {
             </a>
           </li>
           <li className="nav-item">
+            <a className="nav-link text-dark" href="/admin/invoices">
+              <i className="material-symbols-rounded opacity-5">receipt_long</i>
+              <span className="nav-link-text ms-1">Quản lý hóa đơn</span>
+            </a>
+          </li>
+          <li className="nav-item">
             <a className="nav-link text-dark" href="/notifications">
               <i className="material-symbols-rounded opacity-5">notifications</i>
               <span className="nav-link-text ms-1">Notifications</span>

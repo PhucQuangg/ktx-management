@@ -1,11 +1,13 @@
 package com.stu.edu.ktx_management.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "contracts")
@@ -36,5 +38,9 @@ public class Contract {
     private ContractStatus status;
 
     private String reason;
+
+    @OneToMany(mappedBy = "contract")
+    @JsonIgnore
+    private List<Invoice> invoices;
 
 }

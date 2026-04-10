@@ -196,8 +196,12 @@ export default function ContractList() {
         {/* TABLE */}
         <div className="container-fluid py-2">
           <div className="card my-4">
-            <div className="card-header bg-dark text-white">
-              Danh sách hợp đồng
+          <div className="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+              <div className="bg-gradient-dark shadow-dark border-radius-lg pt-4 pb-3">
+                <h6 className="text-white text-capitalize ps-3">
+                  Danh sách hợp đồng
+                </h6>
+              </div>
             </div>
 
             <div className="card-body p-0">
@@ -338,6 +342,7 @@ export default function ContractList() {
             </div>
           </div>
         </div>
+        
       )}
 
       <SettingsPanel sidebarColor={sidebarColor} setSidebarColor={setSidebarColor} />
