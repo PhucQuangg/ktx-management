@@ -30,14 +30,14 @@ export default function Sidebar() {
           <ul className="sidebar-menu" data-widget="tree">
             <li className="treeview">
               <a>
-                <i className="fa fa-th"></i> <span>Biểu Mẫu</span>
+                <i className="fa fa-th"></i> <span>Danh mục</span>
                 <span className="pull-right-container">
                   <i className="fa fa-angle-left pull-right"></i>
                 </span>
               </a>
               <ul className="treeview-menu">
                 <li><a href="/register-dorm"><i className="fa fa-circle-o"></i> Đăng ký nội trú</a></li>
-                <li><a href="#"><i className="fa fa-circle-o"></i> Hóa đơn</a></li>
+                <li><a href="/invoices"><i className="fa fa-circle-o"></i> Hóa đơn</a></li>
                 <li><a href="/rooms"><i className="fa fa-circle-o"></i> Phòng</a></li>
                 <li><a href="#"><i className="fa fa-circle-o"></i> Liên hệ</a></li>
                 <li><a href="#"><i className="fa fa-circle-o"></i> Quy định</a></li>

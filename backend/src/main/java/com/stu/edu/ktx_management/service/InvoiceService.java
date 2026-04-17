@@ -4,12 +4,10 @@ package com.stu.edu.ktx_management.service;
 
 import com.stu.edu.ktx_management.dto.CreateInvoiceRequest;
 import com.stu.edu.ktx_management.dto.InvoiceDTO;
-import com.stu.edu.ktx_management.entity.Contract;
-import com.stu.edu.ktx_management.entity.ContractStatus;
-import com.stu.edu.ktx_management.entity.Invoice;
-import com.stu.edu.ktx_management.entity.InvoiceStatus;
+import com.stu.edu.ktx_management.entity.*;
 import com.stu.edu.ktx_management.repository.ContractRepository;
 import com.stu.edu.ktx_management.repository.InvoiceRepository;
+import com.stu.edu.ktx_management.repository.StudentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +20,7 @@ public class InvoiceService {
 
     private final InvoiceRepository invoiceRepository;
     private final ContractRepository contractRepository;
+    private final StudentRepository studentRepository;
     private final EmailService emailService;
 
     private final Double SERVICE_FEE = 350000.0;
@@ -141,9 +140,17 @@ public class InvoiceService {
 
     }
 
-    public List<Invoice> getByStudent(Integer studentId) {
-        return invoiceRepository.findByStudentId(studentId);
+    public List<InvoiceDTO> getByStudent(String username) {
+
+        Student student = studentRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy student"));
+
+        return invoiceRepository.findByStudentId(student.getId())
+                .stream()
+                .map(inv -> new InvoiceDTO(inv))
+                .toList();
     }
+
 
     public Invoice getById(Integer id) {
         return invoiceRepository.findById(id)

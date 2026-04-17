@@ -10,7 +10,7 @@ import RoomPage from "./pages/RoomPage"
 import RoomDetailPage from "./pages/RoomDetailPage"
 import MyContractPage from "./pages/MyContractPage";
 import ContractDetailPage from "./pages/ContractDetail";
-
+import InvoicePage from "./pages/invoices/MyInvoicePage";
 
 function App() {
   return (
@@ -27,6 +27,7 @@ function App() {
         <Route path="/room-detail" element={<RoomDetailPage />} />
         <Route path="/my-contracts" element={<MyContractPage />} />
         <Route path="/contract-detail" element={<ContractDetailPage />} />
+        <Route path="/invoices" element={<InvoicePage />} />
       </Routes>
 
       <Popup />

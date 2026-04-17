@@ -141,6 +141,7 @@ export default function ContractDetail() {
         <p>(Ký tên)</p>
       </div>
     </div>
+    
 
     {/* ACTION */}
     {contract.status === "PENDING" && (
@@ -148,6 +149,10 @@ export default function ContractDetail() {
         Hủy đăng ký
       </button>
     )}
+        <div className="back-btn" onClick={() => navigate("/my-contracts")}>
+        ← Quay lại
+      </div>
+    
   </div>
 </div>
 
@@ -165,10 +170,23 @@ export default function ContractDetail() {
           line-height: 1.6;
         }
 
+        .back-btn {
+          cursor: pointer;
+          color: #3b82f6;
+          margin-bottom: 10px;
+          font-weight: 500;
+          transition: 0.2s;
+        }
+
+        .back-btn:hover {
+          opacity: 0.8;
+        }
+
+
         .header {
-  display: flex;
-  justify-content: space-between;
-}
+          display: flex;
+          justify-content: space-between;
+        }
 
 .right {
   text-align: center;
