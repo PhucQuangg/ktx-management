@@ -1,21 +1,25 @@
+
 import React, { useEffect, useState } from "react";
 import Sidebar from "../../components/Sidebar";
 import SettingsPanel from "../../components/SettingsPanel";
 import Script from "../../components/Script";
 import { useNavigate } from "react-router-dom";
 
-
 export default function ContractList() {
   const [contracts, setContracts] = useState([]);
+  const [filteredContracts, setFilteredContracts] = useState([]);
   const [sidebarColor, setSidebarColor] = useState("bg-white");
   const navigate = useNavigate();
 
+  // ===== FILTER =====
+  const [statusFilter, setStatusFilter] = useState("ALL");
+  const [studentFilter, setStudentFilter] = useState("");
 
   // 🔥 Modal từ chối / hủy
   const [actionModal, setActionModal] = useState({
     show: false,
     contractId: null,
-    type: "", // reject | cancel
+    type: "",
     reasonType: "",
     customReason: ""
   });
@@ -27,12 +31,36 @@ export default function ContractList() {
     reload();
   }, [token]);
 
+  // ===== FILTER LOGIC =====
+  useEffect(() => {
+    let result = [...contracts];
+
+    // lọc trạng thái
+    if (statusFilter !== "ALL") {
+      result = result.filter(c => c.status === statusFilter);
+    }
+
+    // lọc tên sinh viên
+    if (studentFilter.trim() !== "") {
+      result = result.filter(c =>
+        c.studentName
+          ?.toLowerCase()
+          .includes(studentFilter.toLowerCase())
+      );
+    }
+
+    setFilteredContracts(result);
+  }, [contracts, statusFilter, studentFilter]);
+
   const reload = () => {
     fetch("http://localhost:8080/api/admin/contracts", {
       headers: { Authorization: "Bearer " + token },
     })
       .then(res => res.json())
-      .then(data => setContracts(data));
+      .then(data => {
+        setContracts(data);
+        setFilteredContracts(data);
+      });
   };
 
   // ===== APPROVE =====
@@ -77,11 +105,13 @@ export default function ContractList() {
     });
   };
 
-  // ===== CONFIRM REJECT / CANCEL =====
+  // ===== CONFIRM =====
   const confirmAction = async () => {
     const { contractId, type, reasonType, customReason } = actionModal;
 
-    const reason = reasonType === "Khác" ? customReason : reasonType;
+    const reason = reasonType === "Khác"
+      ? customReason
+      : reasonType;
 
     if (!reason) {
       return window.showPopup("Vui lòng nhập lý do!", true);
@@ -100,6 +130,7 @@ export default function ContractList() {
 
       if (res.ok) {
         window.showPopup(message);
+
         setActionModal({
           show: false,
           contractId: null,
@@ -107,6 +138,7 @@ export default function ContractList() {
           reasonType: "",
           customReason: ""
         });
+
         reload();
       } else {
         window.showPopup(message, true);
@@ -119,14 +151,32 @@ export default function ContractList() {
   // ===== STATUS =====
   const renderStatus = (status) => {
     const map = {
-      PENDING: { text: "Chờ duyệt", class: "text-warning" },
-      ACTIVE: { text: "Đã duyệt", class: "text-success" },
-      REJECTED: { text: "Đã từ chối", class: "text-danger" },
-      CANCELED: { text: "Đã hủy", class: "text-danger" },
-      EXPIRED: { text: "Hết hạn", class: "text-secondary" },
+      PENDING: {
+        text: "Chờ duyệt",
+        class: "text-warning"
+      },
+      ACTIVE: {
+        text: "Đã duyệt",
+        class: "text-success"
+      },
+      REJECTED: {
+        text: "Đã từ chối",
+        class: "text-danger"
+      },
+      CANCELED: {
+        text: "Đã hủy",
+        class: "text-danger"
+      },
+      EXPIRED: {
+        text: "Hết hạn",
+        class: "text-secondary"
+      },
     };
 
-    const s = map[status] || { text: status, class: "" };
+    const s = map[status] || {
+      text: status,
+      class: ""
+    };
 
     return (
       <span className={`fw-bold ${s.class}`}>
@@ -140,7 +190,9 @@ export default function ContractList() {
       <Sidebar color={sidebarColor} />
 
       <main className="main-content position-relative max-height-vh-100 h-100 border-radius-lg">
-      <nav
+
+        {/* NAVBAR */}
+        <nav
           className="navbar navbar-main navbar-expand-lg px-0 mx-3 shadow-none border-radius-xl"
           id="navbarBlur"
           data-scroll="true"
@@ -153,6 +205,7 @@ export default function ContractList() {
                     Trang
                   </a>
                 </li>
+
                 <li
                   className="breadcrumb-item text-sm text-dark active"
                   aria-current="page"
@@ -161,46 +214,56 @@ export default function ContractList() {
                 </li>
               </ol>
             </nav>
-
-            <ul className="navbar-nav d-flex align-items-center justify-content-end">
-              <li className="nav-item d-xl-none ps-3 d-flex align-items-center">
-                <a href="#" className="nav-link text-body p-0" id="iconNavbarSidenav">
-                  <div className="sidenav-toggler-inner">
-                    <i className="sidenav-toggler-line"></i>
-                    <i className="sidenav-toggler-line"></i>
-                    <i className="sidenav-toggler-line"></i>
-                  </div>
-                </a>
-              </li>
-
-              <li className="nav-item px-3 d-flex align-items-center">
-                <a href="#" className="nav-link text-body p-0">
-                  <i className="material-symbols-rounded fixed-plugin-button-nav">
-                    settings
-                  </i>
-                </a>
-              </li>
-
-              <li className="nav-item d-flex align-items-center">
-                <a
-                  href="http://localhost:3000/login"
-                  className="nav-link text-body font-weight-bold px-0"
-                >
-                  <i className="material-symbols-rounded">account_circle</i>
-                </a>
-              </li>
-            </ul>
           </div>
         </nav>
 
         {/* TABLE */}
         <div className="container-fluid py-2">
           <div className="card my-4">
-          <div className="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+
+            {/* HEADER */}
+            <div className="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
               <div className="bg-gradient-dark shadow-dark border-radius-lg pt-4 pb-3">
                 <h6 className="text-white text-capitalize ps-3">
                   Danh sách hợp đồng
                 </h6>
+              </div>
+            </div>
+
+            {/* FILTER */}
+            <div className="d-flex justify-content-between align-items-center px-4 pt-4 flex-wrap gap-2">
+
+              <div className="d-flex gap-2 flex-wrap">
+
+                {/* TÊN SINH VIÊN */}
+                <input
+                  type="text"
+                  placeholder="Tìm theo tên sinh viên..."
+                  className="form-control border border-dark"
+                  style={{ width: "250px" }}
+                  value={studentFilter}
+                  onChange={(e) =>
+                    setStudentFilter(e.target.value)
+                  }
+                />
+
+                {/* TRẠNG THÁI */}
+                <select
+                  className="form-select border border-dark"
+                  style={{ width: "220px" }}
+                  value={statusFilter}
+                  onChange={(e) =>
+                    setStatusFilter(e.target.value)
+                  }
+                >
+                  <option value="ALL">Tất cả trạng thái</option>
+                  <option value="PENDING">Chờ duyệt</option>
+                  <option value="ACTIVE">Đã duyệt</option>
+                  <option value="REJECTED">Đã từ chối</option>
+                  <option value="CANCELED">Đã hủy</option>
+                  <option value="EXPIRED">Hết hạn</option>
+                </select>
+
               </div>
             </div>
 
@@ -218,8 +281,8 @@ export default function ContractList() {
                 </thead>
 
                 <tbody>
-                  {contracts.length > 0 ? (
-                    contracts.map(c => (
+                  {filteredContracts.length > 0 ? (
+                    filteredContracts.map(c => (
                       <tr key={c.id}>
                         <td>{c.studentName}</td>
                         <td>{c.roomName}</td>
@@ -228,49 +291,52 @@ export default function ContractList() {
                         <td>{renderStatus(c.status)}</td>
 
                         <td>
-                        {/* ===== NÚT XEM (LUÔN CÓ) ===== */}
-                        <button
-                          className="btn btn-info btn-sm me-2"
-                          onClick={() => navigate(`/admin/contract-detail?id=${c.id}`)}
-                        >
-                          Xem
-                        </button>
+                        {/* XEM */}
+                        <i
+                          className="fa-solid fa-eye text-info me-3"
+                          style={{ cursor: "pointer" }}
+                          title="Xem chi tiết"
+                          onClick={() =>
+                            navigate(`/admin/contract-detail?id=${c.id}`)
+                          }
+                        ></i>
 
+                        {/* DUYỆT */}
                         {c.status === "PENDING" && (
                           <>
-                            <button
-                              className="btn btn-success btn-sm me-2"
+                            <i
+                              className="fa-solid fa-check text-success me-3"
+                              style={{ cursor: "pointer" }}
+                              title="Duyệt hợp đồng"
                               onClick={() => handleApprove(c.id)}
-                            >
-                              Duyệt
-                            </button>
+                            ></i>
 
-                            <button
-                              className="btn btn-danger btn-sm"
+                            <i
+                              className="fa-solid fa-xmark text-danger"
+                              style={{ cursor: "pointer" }}
+                              title="Từ chối hợp đồng"
                               onClick={() => openActionModal(c.id, "reject")}
-                            >
-                              Từ chối
-                            </button>
+                            ></i>
                           </>
                         )}
 
+                        {/* HỦY */}
                         {c.status === "ACTIVE" && (
-                          <button
-                            className="btn btn-warning btn-sm"
+                          <i
+                            className="fa-solid fa-ban text-warning"
+                            style={{ cursor: "pointer" }}
+                            title="Hủy hợp đồng"
                             onClick={() => openActionModal(c.id, "cancel")}
-                          >
-                            Hủy
-                          </button>
+                          ></i>
                         )}
-
-                        
                       </td>
-
                       </tr>
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="6">Không có dữ liệu</td>
+                      <td colSpan="6">
+                        Không có dữ liệu
+                      </td>
                     </tr>
                   )}
                 </tbody>
@@ -280,19 +346,30 @@ export default function ContractList() {
         </div>
       </main>
 
-      {/* ===== MODAL ===== */}
+      {/* MODAL */}
       {actionModal.show && (
         <div className="modal fade show d-block">
           <div className="modal-dialog">
             <div className="modal-content">
 
               <div className="modal-header bg-danger text-white">
-                <h5 style={{ color: "#FFF", textAlign: "center", width: "100%" }}>
-                  {actionModal.type === "reject" ? "Từ chối hợp đồng" : "Hủy hợp đồng"}
+                <h5
+                  style={{
+                    color: "#FFF",
+                    textAlign: "center",
+                    width: "100%"
+                  }}
+                >
+                  {actionModal.type === "reject"
+                    ? "Từ chối hợp đồng"
+                    : "Hủy hợp đồng"}
                 </h5>
+
                 <button
                   className="btn-close btn-close-white"
-                  onClick={() => setActionModal({ show: false })}
+                  onClick={() =>
+                    setActionModal({ show: false })
+                  }
                 ></button>
               </div>
 
@@ -301,14 +378,31 @@ export default function ContractList() {
                   className="form-select mb-3"
                   value={actionModal.reasonType}
                   onChange={(e) =>
-                    setActionModal(prev => ({ ...prev, reasonType: e.target.value }))
+                    setActionModal(prev => ({
+                      ...prev,
+                      reasonType: e.target.value
+                    }))
                   }
                 >
-                  <option value="">-- Chọn lý do --</option>
-                  <option value="Không đủ điều kiện">Không đủ điều kiện</option>
-                  <option value="Hết phòng">Hết phòng</option>
-                  <option value="Sai thông tin">Sai thông tin</option>
-                  <option value="Khác">Khác</option>
+                  <option value="">
+                    -- Chọn lý do --
+                  </option>
+
+                  <option value="Không đủ điều kiện">
+                    Không đủ điều kiện
+                  </option>
+
+                  <option value="Hết phòng">
+                    Hết phòng
+                  </option>
+
+                  <option value="Sai thông tin">
+                    Sai thông tin
+                  </option>
+
+                  <option value="Khác">
+                    Khác
+                  </option>
                 </select>
 
                 {actionModal.reasonType === "Khác" && (
@@ -317,7 +411,10 @@ export default function ContractList() {
                     placeholder="Nhập lý do..."
                     value={actionModal.customReason}
                     onChange={(e) =>
-                      setActionModal(prev => ({ ...prev, customReason: e.target.value }))
+                      setActionModal(prev => ({
+                        ...prev,
+                        customReason: e.target.value
+                      }))
                     }
                   />
                 )}
@@ -326,7 +423,9 @@ export default function ContractList() {
               <div className="modal-footer">
                 <button
                   className="btn btn-secondary"
-                  onClick={() => setActionModal({ show: false })}
+                  onClick={() =>
+                    setActionModal({ show: false })
+                  }
                 >
                   Hủy
                 </button>
@@ -342,11 +441,15 @@ export default function ContractList() {
             </div>
           </div>
         </div>
-        
       )}
 
-      <SettingsPanel sidebarColor={sidebarColor} setSidebarColor={setSidebarColor} />
+      <SettingsPanel
+        sidebarColor={sidebarColor}
+        setSidebarColor={setSidebarColor}
+      />
+
       <Script />
     </div>
   );
 }
+

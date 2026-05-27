@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from "react";
+
+import React, { useState } from "react";
 import Sidebar from "../../components/Sidebar";
 import SettingsPanel from "../../components/SettingsPanel";
 import Script from "../../components/Script";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-export default function UpdateStudent() {
+export default function AddStudent() {
   const [sidebarColor, setSidebarColor] = useState("bg-white");
   const navigate = useNavigate();
-  const { id } = useParams(); // 👉 lấy id từ URL
 
   const [form, setForm] = useState({
     fullName: "",
@@ -23,26 +23,7 @@ export default function UpdateStudent() {
 
   const token = localStorage.getItem("admin_token");
 
-  // ✅ Load dữ liệu student
-  useEffect(() => {
-    fetch(`http://localhost:8080/api/admin/students/${id}`, {
-      headers: {
-        Authorization: "Bearer " + token,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setForm({
-          ...data,
-          dateOfBirth: data.dateOfBirth
-            ? data.dateOfBirth.split("T")[0]
-            : "",
-        });
-      })
-      .catch((err) => console.error(err));
-  }, [id]);
-
-  // ✅ handle change
+  // 👉 handle change
   const handleChange = (e) => {
     const { name, value, type } = e.target;
 
@@ -52,15 +33,15 @@ export default function UpdateStudent() {
     });
   };
 
-  // ✅ submit update
+  // 👉 submit add
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
       const res = await fetch(
-        `http://localhost:8080/api/admin/students/${id}`,
+        "http://localhost:8080/api/admin/students",
         {
-          method: "PUT",
+          method: "POST",
           headers: {
             "Content-Type": "application/json",
             Authorization: "Bearer " + token,
@@ -72,13 +53,13 @@ export default function UpdateStudent() {
       const message = await res.text();
 
       if (res.ok) {
-        window.showPopup("Cập nhật thành công!");
+        window.showPopup("Thêm sinh viên thành công!");
 
         setTimeout(() => {
           navigate("/admin/students");
         }, 1000);
       } else {
-        window.showPopup(message || "Cập nhật thất bại!", true);
+        window.showPopup(message || "Thêm thất bại!", true);
       }
     } catch (err) {
       console.error(err);
@@ -92,12 +73,16 @@ export default function UpdateStudent() {
 
       <main className="main-content position-relative max-height-vh-100 h-100 border-radius-lg">
         <div className="container-fluid py-4">
-          <div className="card p-4">
-            <h3 className="text-center">Cập nhật sinh viên</h3>
+          <div className="card p-4 shadow-sm">
+
+            <h3 className="text-center fw-bold mb-4">
+              Thêm sinh viên
+            </h3>
 
             <form onSubmit={handleSubmit}>
               <div className="row">
 
+                {/* HỌ TÊN */}
                 <div className="col-md-6 mb-3">
                   <label className="fw-bold">Họ và tên</label>
                   <input
@@ -110,6 +95,7 @@ export default function UpdateStudent() {
                   />
                 </div>
 
+                {/* MSSV */}
                 <div className="col-md-6 mb-3">
                   <label className="fw-bold">Mã số sinh viên</label>
                   <input
@@ -122,6 +108,7 @@ export default function UpdateStudent() {
                   />
                 </div>
 
+                {/* EMAIL */}
                 <div className="col-md-6 mb-3">
                   <label className="fw-bold">Email</label>
                   <input
@@ -134,6 +121,7 @@ export default function UpdateStudent() {
                   />
                 </div>
 
+                {/* PHONE */}
                 <div className="col-md-6 mb-3">
                   <label className="fw-bold">Số điện thoại</label>
                   <input
@@ -145,6 +133,7 @@ export default function UpdateStudent() {
                   />
                 </div>
 
+                {/* LỚP */}
                 <div className="col-md-6 mb-3">
                   <label className="fw-bold">Lớp</label>
                   <input
@@ -156,6 +145,7 @@ export default function UpdateStudent() {
                   />
                 </div>
 
+                {/* NGÀY SINH */}
                 <div className="col-md-6 mb-3">
                   <label className="fw-bold">Ngày sinh</label>
                   <input
@@ -167,41 +157,60 @@ export default function UpdateStudent() {
                   />
                 </div>
 
+              
+
+                {/* GIỚI TÍNH */}
                 <div className="col-md-6 mb-3">
-                  <label className="fw-bold">Giới tính</label>
-                  <div>
-                    <input
-                      type="radio"
-                      name="gender"
-                      value="false"
-                      checked={form.gender === false}
-                      onChange={handleChange}
-                    /> Nam
-                    <input
-                      type="radio"
-                      name="gender"
-                      value="true"
-                      className="ms-3"
-                      checked={form.gender === true}
-                      onChange={handleChange}
-                    /> Nữ
+                  <label className="fw-bold d-block">
+                    Giới tính
+                  </label>
+
+                  <div className="d-flex align-items-center gap-3 mt-2">
+
+                    <label>
+                      <input
+                        type="radio"
+                        name="gender"
+                        value="false"
+                        checked={form.gender === false}
+                        onChange={handleChange}
+                      />{" "}
+                      Nam
+                    </label>
+
+                    <label>
+                      <input
+                        type="radio"
+                        name="gender"
+                        value="true"
+                        checked={form.gender === true}
+                        onChange={handleChange}
+                      />{" "}
+                      Nữ
+                    </label>
+
                   </div>
                 </div>
-
               </div>
 
+              {/* BUTTON */}
               <div className="d-flex justify-content-center gap-3 mt-4">
-                <button type="submit" className="btn btn-dark">
-                  Cập nhật
+
+                <button
+                  type="submit"
+                  className="btn btn-dark px-4"
+                >
+                  Thêm sinh viên
                 </button>
 
                 <button
                   type="button"
-                  className="btn btn-outline-secondary fw-bold"
+                  className="btn btn-outline-secondary fw-bold px-4"
                   onClick={() => navigate("/admin/students")}
                 >
                   Trở về
                 </button>
+
               </div>
             </form>
           </div>
@@ -212,7 +221,9 @@ export default function UpdateStudent() {
         sidebarColor={sidebarColor}
         setSidebarColor={setSidebarColor}
       />
+
       <Script />
     </div>
   );
 }
+

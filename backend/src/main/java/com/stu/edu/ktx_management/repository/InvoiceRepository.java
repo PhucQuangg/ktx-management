@@ -1,5 +1,6 @@
 package com.stu.edu.ktx_management.repository;
 
+import com.stu.edu.ktx_management.dto.RevenueChartDTO;
 import com.stu.edu.ktx_management.entity.Invoice;
 import com.stu.edu.ktx_management.entity.InvoiceStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,6 +18,8 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Integer> {
     List<Invoice> findByMonth(String month);
 
     boolean existsByContractIdAndMonth(Integer contractId, String month);
+    Long countByStatus(InvoiceStatus status);
+
 
     @Query("""
     SELECT i FROM Invoice i
@@ -41,7 +44,45 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Integer> {
 """)
     List<Invoice> findUnpaidInvoices();
 
+    @Query("""
+SELECT COALESCE(SUM(i.totalAmount),0)
+FROM Invoice i
+WHERE i.status = com.stu.edu.ktx_management.entity.InvoiceStatus.PAID
+""")
+    Long getTotalRevenue();
 
+    @Query("""
+SELECT COUNT(i)
+FROM Invoice i
+WHERE i.status = com.stu.edu.ktx_management.entity.InvoiceStatus.PAID
+""")
+    Long countPaidInvoices();
+
+    @Query("""
+SELECT COUNT(i)
+FROM Invoice i
+WHERE i.status = com.stu.edu.ktx_management.entity.InvoiceStatus.UNPAID
+""")
+    Long countUnpaidInvoices();
+
+    @Query("""
+    SELECT COALESCE(SUM(i.totalAmount),0)
+    FROM Invoice i
+    WHERE i.status = com.stu.edu.ktx_management.entity.InvoiceStatus.UNPAID
+    """)
+    Long getTotalUnpaidAmount();
+
+    @Query("""
+    SELECT new com.stu.edu.ktx_management.dto.RevenueChartDTO(
+        i.month,
+        SUM(i.totalAmount)
+    )
+    FROM Invoice i
+    WHERE i.status = 'PAID'
+    GROUP BY i.month
+    ORDER BY i.month
+    """)
+    List<RevenueChartDTO> getRevenueByMonth();
 
 
 }

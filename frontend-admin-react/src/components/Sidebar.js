@@ -44,7 +44,7 @@ const Sidebar = ({ color }) => {
       <div className="collapse navbar-collapse w-auto">
         <ul className="navbar-nav">
           <li className="nav-item">
-            <a className="nav-link text-dark" href="/">
+            <a className="nav-link text-dark" href="/admin/dashboard">
               <i className="material-symbols-rounded opacity-5">dashboard</i>
               <span className="nav-link-text ms-1">Thống kê</span>
             </a>

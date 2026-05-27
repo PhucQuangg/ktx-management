@@ -1,6 +1,14 @@
 import React, { useEffect, useState } from "react";
+import Sidebar from "../../components/Sidebar";
+import SettingsPanel from "../../components/SettingsPanel";
+import Script from "../../components/Script";
+import { useNavigate } from "react-router-dom";
+
+
 
 export default function UpdateRoom() {
+  const [sidebarColor, setSidebarColor] = useState("bg-white");
+  const navigate = useNavigate();
   const [room, setRoom] = useState({
     name: "",
     capacity: 0,
@@ -90,6 +98,8 @@ export default function UpdateRoom() {
 
   return (
     <div className="container py-5">
+      <Sidebar color={sidebarColor} />
+      <main className="main-content position-relative max-height-vh-100 h-100 border-radius-lg">
       {/* Header */}
       <div className="topbar mb-4 d-flex align-items-center gap-3">
         <div className="brand d-flex align-items-center gap-3">
@@ -191,6 +201,14 @@ export default function UpdateRoom() {
           </div>
         </div>
       </div>
+      </main>
+      <SettingsPanel
+        sidebarColor={sidebarColor}
+        setSidebarColor={setSidebarColor}
+      />
+
+      <Script />
     </div>
+
   );
 }

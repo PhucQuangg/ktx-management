@@ -10,6 +10,7 @@ import ContractDetail from "./pages/contract/AdminContractDetail.js";
 import InvoiceList from "./pages/invoice/AdminInvoice.js";  
 import Popup from "./components/Popup";
 import Account from "./pages/AdminAccountManagement";
+import Dashboard from "./pages/AdminDashboard"; 
 
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
         <Route path="/admin/contracts" element={<ContractList />} />
         <Route path="/admin/contract-detail" element={<ContractDetail />} />
         <Route path="/admin/invoices" element={<InvoiceList />} />
+        <Route path="/admin/dashboard" element={<Dashboard />} />
       </Routes>
       <Popup />
     </Router>

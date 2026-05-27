@@ -1,180 +1,627 @@
-import SettingsPanel from "../components/SettingsPanel";
+import React, { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
+import SettingsPanel from "../components/SettingsPanel";
 import Script from "../components/Script";
-import React, { useState } from "react";
+
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+} from "recharts";
 
 export default function AdminDashboard() {
+
   const [sidebarColor, setSidebarColor] = useState("bg-white");
-  
+
+  const [dashboard, setDashboard] = useState({});
+  const [revenueChart, setRevenueChart] = useState([]);
+
+  const [students, setStudents] = useState([]);
+  const [contracts, setContracts] = useState([]);
+  const [invoices, setInvoices] = useState([]);
+  const [rooms, setRooms] = useState([]);
+
+  const [tab, setTab] = useState("overview");
+
+  const token = localStorage.getItem("admin_token");
+
+  // ================= FETCH =================
+  useEffect(() => {
+
+    // DASHBOARD
+    fetch("http://localhost:8080/api/admin/reports/dashboard", {
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => setDashboard(data));
+
+    // CHART
+    fetch("http://localhost:8080/api/admin/reports/revenue-chart", {
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => setRevenueChart(data));
+
+    // STUDENTS
+    fetch("http://localhost:8080/api/admin/students", {
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => setStudents(data));
+
+    // CONTRACTS
+    fetch("http://localhost:8080/api/admin/contracts", {
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => setContracts(data));
+
+    // INVOICES
+    fetch("http://localhost:8080/api/admin/invoices", {
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => setInvoices(data));
+
+    // ROOMS
+    fetch("http://localhost:8080/api/admin/rooms", {
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => setRooms(data));
+
+  }, []);
+
+  // ================= FORMAT =================
+  const formatMoney = (money) => {
+    return Number(money || 0).toLocaleString("vi-VN") + " VNĐ";
+  };
+
+  // ================= EXPORT EXCEL =================
+  const exportExcel = () => {
+    window.open(
+      "http://localhost:8080/api/admin/reports/export/excel",
+      "_blank"
+    );
+  };
+
+  // ================= EXPORT PDF =================
+  const exportPDF = () => {
+    window.open(
+      "http://localhost:8080/api/admin/reports/export/pdf",
+      "_blank"
+    );
+  };
 
   return (
     <div className="g-sidenav-show">
-      {/* Sidebar */}
+
+      {/* SIDEBAR */}
       <Sidebar color={sidebarColor} />
 
-      {/* Main content */}
+      {/* MAIN */}
       <main className="main-content position-relative max-height-vh-100 h-100 border-radius-lg">
-        {/* Navbar */}
-        <nav
-          className="navbar navbar-main navbar-expand-lg px-0 mx-3 shadow-none border-radius-xl"
-          id="navbarBlur"
-          data-scroll="true"
-        >
+
+        {/* NAVBAR */}
+        <nav className="navbar navbar-main navbar-expand-lg px-0 mx-3 shadow-none border-radius-xl">
+
           <div className="container-fluid py-1 px-3">
+
             <nav aria-label="breadcrumb">
-              <ol className="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
+
+              <ol className="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0">
+
                 <li className="breadcrumb-item text-sm">
                   <a className="opacity-5 text-dark" href="#">
                     Trang
                   </a>
                 </li>
+
                 <li
                   className="breadcrumb-item text-sm text-dark active"
                   aria-current="page"
                 >
-                  Thống kê
+                  Báo cáo & Thống kê
                 </li>
+
               </ol>
+
             </nav>
 
-            <ul className="navbar-nav d-flex align-items-center justify-content-end">
-              <li className="nav-item d-xl-none ps-3 d-flex align-items-center">
-                <a href="#" className="nav-link text-body p-0" id="iconNavbarSidenav">
-                  <div className="sidenav-toggler-inner">
-                    <i className="sidenav-toggler-line"></i>
-                    <i className="sidenav-toggler-line"></i>
-                    <i className="sidenav-toggler-line"></i>
-                  </div>
-                </a>
-              </li>
-
-              <li className="nav-item px-3 d-flex align-items-center">
-                <a href="#" className="nav-link text-body p-0">
-                  <i className="material-symbols-rounded fixed-plugin-button-nav">settings</i>
-                </a>
-              </li>
-
-              <li className="nav-item d-flex align-items-center">
-                <a
-                  href="http://localhost:3000/login"
-                  className="nav-link text-body font-weight-bold px-0"
-                >
-                  <i className="material-symbols-rounded">account_circle</i>
-                </a>
-              </li>
-            </ul>
           </div>
+
         </nav>
-        {/* End Navbar */}
 
-        {/* Dashboard content */}
-        <div className="container-fluid py-2">
-          <div className="row">
-            <div className="ms-3">
-              <h3 className="mb-0 h4 font-weight-bolder">Dashboard</h3>
-              <p className="mb-4">
-                Check the sales, value and bounce rate by country.
-              </p>
+        {/* CONTENT */}
+        <div className="container-fluid py-4">
+
+          {/* ===== TAB ===== */}
+          <div className="card mb-4">
+
+            <div className="card-body d-flex gap-3">
+
+              <button
+                className={`btn ${tab === "overview" ? "btn-dark" : "btn-outline-dark"}`}
+                onClick={() => setTab("overview")}
+              >
+                Tổng quan
+              </button>
+
+              <button
+                className={`btn ${tab === "detail" ? "btn-dark" : "btn-outline-dark"}`}
+                onClick={() => setTab("detail")}
+              >
+                Báo cáo chi tiết
+              </button>
+
+              <button
+                className={`btn ${tab === "finance" ? "btn-dark" : "btn-outline-dark"}`}
+                onClick={() => setTab("finance")}
+              >
+                Thống kê tài chính
+              </button>
+
             </div>
 
-            {/* Card 1 */}
-            <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-              <div className="card">
-                <div className="card-header p-2 ps-3">
-                  <div className="d-flex justify-content-between">
-                    <div>
-                      <p className="text-sm mb-0 text-capitalize">Today's Money</p>
-                      <h4 className="mb-0">$53k</h4>
-                    </div>
-                    <div className="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg">
-                      <i className="material-symbols-rounded opacity-10">weekend</i>
-                    </div>
-                  </div>
-                </div>
-                <hr className="dark horizontal my-0" />
-                <div className="card-footer p-2 ps-3">
-                  <p className="mb-0 text-sm">
-                    <span className="text-success font-weight-bolder">+55%</span> than last week
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Card 2 */}
-            <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-              <div className="card">
-                <div className="card-header p-2 ps-3">
-                  <div className="d-flex justify-content-between">
-                    <div>
-                      <p className="text-sm mb-0 text-capitalize">Today's Users</p>
-                      <h4 className="mb-0">2300</h4>
-                    </div>
-                    <div className="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg">
-                      <i className="material-symbols-rounded opacity-10">person</i>
-                    </div>
-                  </div>
-                </div>
-                <hr className="dark horizontal my-0" />
-                <div className="card-footer p-2 ps-3">
-                  <p className="mb-0 text-sm">
-                    <span className="text-success font-weight-bolder">+3%</span> than last month
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Card 3 */}
-            <div className="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-              <div className="card">
-                <div className="card-header p-2 ps-3">
-                  <div className="d-flex justify-content-between">
-                    <div>
-                      <p className="text-sm mb-0 text-capitalize">Ads Views</p>
-                      <h4 className="mb-0">3,462</h4>
-                    </div>
-                    <div className="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg">
-                      <i className="material-symbols-rounded opacity-10">leaderboard</i>
-                    </div>
-                  </div>
-                </div>
-                <hr className="dark horizontal my-0" />
-                <div className="card-footer p-2 ps-3">
-                  <p className="mb-0 text-sm">
-                    <span className="text-danger font-weight-bolder">-2%</span> than yesterday
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Card 4 */}
-            <div className="col-xl-3 col-sm-6">
-              <div className="card">
-                <div className="card-header p-2 ps-3">
-                  <div className="d-flex justify-content-between">
-                    <div>
-                      <p className="text-sm mb-0 text-capitalize">Sales</p>
-                      <h4 className="mb-0">$103,430</h4>
-                    </div>
-                    <div className="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg">
-                      <i className="material-symbols-rounded opacity-10">weekend</i>
-                    </div>
-                  </div>
-                </div>
-                <hr className="dark horizontal my-0" />
-                <div className="card-footer p-2 ps-3">
-                  <p className="mb-0 text-sm">
-                    <span className="text-success font-weight-bolder">+5%</span> than yesterday
-                  </p>
-                </div>
-              </div>
-            </div>
           </div>
+
+          {/* ================================================= */}
+          {/* ================= TỔNG QUAN ===================== */}
+          {/* ================================================= */}
+
+          {tab === "overview" && (
+            <>
+
+              {/* CHART */}
+              <div className="card mb-4 shadow-sm border-0">
+
+                <div className="card-header pb-0 d-flex justify-content-between align-items-center">
+
+                  <h6 className="mb-0">
+                    Biểu đồ doanh thu theo tháng
+                  </h6>
+
+                  <div className="d-flex gap-2">
+
+                    <button
+                      className="btn btn-success btn-sm"
+                      onClick={exportExcel}
+                    >
+                      Xuất Excel
+                    </button>
+
+                    <button
+                      className="btn btn-danger btn-sm"
+                      onClick={exportPDF}
+                    >
+                      Xuất PDF
+                    </button>
+
+                  </div>
+
+                </div>
+
+                <div className="card-body">
+
+                  <ResponsiveContainer width="100%" height={350}>
+
+                    <BarChart
+                      data={revenueChart}
+                      margin={{
+                        top: 20,
+                        right: 20,
+                        left: 40,
+                        bottom: 5,
+                      }}
+                    >
+
+                      <CartesianGrid
+                        strokeDasharray="3 3"
+                        vertical={false}
+                      />
+
+                      <XAxis
+                        dataKey="month"
+                        tick={{ fontSize: 13 }}
+                      />
+
+                      <YAxis
+                        width={100}
+                        tickFormatter={(value) =>
+                          Number(value).toLocaleString("vi-VN")
+                        }
+                      />
+
+                      <Tooltip
+                        formatter={(value) =>
+                          Number(value).toLocaleString("vi-VN") + " VNĐ"
+                        }
+                      />
+
+                      <Bar
+                        dataKey="revenue"
+                        fill="#344767"
+                        radius={[10, 10, 0, 0]}
+                        barSize={60}
+                      />
+
+                    </BarChart>
+
+                  </ResponsiveContainer>
+
+                </div>
+
+              </div>
+
+              {/* CARD */}
+              <div className="row">
+
+                <div className="col-xl-3 col-sm-6 mb-4">
+                  <div className="card">
+                    <div className="card-body">
+
+                      <p className="text-sm mb-1">
+                        Tổng sinh viên
+                      </p>
+
+                      <h3>{dashboard.totalStudents}</h3>
+
+                    </div>
+                  </div>
+                </div>
+
+                <div className="col-xl-3 col-sm-6 mb-4">
+                  <div className="card">
+                    <div className="card-body">
+
+                      <p className="text-sm mb-1">
+                        Tổng phòng
+                      </p>
+
+                      <h3>{dashboard.totalRooms}</h3>
+
+                    </div>
+                  </div>
+                </div>
+
+                <div className="col-xl-3 col-sm-6 mb-4">
+                  <div className="card">
+                    <div className="card-body">
+
+                      <p className="text-sm mb-1">
+                        Phòng còn trống
+                      </p>
+
+                      <h3 className="text-success">
+                        {dashboard.availableRooms}
+                      </h3>
+
+                    </div>
+                  </div>
+                </div>
+
+                <div className="col-xl-3 col-sm-6 mb-4">
+                  <div className="card">
+                    <div className="card-body">
+
+                      <p className="text-sm mb-1">
+                        Tổng hóa đơn
+                      </p>
+
+                      <h3>
+                        {invoices.length}
+                      </h3>
+
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+            </>
+          )}
+
+          {/* ================================================= */}
+          {/* ============== BÁO CÁO CHI TIẾT ================= */}
+          {/* ================================================= */}
+
+          {tab === "detail" && (
+            <>
+
+              {/* STUDENTS */}
+              <div className="card mb-4">
+
+                <div className="card-header">
+                  <h6>Danh sách sinh viên</h6>
+                </div>
+
+                <div className="table-responsive">
+
+                  <table className="table align-items-center mb-0 text-center">
+
+                    <thead>
+                      <tr>
+                        <th>MSSV</th>
+                        <th>Họ tên</th>
+                        <th>Email</th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+
+                      {students.map((s) => (
+                        <tr key={s.id}>
+
+                          <td>{s.username}</td>
+
+                          <td>{s.fullName}</td>
+
+                          <td>{s.email}</td>
+
+                        </tr>
+                      ))}
+
+                    </tbody>
+
+                  </table>
+
+                </div>
+
+              </div>
+
+              {/* CONTRACT */}
+              <div className="card mb-4">
+
+                <div className="card-header">
+                  <h6>Danh sách hợp đồng</h6>
+                </div>
+
+                <div className="table-responsive">
+
+                  <table className="table align-items-center mb-0 text-center">
+
+                    <thead>
+                      <tr>
+                        <th>Sinh viên</th>
+                        <th>Phòng</th>
+                        <th>Trạng thái</th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+
+                      {contracts.map((c) => (
+                        <tr key={c.id}>
+
+                          <td>{c.studentName}</td>
+
+                          <td>{c.roomName}</td>
+
+                          <td>
+                            {c.status === "PENDING" && "Chờ duyệt"}
+                            {c.status === "ACTIVE" && "Đang hoạt động"}
+                            {c.status === "REJECTED" && "Đã từ chối"}
+                            {c.status === "CANCELED" && "Đã hủy"}
+                            {c.status === "EXPIRED" && "Hết hạn"}
+                          </td>
+
+                        </tr>
+                      ))}
+
+                    </tbody>
+
+                  </table>
+
+                </div>
+
+              </div>
+
+              {/* INVOICE */}
+              <div className="card mb-4">
+
+                <div className="card-header">
+                  <h6>Danh sách hóa đơn</h6>
+                </div>
+
+                <div className="table-responsive">
+
+                  <table className="table align-items-center mb-0 text-center">
+
+                    <thead>
+                      <tr>
+                        <th>Sinh viên</th>
+                        <th>Tổng tiền</th>
+                        <th>Trạng thái</th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+
+                      {invoices.map((i) => (
+                        <tr key={i.id}>
+
+                          <td>{i.studentName}</td>
+
+                          <td>{formatMoney(i.totalAmount)}</td>
+
+                          <td>
+                            {i.status === "PAID" && "Đã thanh toán"}
+                            {i.status === "UNPAID" && "Chưa thanh toán"}
+                          </td>
+
+                        </tr>
+                      ))}
+
+                    </tbody>
+
+                  </table>
+
+                </div>
+
+              </div>
+
+              {/* ROOM */}
+              <div className="card mb-4">
+
+                <div className="card-header">
+                  <h6>Danh sách phòng</h6>
+                </div>
+
+                <div className="table-responsive">
+
+                  <table className="table align-items-center mb-0 text-center">
+
+                    <thead>
+                      <tr>
+                        <th>Tên phòng</th>
+                        <th>Sức chứa</th>
+                        <th>Hiện tại</th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+
+                      {rooms.map((r) => (
+                        <tr key={r.id}>
+
+                          <td>{r.name}</td>
+
+                          <td>{r.capacity}</td>
+
+                          <td>{r.current_people}</td>
+
+                        </tr>
+                      ))}
+
+                    </tbody>
+
+                  </table>
+
+                </div>
+
+              </div>
+
+            </>
+          )}
+
+          {/* ================================================= */}
+          {/* ============= THỐNG KÊ TÀI CHÍNH ================ */}
+          {/* ================================================= */}
+
+          {tab === "finance" && (
+            <div className="row">
+
+              <div className="col-xl-3 col-sm-6 mb-4">
+
+                <div className="card">
+
+                  <div className="card-body">
+
+                    <p className="text-sm mb-1">
+                      Tổng doanh thu
+                    </p>
+
+                    <h5 className="text-success">
+                      {formatMoney(dashboard.revenue)}
+                    </h5>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+              <div className="col-xl-3 col-sm-6 mb-4">
+
+                <div className="card">
+
+                  <div className="card-body">
+
+                    <p className="text-sm mb-1">
+                      Hóa đơn đã thanh toán
+                    </p>
+
+                    <h3>
+                      {dashboard.paidInvoices}
+                    </h3>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+              <div className="col-xl-3 col-sm-6 mb-4">
+
+                <div className="card">
+
+                  <div className="card-body">
+
+                    <p className="text-sm mb-1">
+                      Hóa đơn chưa thanh toán
+                    </p>
+
+                    <h3 className="text-danger">
+                      {dashboard.unpaidInvoices}
+                    </h3>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+              <div className="col-xl-3 col-sm-6 mb-4">
+
+                <div className="card">
+
+                  <div className="card-body">
+
+                    <p className="text-sm mb-1">
+                      Tổng tiền chưa thanh toán
+                    </p>
+
+                    <h5 className="text-warning">
+                      {formatMoney(dashboard.unpaidAmount)}
+                    </h5>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+          )}
+
         </div>
+
       </main>
 
-      {/* Settings panel */}
-      <SettingsPanel sidebarColor={sidebarColor} setSidebarColor={setSidebarColor} />
+      {/* SETTINGS */}
+      <SettingsPanel
+        sidebarColor={sidebarColor}
+        setSidebarColor={setSidebarColor}
+      />
+
       <Script />
+
     </div>
   );
 }

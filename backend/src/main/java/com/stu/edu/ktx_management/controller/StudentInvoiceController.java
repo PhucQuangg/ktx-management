@@ -1,6 +1,5 @@
 package com.stu.edu.ktx_management.controller;
 
-import com.stu.edu.ktx_management.entity.Student;
 import com.stu.edu.ktx_management.service.InvoiceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

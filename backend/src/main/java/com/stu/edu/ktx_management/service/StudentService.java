@@ -93,7 +93,6 @@ public class StudentService {
         return studentRepository.save(student);
     }
 
-    // dành cho admin tạo thủ công
     public Student createStudentByAdmin(StudentDTO studentDTO){
         if (studentRepository.findByUsername(studentDTO.getUsername()).isPresent()){
             throw new RuntimeException("Sinh viên đã tồn tại");
@@ -231,6 +230,40 @@ public class StudentService {
                 !existingStudent.get().getEmail().equalsIgnoreCase(student.getEmail())) {
             throw new RuntimeException("Email đã tồn tại!");
         }
+    }
+
+    public List<Student> filterStudents(String fullName, String className) {
+
+        List<Student> students;
+
+        if (fullName != null && !fullName.isEmpty()
+                && className != null && !className.isEmpty()) {
+
+            students = studentRepository
+                    .findByFullNameContainingIgnoreCaseAndClassNameContainingIgnoreCase(
+                            fullName,
+                            className
+                    );
+
+        } else if (fullName != null && !fullName.isEmpty()) {
+
+            students = studentRepository
+                    .findByFullNameContainingIgnoreCase(fullName);
+
+        } else if (className != null && !className.isEmpty()) {
+
+            students = studentRepository
+                    .findByClassNameContainingIgnoreCase(className);
+
+        } else {
+
+            students = studentRepository.findAll();
+        }
+
+        return students.stream()
+                .filter(s -> s.getRole() == Role.STUDENT)
+                .filter(s -> s.getApprovalStatus() == ApprovalStatus.APPROVED)
+                .toList();
     }
 
 }

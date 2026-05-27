@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/api/admin/students")
@@ -74,6 +76,14 @@ public class AdminStudentController {
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
+    }
+
+    @GetMapping("/filter")
+    public List<Student> filterStudents(
+            @RequestParam(required = false) String fullName,
+            @RequestParam(required = false) String className
+    ) {
+        return studentService.filterStudents(fullName, className);
     }
 
 

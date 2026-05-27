@@ -13,6 +13,7 @@ export default function RoomList() {
   const [showAddModal, setShowAddModal] = useState(false);
   const navigate = useNavigate();
   const token = localStorage.getItem("admin_token");
+  const [roomStatus, setRoomStatus] = useState("ALL");
 
   useEffect(() => {
     if (!token) return;
@@ -67,6 +68,21 @@ export default function RoomList() {
       }
     );
   };
+  useEffect(() => {
+    let filtered = rooms;
+  
+    // FILTER TYPE
+    if (roomType !== "ALL") {
+      filtered = filtered.filter((r) => r.type === roomType);
+    }
+  
+    // FILTER STATUS
+    if (roomStatus !== "ALL") {
+      filtered = filtered.filter((r) => r.status === roomStatus);
+    }
+  
+    setFilteredRooms(filtered);
+  }, [roomType, roomStatus, rooms]);
 
   return (
     <div className="g-sidenav-show">
@@ -134,16 +150,36 @@ export default function RoomList() {
 
                 <div className="card-body px-0 pb-2">
                   <div className="table-responsive p-0">
-                    <div className="d-flex justify-content-between align-items-center px-4 pt-3">
-                      <select
-                        value={roomType}
-                        onChange={(e) => setRoomType(e.target.value)}
-                        className="form-select w-auto"
-                      >
-                        <option value="ALL">Tất cả</option>
-                        <option value="NORMAL">Tiêu chuẩn</option>
-                        <option value="PLUS">Tiện nghi</option>
-                      </select>
+                  <div className="d-flex justify-content-between align-items-center px-4 pt-3">
+
+                      <div className="d-flex gap-2">
+
+                        {/* FILTER TYPE */}
+                        <select
+                          value={roomType}
+                          onChange={(e) => setRoomType(e.target.value)}
+                          className="form-select"
+                          style={{ width: "180px" }}
+                        >
+                          <option value="ALL">Tất cả loại phòng</option>
+                          <option value="NORMAL">Tiêu chuẩn</option>
+                          <option value="PLUS">Tiện nghi</option>
+                        </select>
+
+                        {/* FILTER STATUS */}
+                        <select
+                          value={roomStatus}
+                          onChange={(e) => setRoomStatus(e.target.value)}
+                          className="form-select"
+                          style={{ width: "180px" }}
+                        >
+                          <option value="ALL">Tất cả tình trạng</option>
+                          <option value="AVAILABLE">Còn trống</option>
+                          <option value="FULL">Đã đầy</option>
+                          <option value="MAINTENANCE">Bảo trì</option>
+                        </select>
+
+                      </div>
 
                       <button
                         className="btn btn-dark"
@@ -151,7 +187,7 @@ export default function RoomList() {
                       >
                         + Thêm phòng
                       </button>
-                    </div>
+                      </div>
 
                     <table className="table align-middle mb-0">
                       <thead>
@@ -174,8 +210,16 @@ export default function RoomList() {
                               <td>{r.capacity}</td>
                               <td>{r.current_people}</td>
                               <td>{r.price}</td>
-                              <td style={{ whiteSpace: "nowrap" }}>{r.status}</td>
-                              <td>{r.type}</td>
+                              <td style={{ whiteSpace: "nowrap" }}>
+                                {r.status === "AVAILABLE" && "Còn trống"}
+                                {r.status === "FULL" && "Đã đầy"}
+                                {r.status === "MAINTENANCE" && "Bảo trì"}
+                              </td>
+
+                              <td>
+                                {r.type === "NORMAL" && "Tiêu chuẩn"}
+                                {r.type === "PLUS" && "Tiện nghi"}
+                              </td>
                               <td>
                                 <i
                                   className="fa-regular fa-pen-to-square text-secondary me-2"
