@@ -40,10 +40,10 @@ function Script() {
 
         userMenu.innerHTML = `
           <div class="pull-left">
-            <a href="/profile" class="btn btn-default btn-flat">Profile</a>
+            <a href="/profile" class="btn btn-default btn-flat">Thông tin cá nhân</a>
           </div>
           <div class="pull-right">
-            <a id="logoutBtn" class="btn btn-default btn-flat">Sign out</a>
+            <a id="logoutBtn" class="btn btn-default btn-flat">Đăng xuất</a>
           </div>
         `;
 

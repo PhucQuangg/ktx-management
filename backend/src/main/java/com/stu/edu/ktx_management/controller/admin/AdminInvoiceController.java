@@ -3,9 +3,14 @@ package com.stu.edu.ktx_management.controller.admin;
 import com.stu.edu.ktx_management.dto.CreateInvoiceRequest;
 import com.stu.edu.ktx_management.service.InvoiceService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.Map;
 
 @RestController
@@ -52,9 +57,10 @@ public class AdminInvoiceController {
 
 
     @PutMapping("/{id}/confirm")
-    public ResponseEntity<?> confirm(@PathVariable Integer id) {
+    public ResponseEntity<String> confirm(@PathVariable Integer id) {
         try {
-            return ResponseEntity.ok(invoiceService.markAsPaid(id));
+            invoiceService.markAsPaid(id);
+            return ResponseEntity.ok("Xác nhận thanh toán thành công!");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -70,4 +76,27 @@ public class AdminInvoiceController {
         }
     }
 
+    @GetMapping("/{id}/pdf")
+    public ResponseEntity<?> downloadInvoicePdf(
+            @PathVariable Integer id
+    ) throws Exception {
+
+        File file = invoiceService.generatePdf(id);
+
+        InputStreamResource resource =
+                new InputStreamResource(
+                        new FileInputStream(file)
+                );
+
+        return ResponseEntity.ok()
+                .header(
+                        HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=invoice_" + id + ".pdf"
+                )
+                .contentType(
+                        MediaType.APPLICATION_PDF
+                )
+                .contentLength(file.length())
+                .body(resource);
+    }
 }

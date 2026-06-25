@@ -24,6 +24,8 @@ public class Invoice {
     private Double roomPrice;
     private Double serviceFee;
     private Double totalAmount;
+    @Column(unique = true)
+    private String txnRef;
 
     @Enumerated(EnumType.STRING)
     private InvoiceStatus status;

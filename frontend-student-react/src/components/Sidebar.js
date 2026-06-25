@@ -10,7 +10,7 @@ export default function Sidebar() {
   
     return (
       <aside className="main-sidebar">
-        <section className="sidebar" style={{ minHeight: "110vh" }}>
+        <section className="sidebar" style={{ minHeight: "140vh" }}>
           <div className="user-panel">
             <div className="pull-left image">
               <img
@@ -45,20 +45,7 @@ export default function Sidebar() {
               </ul>
             </li>
   
-            <li className="treeview">
-              <a>
-                <i className="fa fa-th"></i> <span>Thanh Toán</span>
-                <span className="pull-right-container">
-                  <i className="fa fa-angle-left pull-right"></i>
-                </span>
-              </a>
-              <ul className="treeview-menu">
-                <li><a href="#"><i className="fa fa-circle-o"></i> Tiền phòng</a></li>
-                <li><a href="#"><i className="fa fa-circle-o"></i> Tiền điện</a></li>
-                <li><a href="#"><i className="fa fa-circle-o"></i> Tiền nước</a></li>
-                <li><a href="#"><i className="fa fa-circle-o"></i> Chi phí khác</a></li>
-              </ul>
-            </li>
+          
   
             <li>
               <a href="#"><i className="fa fa-info-circle"></i> <span>Hướng Dẫn</span></a>

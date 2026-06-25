@@ -2,12 +2,18 @@ import React, { useEffect, useState } from "react";
 import Sidebar from "../../components/Sidebar";
 import SettingsPanel from "../../components/SettingsPanel";
 import Script from "../../components/Script";
+import { useLocation, useNavigate } from "react-router-dom";
+
 
 export default function ContractDetail() {
   const [sidebarColor, setSidebarColor] = useState("bg-white");
   const [contract, setContract] = useState(null);
-
+  const navigate = useNavigate();
+  const location = useLocation();
+  
+  const filters = location.state;
   const params = new URLSearchParams(window.location.search);
+  
   const contractId = params.get("id");
 
   const token = localStorage.getItem("admin_token");
@@ -151,12 +157,16 @@ export default function ContractDetail() {
 
             {/* BUTTON */}
             <div className="text-center mt-4">
-              <button
-                className="btn btn-outline-dark"
-                onClick={() => window.history.back()}
-              >
-                ← Trở về
-              </button>
+            <button
+              className="btn btn-outline-dark"
+              onClick={() =>
+                navigate("/admin/contracts", {
+                  state: filters
+                })
+              }
+            >
+              ← Trở về
+            </button>
             </div>
 
           </div>

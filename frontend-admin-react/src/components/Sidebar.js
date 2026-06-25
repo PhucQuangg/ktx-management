@@ -69,6 +69,12 @@ const Sidebar = ({ color }) => {
             </a>
           </li>
           <li className="nav-item">
+            <a className="nav-link text-dark" href="/admin/facilities">
+              <i className="material-symbols-rounded opacity-5">table_view</i>
+              <span className="nav-link-text ms-1">Quản lý cơ sở vật chất</span>
+            </a>
+          </li>
+          <li className="nav-item">
             <a className="nav-link text-dark" href="/admin/contracts">
               <i className="material-symbols-rounded opacity-5">receipt_long</i>
               <span className="nav-link-text ms-1">Quản lý hợp đồng</span>
@@ -80,12 +86,7 @@ const Sidebar = ({ color }) => {
               <span className="nav-link-text ms-1">Quản lý hóa đơn</span>
             </a>
           </li>
-          <li className="nav-item">
-            <a className="nav-link text-dark" href="/notifications">
-              <i className="material-symbols-rounded opacity-5">notifications</i>
-              <span className="nav-link-text ms-1">Notifications</span>
-            </a>
-          </li>
+        
           <li className="nav-item mt-3">
             <h6 className="ps-4 ms-2 text-uppercase text-xs text-dark font-weight-bolder opacity-5">
               Account pages

@@ -1,12 +1,14 @@
 package com.stu.edu.ktx_management.controller;
 
 
+import com.stu.edu.ktx_management.entity.Contract;
 import com.stu.edu.ktx_management.service.ContractService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
+import java.util.Map;
+
 
 @RestController
 @RequestMapping("/api/student/contracts")
@@ -16,21 +18,25 @@ public class StudentContractController {
     private ContractService contractService;
 
     @PostMapping("/register/semester")
-    public ResponseEntity<?> registerBySemester(@RequestParam Integer roomId) {
-        return ResponseEntity.ok(contractService.registerRoomBySemester(roomId));
-    }
+    public ResponseEntity<?> registerBySemester(
+            @RequestParam Integer roomId) {
 
-    @PostMapping("/register/custom")
-    public ResponseEntity<?> registerCustom(@RequestParam Integer roomId,
-                                            @RequestParam String startDate,
-                                            @RequestParam String endDate) {
-        return ResponseEntity.ok(
-                contractService.registerRoomCustom(
-                        roomId,
-                        LocalDate.parse(startDate),
-                        LocalDate.parse(endDate)
-                )
-        );
+        try {
+
+            Contract contract =
+                    contractService.registerRoomBySemester(roomId);
+
+            return ResponseEntity.ok(contract);
+
+        } catch (RuntimeException e) {
+
+            return ResponseEntity
+                    .badRequest()
+                    .body(Map.of(
+                            "message",
+                            e.getMessage()
+                    ));
+        }
     }
 
     @GetMapping("/my-contracts")

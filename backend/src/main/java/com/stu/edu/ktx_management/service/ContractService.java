@@ -7,6 +7,7 @@ import com.stu.edu.ktx_management.dto.mapper.ContractMapper;
 import com.stu.edu.ktx_management.entity.*;
 import com.stu.edu.ktx_management.repository.ContractRepository;
 import com.stu.edu.ktx_management.repository.RoomRepository;
+import com.stu.edu.ktx_management.repository.SemesterRegistrationRepository;
 import com.stu.edu.ktx_management.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -32,6 +33,9 @@ public class ContractService {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private SemesterRegistrationRepository semesterRepository;
 
     // ================= GET ALL =================
     public List<Contract> getAllContract() {
@@ -82,29 +86,97 @@ public class ContractService {
                 .collect(Collectors.toList());
     }
 
-    // ================= REGISTER =================
     public Contract registerRoomBySemester(Integer roomId) {
+
         Student student = getLoggedInStudent();
-        LocalDate now = LocalDate.now();
 
-        LocalDate start;
-        LocalDate end;
+        LocalDate today = LocalDate.now();
 
-        if (now.getMonthValue() <= 6) {
-            start = LocalDate.of(now.getYear(), 1, 1);
-            end = LocalDate.of(now.getYear(), 6, 30);
-        } else {
-            start = LocalDate.of(now.getYear(), 7, 1);
-            end = LocalDate.of(now.getYear(), 12, 31);
+        List<SemesterRegistration> semesters =
+                semesterRepository.findByActiveTrue();
+
+        SemesterRegistration currentSemester = null;
+
+        for (SemesterRegistration s : semesters) {
+
+            LocalDate registerStart =
+                    LocalDate.of(
+                            today.getYear(),
+                            s.getRegisterStartMonth(),
+                            s.getRegisterStartDay()
+                    );
+
+            LocalDate registerEnd =
+                    LocalDate.of(
+                            today.getYear(),
+                            s.getRegisterEndMonth(),
+                            s.getRegisterEndDay()
+                    );
+
+            // xử lý trường hợp HK2
+            if (registerEnd.isBefore(registerStart)) {
+
+                if (today.getMonthValue() == 12) {
+
+                    registerEnd =
+                            registerEnd.plusYears(1);
+
+                } else {
+
+                    registerStart =
+                            registerStart.minusYears(1);
+                }
+            }
+
+            if (
+                    !today.isBefore(registerStart)
+                            &&
+                            !today.isAfter(registerEnd)
+            ) {
+
+                currentSemester = s;
+                break;
+            }
         }
 
-        return createContract(student.getId(), roomId, start, end);
+        if (currentSemester == null) {
+
+            throw new RuntimeException(
+                    "Hiện không trong thời gian đăng ký phòng"
+            );
+        }
+
+        int year = today.getYear();
+
+        LocalDate contractStart =
+                LocalDate.of(
+                        year,
+                        currentSemester.getContractStartMonth(),
+                        currentSemester.getContractStartDay()
+                );
+
+        LocalDate contractEnd =
+                LocalDate.of(
+                        year,
+                        currentSemester.getContractEndMonth(),
+                        currentSemester.getContractEndDay()
+                );
+
+        if (contractEnd.isBefore(contractStart)) {
+
+            contractEnd =
+                    contractEnd.plusYears(1);
+        }
+
+        return createContract(
+                student.getId(),
+                roomId,
+                contractStart,
+                contractEnd
+        );
     }
 
-    public Contract registerRoomCustom(Integer roomId, LocalDate startDate, LocalDate endDate) {
-        Student student = getLoggedInStudent();
-        return createContract(student.getId(), roomId, startDate, endDate);
-    }
+
 
     private Contract createContract(Integer studentId, Integer roomId, LocalDate startDate, LocalDate endDate) {
 
@@ -125,6 +197,18 @@ public class ContractService {
         if (contractRepository.findByStudentAndStatus(student, ContractStatus.ACTIVE).isPresent()) {
             throw new RuntimeException("Bạn đã có hợp đồng đang hoạt động");
         }
+        boolean hasPending =
+                contractRepository
+                        .existsByStudentAndStatus(
+                                student,
+                                ContractStatus.PENDING
+                        );
+
+        if (hasPending) {
+            throw new RuntimeException(
+                    "Bạn đã có đơn đăng ký đang chờ duyệt"
+            );
+        }
 
         Contract contract = new Contract();
         contract.setStudent(student);
@@ -136,7 +220,6 @@ public class ContractService {
         return contractRepository.save(contract);
     }
 
-    // ================= APPROVE =================
     public Contract approveContract(Integer contractId) {
         Contract contract = contractRepository.findById(contractId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy hợp đồng"));
@@ -159,7 +242,14 @@ public class ContractService {
         }
 
         roomRepository.save(room);
-        return contractRepository.save(contract);
+        Contract result = contractRepository.save(contract);
+
+        emailService.sendApprovalContract(
+                result.getStudent(),
+                result
+        );
+
+        return result;
     }
 
     // ================= REJECT =================

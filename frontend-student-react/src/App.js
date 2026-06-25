@@ -11,6 +11,7 @@ import RoomDetailPage from "./pages/RoomDetailPage"
 import MyContractPage from "./pages/MyContractPage";
 import ContractDetailPage from "./pages/ContractDetail";
 import InvoicePage from "./pages/invoices/MyInvoicePage";
+import PaymentResult from "./pages/invoices/PaymentResult"; 
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
         <Route path="/my-contracts" element={<MyContractPage />} />
         <Route path="/contract-detail" element={<ContractDetailPage />} />
         <Route path="/invoices" element={<InvoicePage />} />
+        <Route path="/payment-result" element={<PaymentResult />} />
       </Routes>
 
       <Popup />

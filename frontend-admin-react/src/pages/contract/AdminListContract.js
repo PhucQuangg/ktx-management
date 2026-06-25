@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import Sidebar from "../../components/Sidebar";
 import SettingsPanel from "../../components/SettingsPanel";
 import Script from "../../components/Script";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export default function ContractList() {
   const [contracts, setContracts] = useState([]);
@@ -11,11 +11,18 @@ export default function ContractList() {
   const [sidebarColor, setSidebarColor] = useState("bg-white");
   const navigate = useNavigate();
 
-  // ===== FILTER =====
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [studentFilter, setStudentFilter] = useState("");
 
-  // 🔥 Modal từ chối / hủy
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state) {
+      setStatusFilter(location.state.statusFilter || "ALL");
+      setStudentFilter(location.state.studentFilter || "");
+    }
+  }, []);
+
   const [actionModal, setActionModal] = useState({
     show: false,
     contractId: null,
@@ -83,7 +90,9 @@ export default function ContractList() {
 
           if (res.ok) {
             window.showPopup(message || "Duyệt thành công!");
-            reload();
+            setTimeout(() => {
+              reload();
+            }, 1500);
           } else {
             window.showPopup(message, true);
           }
@@ -235,7 +244,6 @@ export default function ContractList() {
 
               <div className="d-flex gap-2 flex-wrap">
 
-                {/* TÊN SINH VIÊN */}
                 <input
                   type="text"
                   placeholder="Tìm theo tên sinh viên..."
@@ -291,17 +299,22 @@ export default function ContractList() {
                         <td>{renderStatus(c.status)}</td>
 
                         <td>
-                        {/* XEM */}
+                       
                         <i
                           className="fa-solid fa-eye text-info me-3"
                           style={{ cursor: "pointer" }}
                           title="Xem chi tiết"
                           onClick={() =>
-                            navigate(`/admin/contract-detail?id=${c.id}`)
+                            navigate(`/admin/contract-detail?id=${c.id}`, {
+                              state: {
+                                statusFilter,
+                                studentFilter
+                              }
+                            })
                           }
                         ></i>
 
-                        {/* DUYỆT */}
+                        
                         {c.status === "PENDING" && (
                           <>
                             <i

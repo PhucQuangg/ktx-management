@@ -1,5 +1,6 @@
 package com.stu.edu.ktx_management.controller;
 
+import com.stu.edu.ktx_management.dto.RoomDetailDTO;
 import com.stu.edu.ktx_management.entity.Room;
 import com.stu.edu.ktx_management.entity.TypeRoom;
 import com.stu.edu.ktx_management.service.RoomService;
@@ -31,7 +32,9 @@ public class StudentRoomController {
     }
 
     @GetMapping("/{id}")
-    public Room getRoom(@PathVariable("id") Integer id) {
-        return roomService.getRoomById(id);
+    public RoomDetailDTO getRoom(
+            @PathVariable Integer id
+    ) {
+        return roomService.getRoomByIdWithStu(id);
     }
 }

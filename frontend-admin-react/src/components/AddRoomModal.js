@@ -44,7 +44,6 @@ export default function AddRoomModal({ show, onClose, onSuccess }) {
   return (
     <div className="modern-modal-overlay">
       <div className="modern-modal">
-
         <div className="modal-header-custom">
           <img
             src="/assets/images/small-logos/Logo_STU.png"
@@ -59,26 +58,58 @@ export default function AddRoomModal({ show, onClose, onSuccess }) {
 
         {/* FORM */}
         <form onSubmit={handleSubmit} className="modal-body-custom">
-
           <div className="row g-3">
             <div className="col-md-6">
-              <label className="form-label"><strong>Tên phòng:</strong></label>
-              <input name="name" className="form-control"  placeholder="Nhập tên phòng"  onChange={handleChange} required />
+              <label className="form-label">
+                <strong>Tên phòng:</strong>
+              </label>
+              <input
+                name="name"
+                className="form-control"
+                placeholder="Nhập tên phòng"
+                onChange={handleChange}
+                required
+              />
             </div>
 
             <div className="col-md-6">
-              <label className="form-label"><strong>Sức chứa:</strong></label>
-              <input type="number" name="capacity" className="form-control" placeholder="Số lượng sinh viên tối đa" onChange={handleChange} required />
+              <label className="form-label">
+                <strong>Sức chứa:</strong>
+              </label>
+              <input
+                type="number"
+                name="capacity"
+                className="form-control"
+                placeholder="Số lượng sinh viên tối đa"
+                onChange={handleChange}
+                required
+              />
             </div>
 
             <div className="col-md-6">
-              <label className="form-label"><strong>Giá phòng:</strong></label>
-              <input type="number" name="price" className="form-control" placeholder="Giá phòng" onChange={handleChange} required />
+              <label className="form-label">
+                <strong>Giá phòng:</strong>
+              </label>
+              <input
+                type="number"
+                name="price"
+                className="form-control"
+                placeholder="Giá phòng"
+                onChange={handleChange}
+                required
+              />
             </div>
 
             <div className="col-md-6">
-              <label className="form-label"><strong>Loại phòng:</strong></label>
-              <select name="type" className="form-select" onChange={handleChange} required>
+              <label className="form-label">
+                <strong>Loại phòng:</strong>
+              </label>
+              <select
+                name="type"
+                className="form-select"
+                onChange={handleChange}
+                required
+              >
                 <option value="">-- Chọn --</option>
                 <option value="NORMAL">Tiêu chuẩn</option>
                 <option value="PLUS">Tiện nghi</option>
@@ -86,8 +117,15 @@ export default function AddRoomModal({ show, onClose, onSuccess }) {
             </div>
 
             <div className="col-md-6">
-              <label className="form-label"><strong>Trạng thái:</strong></label>
-              <select name="status" className="form-select"  onChange={handleChange} required>
+              <label className="form-label">
+                <strong>Trạng thái:</strong>
+              </label>
+              <select
+                name="status"
+                className="form-select"
+                onChange={handleChange}
+                required
+              >
                 <option value="">-- Chọn --</option>
                 <option value="AVAILABLE">Còn trống</option>
                 <option value="FULL">Đầy</option>
@@ -98,14 +136,17 @@ export default function AddRoomModal({ show, onClose, onSuccess }) {
 
           {/* BUTTONS */}
           <div className="modal-actions">
-            <button type="button" className="btn btn-outline-secondary" onClick={onClose}>
+            <button
+              type="button"
+              className="btn btn-outline-secondary"
+              onClick={onClose}
+            >
               Đóng
             </button>
             <button type="submit" className="btn btn-success">
               Thêm phòng
             </button>
           </div>
-
         </form>
       </div>
     </div>

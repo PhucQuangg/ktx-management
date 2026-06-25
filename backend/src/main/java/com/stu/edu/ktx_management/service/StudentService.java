@@ -4,6 +4,7 @@ import com.stu.edu.ktx_management.dto.StudentProfileDTO;
 import com.stu.edu.ktx_management.entity.*;
 import com.stu.edu.ktx_management.repository.ContractRepository;
 import com.stu.edu.ktx_management.repository.StudentRepository;
+import com.stu.edu.ktx_management.repository.StudentVerificationRepository;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,9 @@ public class StudentService {
     @Autowired
     private ContractRepository contractRepository;
 
+    @Autowired
+    private StudentVerificationRepository verificationRepository;
+
 
     public List<Student> getAllStudents() {
         return studentRepository.findAll();
@@ -55,12 +59,10 @@ public class StudentService {
         return student;
     }
 
-    // ✅ Từ chối hồ sơ sinh viên
     public Student rejectStudent(Integer studentId, String reason) {
         Student student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy sinh viên!"));
 
-        student.setApprovalStatus(ApprovalStatus.REJECTED);
         studentRepository.delete(student);
 
         emailService.sendRejectionEmail(student, reason);
@@ -73,19 +75,47 @@ public class StudentService {
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy sinh viên với id: " + id));
     }
 
+
     public Student registerStudent(Student student) {
 
+        // MSSV đã tồn tại trong hệ thống KTX
         if (studentRepository.findByUsername(student.getUsername()).isPresent()) {
             throw new RuntimeException("Mã số sinh viên đã tồn tại!");
         }
 
+        // Email đã dùng
         if (studentRepository.findByEmail(student.getEmail()).isPresent()) {
             throw new RuntimeException("Email đã được sử dụng!");
         }
 
-        if (student.getPassword() != null) {
-            student.setPassword(passwordEncoder.encode(student.getPassword()));
+        // Kiểm tra sinh viên có trong danh sách của trường không
+        StudentVerification verification =
+                verificationRepository.findByMssv(student.getUsername())
+                        .orElseThrow(() ->
+                                new RuntimeException("Mã số sinh viên không tồn tại trong dữ liệu nhà trường"));
+
+        if (!verification.getDateOfBirth().equals(student.getDateOfBirth())) {
+            throw new RuntimeException(
+                    "Sai thông tin ngày sinh"
+            );
         }
+
+        if (!verification.getClassName().equals(student.getClassName())) {
+            throw new RuntimeException(
+                    "Sai thông tin lớp"
+            );
+        }
+
+        if (!verification.getEmail().equalsIgnoreCase(student.getEmail())) {
+            throw new RuntimeException("Email không tồn tại");
+        }
+
+        if (verification.getStatus() != VerificationStatus.ACTIVE) {
+            throw new RuntimeException("Sinh viên không còn đang theo học");
+        }
+
+
+        student.setPassword(passwordEncoder.encode(student.getPassword()));
 
         student.setRole(Role.STUDENT);
         student.setApprovalStatus(ApprovalStatus.PENDING);

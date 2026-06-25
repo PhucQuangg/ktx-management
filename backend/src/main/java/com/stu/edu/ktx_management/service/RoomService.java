@@ -1,5 +1,7 @@
 package com.stu.edu.ktx_management.service;
 
+import com.stu.edu.ktx_management.dto.RoomDetailDTO;
+import com.stu.edu.ktx_management.dto.RoomFacilityDTO;
 import com.stu.edu.ktx_management.entity.Room;
 import com.stu.edu.ktx_management.entity.RoomStatus;
 import com.stu.edu.ktx_management.entity.TypeRoom;
@@ -24,8 +26,69 @@ public class RoomService {
         return rooms;
     }
 
-    public Room getRoomById(int id){
-        return roomRepository.findById(id).orElseThrow(()->new RuntimeException("Không tìm thấy phòng với id: "+id));
+    public Room getRoomById(Integer id) {
+
+        return roomRepository.findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "Không tìm thấy phòng với id: " + id
+                        ));
+    }
+    public RoomDetailDTO getRoomByIdWithStu(Integer id) {
+
+        Room room = roomRepository.findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException(
+                                "Không tìm thấy phòng với id: " + id
+                        ));
+
+        RoomDetailDTO dto = new RoomDetailDTO();
+
+        dto.setId(room.getId());
+        dto.setName(room.getName());
+        dto.setCapacity(room.getCapacity());
+        dto.setCurrent_people(room.getCurrent_people());
+        dto.setPrice(room.getPrice());
+        dto.setStatus(room.getStatus().name());
+        dto.setType(room.getType().name());
+
+
+        List<RoomFacilityDTO> facilityDTOs =
+                room.getRoomFacilities()
+                        .stream()
+                        .map(f -> {
+
+                            RoomFacilityDTO facility = new RoomFacilityDTO();
+
+                            facility.setId(f.getId());
+
+                            facility.setRoomId(room.getId());
+
+                            facility.setRoomName(room.getName());
+
+                            facility.setFacilityTypeId(
+                                    f.getFacilityType().getId()
+                            );
+
+                            facility.setFacilityName(
+                                    f.getFacilityType().getName()
+                            );
+
+                            facility.setQuantity(
+                                    f.getQuantity()
+                            );
+
+                            facility.setStatus(
+                                    f.getStatus().toString()
+                            );
+
+                            return facility;
+                        })
+                        .toList();
+
+        dto.setFacilities(facilityDTOs);
+
+        return dto;
     }
     public List<Room> searchRooms(Integer id, String roomName){
         if(id != null){

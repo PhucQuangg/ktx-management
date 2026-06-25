@@ -11,13 +11,8 @@ export default function RoomDetail() {
 
   const [room, setRoom] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [loadingRegister, setLoadingRegister] = useState(false);
 
-  // Dùng cho đăng ký theo ngày
-  const [customStart, setCustomStart] = useState("");
-  const [customEnd, setCustomEnd] = useState("");
-  const [showCustomForm, setShowCustomForm] = useState(false);
   const [contractStatus, setContractStatus] = useState(null);
 
   useEffect(() => {
@@ -62,70 +57,64 @@ export default function RoomDetail() {
     MAINTENANCE: "Bảo trì",
   }[room.status] || room.status;
 
-  const registerBySemester = () => {
+  const registerRoom = () => {
+
     const token = sessionStorage.getItem("token");
-    if (!token) return window.showPopup("Bạn chưa đăng nhập!", true);
   
-    setLoadingRegister(true);
-  
-    fetch(`http://localhost:8080/api/student/contracts/register/semester?roomId=${roomId}`, {
-      method: "POST",
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then(async res => {
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.message || "Không thể đăng ký phòng!");
-        return data;
-      })
-      .then(() => {
-        setShowRegisterModal(false); // đóng modal trước
-        window.showPopup("Đăng ký phòng thành công! Chờ admin duyệt!", false);
-        setTimeout(() => window.location.reload(), 2000);
-      })
-      .catch(err => {
-        setShowRegisterModal(false); // đóng modal trước khi show lỗi
-        window.showPopup(err.message, true);
-      })
-      .finally(() => setLoadingRegister(false));
-  };
-  
-  const registerCustom = () => {
-    if (!customStart || !customEnd) return window.showPopup("Vui lòng chọn đầy đủ ngày!", true);
-  
-    const token = sessionStorage.getItem("token");
-    if (!token) return window.showPopup("Bạn chưa đăng nhập!", true);
+    if (!token) {
+      window.showPopup("Bạn chưa đăng nhập!", true);
+      return;
+    }
   
     setLoadingRegister(true);
   
     fetch(
-      `http://localhost:8080/api/student/contracts/register/custom?roomId=${roomId}&startDate=${customStart}&endDate=${customEnd}`,
+      `http://localhost:8080/api/student/contracts/register/semester?roomId=${roomId}`,
       {
         method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       }
     )
-      .then(async res => {
+      .then(async (res) => {
+  
         const data = await res.json();
-        if (!res.ok) throw new Error(data.message || "Không thể đăng ký phòng!");
+  
+        if (!res.ok) {
+          throw new Error(data.message || "Không thể đăng ký phòng");
+        }
+  
         return data;
       })
       .then(() => {
-        setShowRegisterModal(false); // đóng modal trước
-        window.showPopup("Đăng ký thành công! Chờ admin duyệt!", false);
-        setCustomStart("");
-        setCustomEnd("");
-        setShowCustomForm(false);
-       setTimeout(() => window.location.reload(), 2000);
+  
+        window.showPopup(
+          "Đăng ký phòng thành công! Chờ admin duyệt!"
+        );
+  
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
+  
       })
-      .catch(err => {
-        setShowRegisterModal(false); // đóng modal trước khi show lỗi
-        window.showPopup(err.message, true);
+      .catch((err) => {
+  
+        window.showPopup(
+          err.message,
+          true
+        );
+  
       })
-      .finally(() => setLoadingRegister(false));
+      .finally(() => {
+  
+        setLoadingRegister(false);
+  
+      });
   };
   
-  const today = new Date().toISOString().split("T")[0];
 
+  
   return (
     <div>
       <Header />
@@ -199,6 +188,50 @@ export default function RoomDetail() {
                   <div className="label">Ghi chú</div>
                   <div className="value muted">{room.note || "Không có"}</div>
                 </div>
+                <div className="facility-section">
+
+                <h4 className="facility-title">
+                  Cơ sở vật chất phòng
+                </h4>
+
+                {room.facilities && room.facilities.length > 0 ? (
+
+                  <div className="facility-grid">
+
+                    {room.facilities.map((item, index) => (
+
+                      <div
+                        key={index}
+                        className="facility-card"
+                      >
+                        <div className="facility-icon">
+                          🛠️
+                        </div>
+
+                        <div>
+                          <div className="facility-name">
+                            {item.facilityName}
+                          </div>
+
+                          <div className="facility-quantity">
+                            Số lượng: {item.quantity}
+                          </div>
+                        </div>
+                      </div>
+
+                    ))}
+
+                  </div>
+
+                ) : (
+
+                  <div className="text-muted">
+                    Chưa có dữ liệu cơ sở vật chất
+                  </div>
+
+                )}
+
+                </div>
               </div>
 
               <aside className="sidebar">
@@ -213,29 +246,114 @@ export default function RoomDetail() {
                   Các tùy chọn
                 </div>
                 <div className="actions">
-                    <button
-                      className="btn btn-primary"
-                      onClick={() => {
-                        if (contractStatus === "ACTIVE") {
-                          window.showPopup("Bạn đã có hợp đồng đang hoạt động", true);
-                        } else if (contractStatus === "PENDING") {
-                          window.showPopup("Bạn đã đăng ký phòng, chờ admin duyệt", true);
-                        } else {
-                          setShowRegisterModal(true); // chưa có hợp đồng, mở modal
-                        }
+                <button
+                  className="btn btn-primary"
+                  disabled={loadingRegister}
+                  onClick={() => {
+
+                    if (contractStatus === "ACTIVE") {
+
+                      window.showPopup(
+                        "Bạn đã có hợp đồng đang hoạt động",
+                        true
+                      );
+
+                      return;
+                    }
+
+                    if (contractStatus === "PENDING") {
+
+                      window.showPopup(
+                        "Bạn đã có đơn đăng ký đang chờ duyệt",
+                        true
+                      );
+
+                      return;
+                    }
+
+                    registerRoom();
+                  }}
+                >
+                  {loadingRegister
+                    ? "Đang đăng ký..."
+                    : "Đăng ký phòng"}
+                </button>
+                  </div>
+
+
+                  <div
+                    style={{
+                      marginTop: 18,
+                      borderTop: "1px dashed #eef2ff",
+                      paddingTop: 12,
+                    }}
+                  >
+                    <div
+                      className="muted"
+                      style={{
+                        fontWeight: 600,
+                        marginBottom: 10,
                       }}
                     >
-                      Đăng ký phòng
-                    </button>
-                  </div>
+                      Thông tin thêm
+                    </div>
 
+                    <div
+                      style={{
+                        fontSize: 13,
+                        lineHeight: "1.8",
+                        color: "#64748b",
+                      }}
+                    >
+                      <div>
+                        💡 <strong>Phí điện nước:</strong> 350.000đ/người/tháng
+                      </div>
 
-                <div style={{ marginTop: 18, borderTop: "1px dashed #eef2ff", paddingTop: 12 }}>
-                  <div className="muted">Thông tin thêm</div>
-                  <div style={{ fontSize: 13, marginTop: 8 }} className="muted-2">
-                    Ngày cập nhật: {new Date(room.updatedAt).toLocaleDateString()}
+                      <div
+                        style={{
+                          marginTop: 10,
+                          padding: 10,
+                          background: "#f8fafc",
+                          borderRadius: 8,
+                          border: "1px solid #e2e8f0",
+                        }}
+                      >
+                        <div style={{ fontWeight: 600, color: "#1e293b" }}>
+                          📚 Học kỳ 1
+                        </div>
+
+                        <div>
+                          ⏰ Đăng ký: <strong>01/06 - 31/07</strong>
+                        </div>
+
+                        <div>
+                          🏠 Lưu trú: <strong>01/09 - 31/01</strong>
+                        </div>
+                      </div>
+
+                      <div
+                        style={{
+                          marginTop: 10,
+                          padding: 10,
+                          background: "#f8fafc",
+                          borderRadius: 8,
+                          border: "1px solid #e2e8f0",
+                        }}
+                      >
+                        <div style={{ fontWeight: 600, color: "#1e293b" }}>
+                          📚 Học kỳ 2
+                        </div>
+
+                        <div>
+                          ⏰ Đăng ký: <strong>01/12 - 31/01</strong>
+                        </div>
+
+                        <div>
+                          🏠 Lưu trú: <strong>01/02 - 30/06</strong>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                </div>
               </aside>
 
               <button className="back-button" onClick={() => (window.location.href = "/rooms")}>
@@ -245,69 +363,13 @@ export default function RoomDetail() {
           </div>
         </div>
 
-        {/* Modal đăng ký */}
-        {showRegisterModal && (
-          <div className="modal-overlay">
-            <div className="modal-box">
-              <h2>Chọn hình thức đăng ký</h2>
-              <p className="muted">Hãy chọn kiểu đăng ký bạn muốn:</p>
-
-              <div className="modal-buttons">
-                <button className="btn btn-primary" disabled={loadingRegister} onClick={registerBySemester}>
-                  Đăng ký theo học kỳ
-                </button>
-
-                {!showCustomForm && (
-                  <button className="btn btn-secondary" onClick={() => setShowCustomForm(true)}>
-                    Đăng ký theo ngày
-                  </button>
-                )}
-
-
-                  {showCustomForm && (
-                    <div className="custom-date-form">
-                      <label>
-                        Ngày bắt đầu:
-                        <input
-                          type="date"
-                          value={customStart}
-                          min={today} // không cho chọn trước hôm nay
-                          onChange={e => setCustomStart(e.target.value)}
-                        />
-                      </label>
-                      <label>
-                        Ngày kết thúc:
-                        <input
-                          type="date"
-                          value={customEnd}
-                          min={customStart || today} // không cho kết thúc trước bắt đầu
-                          onChange={e => setCustomEnd(e.target.value)}
-                        />
-                      </label>
-                      <button
-                        className="btn btn-primary"
-                        disabled={loadingRegister}
-                        onClick={registerCustom}
-                      >
-                        Xác nhận
-                      </button>
-                    </div>
-                  )}
-
-              </div>
-
-              <button className="modal-close" onClick={() => {setShowRegisterModal(false); setShowCustomForm(false);}}>
-                Đóng
-              </button>
-            </div>
-          </div>
-        )}
+        
 
         <Script />
 
         <style>{`
           :root{--bg:#f6f8fb;--card:#fff;--muted:#6b7280;--accent:#4f46e5;--radius:12px;font-family:Inter,sans-serif}
-          .card{background:var(--card);border-radius:var(--radius);box-shadow:0 8px 24px rgba(15,23,42,0.08);overflow:hidden}
+          .card{background:var(--card); max-width: 1000px;border-radius:var(--radius);box-shadow:0 8px 24px rgba(15,23,42,0.08);overflow:hidden}
           .room-header{display:flex;gap:20px;padding:28px;border-bottom:1px solid #eef2ff;align-items:center}
           .photo{width:160px;height:110px;border-radius:10px;background:#dbeafe;display:flex;align-items:center;justify-content:center;font-weight:700;color:#1e293b}
           .meta{flex:1}.meta h1{margin:0;font-size:22px}.meta p{margin:6px 0;color:var(--muted)}
@@ -331,6 +393,59 @@ export default function RoomDetail() {
           .custom-date-form label{display:flex;flex-direction:column;font-size:13px;color:#374151}
           .custom-date-form input{padding:6px 10px;border:1px solid #d1d5db;border-radius:8px}
           @keyframes fadeIn{from {opacity:0; transform:scale(0.94);} to {opacity:1; transform:scale(1);}}
+          .facility-section{
+            margin-top:25px;
+          }
+
+          .facility-title{
+            font-size:18px;
+            font-weight:700;
+            margin-bottom:15px;
+            color:#1e293b;
+          }
+
+          .facility-grid{
+            display:grid;
+            grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+            gap:15px;
+          }
+
+          .facility-card{
+            background:#f8fafc;
+            border:1px solid #e2e8f0;
+            border-radius:12px;
+            padding:15px;
+            display:flex;
+            align-items:center;
+            gap:12px;
+            transition:0.2s;
+          }
+
+          .facility-card:hover{
+            transform:translateY(-2px);
+            box-shadow:0 4px 12px rgba(0,0,0,0.08);
+          }
+
+          .facility-icon{
+            width:45px;
+            height:45px;
+            border-radius:10px;
+            background:#eef2ff;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:20px;
+          }
+
+          .facility-name{
+            font-weight:700;
+            color:#1e293b;
+          }
+
+          .facility-quantity{
+            color:#64748b;
+            font-size:14px;
+          }
         `}</style>
       </div>
     </div>

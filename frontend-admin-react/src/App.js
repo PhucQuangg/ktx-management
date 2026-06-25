@@ -1,5 +1,4 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import IndexPage from "./pages/AdminDashboard";
 import StudentPage from "./pages/student/AdminListStudent"
 import AddStudentPage from "./pages/student/AdminaddStudent"
 import RoomPage from "./pages/room/AdminListRoom"
@@ -11,14 +10,12 @@ import InvoiceList from "./pages/invoice/AdminInvoice.js";
 import Popup from "./components/Popup";
 import Account from "./pages/AdminAccountManagement";
 import Dashboard from "./pages/AdminDashboard"; 
-
-
+import AdminFacility from "./pages/AdminFacility.js";
 function App() {
   return (
     <Router>
-      {/* Các route */}
       <Routes>
-        <Route path="/" element={<IndexPage />} />
+        <Route path="/" element={<Dashboard />} />
         <Route path="/admin/students" element={<StudentPage />} />
         <Route path="/admin/students/add" element={<AddStudentPage />} />
         <Route path="/admin/rooms" element={<RoomPage />} />
@@ -29,6 +26,7 @@ function App() {
         <Route path="/admin/contract-detail" element={<ContractDetail />} />
         <Route path="/admin/invoices" element={<InvoiceList />} />
         <Route path="/admin/dashboard" element={<Dashboard />} />
+        <Route path="/admin/facilities" element={<AdminFacility />} />
       </Routes>
       <Popup />
     </Router>

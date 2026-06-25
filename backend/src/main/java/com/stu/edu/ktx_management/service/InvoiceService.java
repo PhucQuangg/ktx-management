@@ -10,7 +10,9 @@ import com.stu.edu.ktx_management.repository.InvoiceRepository;
 import com.stu.edu.ktx_management.repository.StudentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
 import java.time.*;
 import java.util.List;
 
@@ -22,6 +24,7 @@ public class InvoiceService {
     private final ContractRepository contractRepository;
     private final StudentRepository studentRepository;
     private final EmailService emailService;
+    private final PdfInvoiceService pdfInvoiceService;
 
     private final Double SERVICE_FEE = 350000.0;
 
@@ -157,10 +160,14 @@ public class InvoiceService {
                 .orElseThrow(() -> new RuntimeException("Invoice not found"));
     }
 
+    @Transactional
     public Invoice markAsPaid(Integer id) {
+
         Invoice invoice = getById(id);
         invoice.setStatus(InvoiceStatus.PAID);
-        return invoiceRepository.save(invoice);
+        emailService.sendPaymentSuccessEmail(invoice);
+
+        return invoice;
     }
     public List<InvoiceDTO> filter(String status, String month, String roomName) {
 
@@ -201,5 +208,12 @@ public class InvoiceService {
     }
 
 
+
+    public File generatePdf(Integer id) throws Exception {
+
+        Invoice invoice = getById(id);
+
+        return pdfInvoiceService.generateInvoicePdf(invoice);
+    }
 }
 

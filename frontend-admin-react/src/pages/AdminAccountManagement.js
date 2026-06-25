@@ -25,19 +25,33 @@ export default function DormitoryRegistration() {
 
   const token = localStorage.getItem("admin_token");
 
-  // Lấy dữ liệu sinh viên
   useEffect(() => {
     if (!token) return;
+  
     fetch("http://localhost:8080/api/admin/accounts/all", {
-      headers: { Authorization: `Bearer ${token}` }
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
     })
       .then(res => res.json())
       .then(data => {
-        setStudents(data);
-        setFilteredStudents(data.filter(s => s.approvalStatus === "PENDING"));
+  
+        const studentList = data.filter(
+          s => s.role === "STUDENT"
+        );
+  
+        setStudents(studentList);
+  
+        setFilteredStudents(
+          studentList.filter(
+            s => s.approvalStatus === "PENDING"
+          )
+        );
+  
         setSelectedRole("PENDING");
       })
       .catch(err => console.error(err));
+  
   }, [token]);
 
   useEffect(() => {
@@ -179,7 +193,6 @@ export default function DormitoryRegistration() {
                         <option value="ALL">Tất cả</option>
                         <option value="PENDING">Chờ duyệt</option>
                         <option value="APPROVED">Đã duyệt</option>
-                        <option value="REJECTED">Từ chối</option>
                       </select>
                     </div>
 
@@ -208,7 +221,6 @@ export default function DormitoryRegistration() {
                               <td>
                                 {s.approvalStatus === "PENDING" && <span className="text-warning">Chờ duyệt</span>}
                                 {s.approvalStatus === "APPROVED" && <span className="text-success fw-bold">Đã duyệt</span>}
-                                {s.approvalStatus === "REJECTED" && <span className="text-danger fw-bold">Từ chối</span>}
                               </td>
                             </tr>
                           ))

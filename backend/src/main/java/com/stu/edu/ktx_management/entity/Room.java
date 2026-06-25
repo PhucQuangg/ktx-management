@@ -1,7 +1,6 @@
 package com.stu.edu.ktx_management.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,7 +33,7 @@ public class Room {
     @Column(name = "type")
     private TypeRoom type;
 
-    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "room")
     @JsonIgnore
-    private List<Facility> facilities;
+    private List<RoomFacility> roomFacilities;
 }

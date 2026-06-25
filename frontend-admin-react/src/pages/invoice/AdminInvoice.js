@@ -35,7 +35,55 @@ export default function InvoiceList() {
       .catch((err) => console.error(err));
   };
 
-  // 👉 LOAD INVOICES (CÓ FILTER)
+  const confirmPayment = async (id) => {
+    window.showPopup(
+      "Xác nhận hóa đơn này đã được thanh toán?",
+      false,
+      true,
+      async () => {
+        try {
+          const res = await fetch(
+            `http://localhost:8080/api/admin/invoices/${id}/confirm`,
+            {
+              method: "PUT",
+              headers: {
+                Authorization: "Bearer " + token,
+              },
+            }
+          );
+  
+          const message = await res.text();
+  
+          if (res.ok) {
+            setTimeout(() => {
+              window.showPopup(
+                message || "Xác nhận thanh toán thành công!"
+              );
+  
+              fetchInvoices();
+  
+              if (selectedInvoice) {
+                setSelectedInvoice({
+                  ...selectedInvoice,
+                  status: "PAID",
+                });
+              }
+            }, 200);
+          } else {
+            setTimeout(() => {
+              window.showPopup(
+                message || "Xác nhận thanh toán thất bại!",
+                true
+              );
+            }, 200);
+          }
+        } catch (err) {
+          console.error(err);
+          window.showPopup("Lỗi server!", true);
+        }
+      }
+    );
+  };
   const fetchInvoices = () => {
     let url = "http://localhost:8080/api/admin/invoices?";
 
@@ -61,26 +109,57 @@ export default function InvoiceList() {
       })
       .catch((err) => console.error(err));
   };
+  const printInvoice = async (id) => {
+    try {
+      const res = await fetch(
+        `http://localhost:8080/api/admin/invoices/${id}/pdf`,
+        {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        }
+      );
+  
+      if (!res.ok) {
+        window.showPopup("Không thể tải hóa đơn", true);
+        return;
+      }
+  
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+  
+      const pdfWindow = window.open(url, "_blank");
+  
+      if (!pdfWindow) {
+        window.showPopup(
+          "Trình duyệt đã chặn popup",
+          true
+        );
+        return;
+      }
+  
+      pdfWindow.onload = () => {
+        pdfWindow.focus();
+        pdfWindow.print();
+      };
+  
+    } catch (err) {
+      console.error(err);
+      window.showPopup("Lỗi tải PDF", true);
+    }
+  };
 
-  // 👉 LOAD LẦN ĐẦU
   useEffect(() => {
     if (!token) return;
     fetchInvoices();
     fetchRooms();
   }, [token]);
 
-  // 👉 AUTO FILTER
   useEffect(() => {
     if (!token) return;
     fetchInvoices();
   }, [filterMonth, status, roomName]);
 
-  // 👉 DEFAULT THÁNG HIỆN TẠI CHO FILTER
-  useEffect(() => {
-    const now = new Date();
-    const m = now.toISOString().slice(0, 7);
-    setFilterMonth(m);
-  }, []);
 
   // 👉 TẠO HÓA ĐƠN
   const handleGenerate = async () => {
@@ -427,15 +506,31 @@ export default function InvoiceList() {
 
                           </div>
 
-                          {/* FOOTER */}
                           <div className="modal-footer">
+                          <button
+                            className="btn btn-primary"
+                            onClick={() => printInvoice(selectedInvoice.id)}
+                          >
+                            🖨️ In hóa đơn
+                          </button>
+
+                            {selectedInvoice.status === "UNPAID" && (
+                              <button
+                                className="btn btn-success"
+                                onClick={() => confirmPayment(selectedInvoice.id)}
+                              >
+                                ✓ Xác nhận thanh toán
+                              </button>
+                            )}
+
                             <button
                               className="btn btn-secondary"
                               onClick={() => setSelectedInvoice(null)}
                             >
                               Đóng
                             </button>
-                          </div>
+
+                            </div>
 
                         </div>
                       </div>

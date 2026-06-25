@@ -14,6 +14,7 @@ import {
 } from "recharts";
 
 export default function AdminDashboard() {
+  
 
   const [sidebarColor, setSidebarColor] = useState("bg-white");
 
@@ -27,66 +28,52 @@ export default function AdminDashboard() {
 
   const [tab, setTab] = useState("overview");
 
-  const token = localStorage.getItem("admin_token");
+  const [token, setToken] = useState(null);
 
-  // ================= FETCH =================
   useEffect(() => {
-
-    // DASHBOARD
-    fetch("http://localhost:8080/api/admin/reports/dashboard", {
-      headers: {
-        Authorization: "Bearer " + token,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => setDashboard(data));
-
-    // CHART
-    fetch("http://localhost:8080/api/admin/reports/revenue-chart", {
-      headers: {
-        Authorization: "Bearer " + token,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => setRevenueChart(data));
-
-    // STUDENTS
-    fetch("http://localhost:8080/api/admin/students", {
-      headers: {
-        Authorization: "Bearer " + token,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => setStudents(data));
-
-    // CONTRACTS
-    fetch("http://localhost:8080/api/admin/contracts", {
-      headers: {
-        Authorization: "Bearer " + token,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => setContracts(data));
-
-    // INVOICES
-    fetch("http://localhost:8080/api/admin/invoices", {
-      headers: {
-        Authorization: "Bearer " + token,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => setInvoices(data));
-
-    // ROOMS
-    fetch("http://localhost:8080/api/admin/rooms", {
-      headers: {
-        Authorization: "Bearer " + token,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => setRooms(data));
-
+    setToken(localStorage.getItem("admin_token"));
   }, []);
+  
+
+  useEffect(() => {
+    if (!token) return;
+  
+    loadData();
+  }, [token]);
+  const loadData = async () => {
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
+  
+    const [
+      dashboardRes,
+      chartRes,
+      studentsRes,
+      contractsRes,
+      invoicesRes,
+      roomsRes,
+    ] = await Promise.all([
+      fetch("http://localhost:8080/api/admin/reports/dashboard", { headers }),
+      fetch("http://localhost:8080/api/admin/reports/revenue-chart", { headers }),
+      fetch("http://localhost:8080/api/admin/students", { headers }),
+      fetch("http://localhost:8080/api/admin/contracts", { headers }),
+      fetch("http://localhost:8080/api/admin/invoices", { headers }),
+      fetch("http://localhost:8080/api/admin/rooms", { headers }),
+    ]);
+  
+    setDashboard(await dashboardRes.json());
+    setRevenueChart(await chartRes.json());
+    setStudents(await studentsRes.json());
+    setContracts(await contractsRes.json());
+    setInvoices(await invoicesRes.json());
+    setRooms(await roomsRes.json());
+  };
+  
+  useEffect(() => {
+    if (token) {
+      loadData();
+    }
+  }, [token]);
 
   // ================= FORMAT =================
   const formatMoney = (money) => {
@@ -611,6 +598,7 @@ export default function AdminDashboard() {
           )}
 
         </div>
+        
 
       </main>
 

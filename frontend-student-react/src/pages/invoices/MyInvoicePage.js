@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import Sidebar from "../../components/Sidebar";
 import Header from "../../components/Header";
 import Script from "../../components/Script";
 
 export default function MyInvoices() {
   const [invoices, setInvoices] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   const [month, setMonth] = useState("");
   const [status, setStatus] = useState("");
@@ -13,32 +12,52 @@ export default function MyInvoices() {
   const [selected, setSelected] = useState(null);
 
   const token = sessionStorage.getItem("token");
+
   useEffect(() => {
-    const token = sessionStorage.getItem("token");
     if (!token) {
-      window.location.href = "/login"; 
+      window.location.href = "/login";
     }
-  }, []);
+  }, [token]);
 
   const formatMoney = (amount) =>
     amount?.toLocaleString("vi-VN") + " đ";
 
-  // 👉 LOAD DATA
-  const fetchInvoices = () => {
-    setLoading(true);
-
+  // LOAD DATA
+  const fetchInvoices = useCallback(() => {
     fetch("http://localhost:8080/api/student/invoices", {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     })
-      .then(res => res.json())
-      .then(data => setInvoices(data))
-      .catch(err => console.error(err))
-      .finally(() => setLoading(false));
+      .then((res) => res.json())
+      .then((data) => setInvoices(data))
+      .catch((err) => console.error(err));
+  }, [token]);
+
+  const handlePayment = async (id) => {
+    try {
+      const res = await fetch(
+        `http://localhost:8080/api/payment/create/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const url = await res.text();
+
+      window.location.href = url;
+    } catch (err) {
+      console.error(err);
+      window.showPopup("Payment error");
+    }
   };
 
   useEffect(() => {
     fetchInvoices();
-  }, []);
+  }, [fetchInvoices]);
+
 
   const isOverdue = (inv) =>
     inv.status === "UNPAID" &&
@@ -49,7 +68,6 @@ export default function MyInvoices() {
     (!status || inv.status === status)
   );
 
-  if (loading) return <p style={{ padding: 20 }}>Đang tải hóa đơn...</p>;
 
   return (
     <div>
@@ -125,8 +143,11 @@ export default function MyInvoices() {
                       </button>
 
                       {inv.status === "UNPAID" && (
-                        <button className="btn-pay">
-                          Thanh toán
+                        <button
+                        className="btn-pay"
+                        onClick={() => handlePayment(inv.id)}
+                        >
+                          Thanh toán VNPay
                         </button>
                       )}
                     </div>
@@ -190,8 +211,11 @@ export default function MyInvoices() {
 
             {selected.status === "UNPAID" && (
               <div className="pay-wrapper">
-                <button className="btn-pay">
-                  Thanh toán
+                <button
+                  className="btn-pay"
+                  onClick={() => handlePayment(selected.id)}
+                >
+                  Thanh toán VNPay
                 </button>
               </div>
             )}

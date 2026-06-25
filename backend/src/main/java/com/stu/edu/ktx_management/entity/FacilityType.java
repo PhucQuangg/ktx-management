@@ -5,25 +5,20 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
+@Table(name = "facility_types")
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(name = "facilities")
-public class Facility {
+public class FacilityType {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     private String name;
-
-    private Integer quantity;
-
-    @Column(name = "status")
-    private String status;
-
-    @ManyToOne
-    @JoinColumn(name = "room_id")
-    private Room room;
+    @OneToMany(mappedBy = "facilityType")
+    private List<RoomFacility> roomFacilities;
 }

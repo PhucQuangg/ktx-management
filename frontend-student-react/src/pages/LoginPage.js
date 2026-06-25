@@ -37,7 +37,12 @@ function Login() {
         sessionStorage.setItem("role", data.role);
         window.location.href = `http://localhost:3000/?fromLogin=true&role=${data.role}`;
       } else if (data.role === "ADMIN") {
-        window.location.href = `http://localhost:3001/?token=${data.token}`;
+        if (data.role === "ADMIN") {
+          sessionStorage.setItem("admin_token", data.token);
+          sessionStorage.setItem("role", data.role);
+        
+          window.location.href = `http://localhost:3001/admin/dashboard?token=${data.token}`;;
+        }
       } else {
         setError("Không xác định được vai trò tài khoản!");
       }

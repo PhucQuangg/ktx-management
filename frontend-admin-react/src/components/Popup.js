@@ -10,7 +10,12 @@ function Popup() {
 
   // Tạo window.showPopup toàn cục
   useEffect(() => {
-    window.showPopup = (msg, error = false, confirm = false, onConfirm = null) => {
+    window.showPopup = (
+      msg,
+      error = false,
+      confirm = false,
+      onConfirm = null
+    ) => {
       setMessage(msg);
       setIsError(error);
       setIsConfirm(confirm);

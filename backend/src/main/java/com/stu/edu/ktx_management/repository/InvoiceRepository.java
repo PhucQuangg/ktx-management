@@ -8,11 +8,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface InvoiceRepository extends JpaRepository<Invoice, Integer> {
 
     List<Invoice> findByStudentId(Integer studentId);
-
+    Optional<Invoice> findByTxnRef(String txnRef);
     List<Invoice> findByStatus(InvoiceStatus status);
 
     List<Invoice> findByMonth(String month);
@@ -73,16 +74,16 @@ WHERE i.status = com.stu.edu.ktx_management.entity.InvoiceStatus.UNPAID
     Long getTotalUnpaidAmount();
 
     @Query("""
-    SELECT new com.stu.edu.ktx_management.dto.RevenueChartDTO(
-        i.month,
-        SUM(i.totalAmount)
+            SELECT new com.stu.edu.ktx_management.dto.RevenueChartDTO(
+            i.month,
+            SUM(i.totalAmount)
     )
-    FROM Invoice i
-    WHERE i.status = 'PAID'
-    GROUP BY i.month
-    ORDER BY i.month
-    """)
-    List<RevenueChartDTO> getRevenueByMonth();
+            FROM Invoice i
+            WHERE i.status = com.stu.edu.ktx_management.entity.InvoiceStatus.PAID
+            GROUP BY i.month
+            ORDER BY i.month
+            """)
+List<RevenueChartDTO> getRevenueByMonth();
 
 
 }

@@ -58,7 +58,7 @@
                     }))
                     .csrf(csrf -> csrf.disable())
                     .authorizeHttpRequests(auth -> auth
-                            .requestMatchers("/", "/login", "/register", "/forgot-password", "/api/auth/**").permitAll()
+                            .requestMatchers("/", "/login", "/register", "/forgot-password", "/api/auth/**","/api/payment/**").permitAll()
                             .requestMatchers("/admin/**", "/api/admin/**").hasRole("ADMIN")
                             .requestMatchers("/student/**", "/api/student/**").hasAnyRole("STUDENT", "ADMIN")
                             .anyRequest().authenticated()
