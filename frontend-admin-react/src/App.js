@@ -11,11 +11,13 @@ import Popup from "./components/Popup";
 import Account from "./pages/AdminAccountManagement";
 import Dashboard from "./pages/AdminDashboard"; 
 import AdminFacility from "./pages/AdminFacility.js";
+import NotificationList from "./pages/notification/NotificationList.js";
+import IndexPage from "./pages/IndexPage.js";
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Dashboard />} />
+        <Route path="/" element={<IndexPage />} />
         <Route path="/admin/students" element={<StudentPage />} />
         <Route path="/admin/students/add" element={<AddStudentPage />} />
         <Route path="/admin/rooms" element={<RoomPage />} />
@@ -27,6 +29,7 @@ function App() {
         <Route path="/admin/invoices" element={<InvoiceList />} />
         <Route path="/admin/dashboard" element={<Dashboard />} />
         <Route path="/admin/facilities" element={<AdminFacility />} />
+        <Route path="/admin/notifications" element={<NotificationList />} />
       </Routes>
       <Popup />
     </Router>

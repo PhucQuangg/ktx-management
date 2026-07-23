@@ -22,7 +22,11 @@ export default function InvoiceList() {
   const [rooms, setRooms] = useState([]);
   const [sidebarColor, setSidebarColor] = useState("bg-white");
   const token = localStorage.getItem("admin_token");
-
+  useEffect(() => {
+    if (!token) {
+      window.location.href("http://localhost:3000/login");
+    }
+  }, [token]);
   // 👉 LOAD ROOMS
   const fetchRooms = () => {
     fetch("http://localhost:8080/api/admin/rooms", {

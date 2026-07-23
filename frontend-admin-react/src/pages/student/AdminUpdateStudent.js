@@ -11,7 +11,12 @@ export default function UpdateStudent() {
   const studentId = params.get("id");
 
   const token = localStorage.getItem("admin_token");
-
+  
+  useEffect(() => {
+    if (!token) {
+      window.location.href("http://localhost:3000/login");
+    }
+  }, [token]);
   const [form, setForm] = useState({
     fullName: "",
     username: "",
@@ -111,7 +116,7 @@ export default function UpdateStudent() {
       <main className="main-content position-relative max-height-vh-100 h-100 border-radius-lg">
         <div className="container-fluid py-4">
           <div className="card p-4">
-            <h3 className="text-center">Cập nhật sinh viên</h3>
+            <h3 className="text-center">Thông tin sinh viên</h3>
 
             <div className="row">
               {/* giống UI cũ nhưng thêm readOnly */}

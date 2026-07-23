@@ -84,52 +84,69 @@ export default function DormitoryRegistration() {
   };
 
   return (
-    <div className="wrapper">
-      <Header />
-      <Sidebar />
+  <div className="wrapper">
+    <Header />
+    <Sidebar />
 
+    <div
+      className="content-wrapper"
+      style={{
+        marginTop: "50px",
+        background: "#FFF8E7",
+        minHeight: "100vh",
+        padding: "30px 15px",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "flex-start",
+        overflowX: "hidden",
+      }}
+    >
       <div
-        className="content-wrapper"
         style={{
-          background: "#FFF8E7",
-
-          minHeight: "100vh",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",        }}
+          width: "100%",
+          maxWidth: "950px",
+        }}
       >
         <div
           className="form-container"
           style={{
-            background: "rgba(255,255,255,0.2)",
+            background: "#fff",
+            borderRadius: "16px",
             padding: "40px",
-            borderRadius: "10px",
-            width: "70%",
-            maxWidth: "900px",
-            boxShadow: "0 0 20px rgba(0,0,0,0.1)",
-            fontFamily: "Arial",
+            boxShadow: "0 10px 30px rgba(0,0,0,.12)",
+            margin: "0 auto",
           }}
         >
           <h2
             style={{
               textAlign: "center",
-              marginBottom: "30px",
-              fontWeight: "600",
-              color: "#2d4f7c",
+              fontWeight: "700",
+              color: "#2c3e50",
+              marginBottom: "35px",
+              borderBottom: "2px solid #4BA3FF",
+              paddingBottom: "12px",
             }}
           >
-            Biểu mẫu đăng ký nội trú ký túc xá
+            <i
+              className="fa fa-edit"
+              style={{
+                color: "#4BA3FF",
+                marginRight: "10px",
+              }}
+            ></i>
+
+            Đăng ký nội trú ký túc xá
           </h2>
 
           <form onSubmit={handleSubmit}>
             {/* Row 1 */}
             <div className="row">
-              <div className="col-sm-6">
+              <div className="col-md-6">
                 <div className="form-group">
                   <label>Họ và Tên</label>
                   <input
                     type="text"
-                    className="form-control custom-input"
+                    className="form-control"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     disabled={disabled}
@@ -138,12 +155,12 @@ export default function DormitoryRegistration() {
                 </div>
               </div>
 
-              <div className="col-sm-6">
+              <div className="col-md-6">
                 <div className="form-group">
                   <label>MSSV</label>
                   <input
                     type="text"
-                    className="form-control custom-input"
+                    className="form-control"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     disabled={disabled}
@@ -155,12 +172,12 @@ export default function DormitoryRegistration() {
 
             {/* Row 2 */}
             <div className="row">
-              <div className="col-sm-6">
+              <div className="col-md-6">
                 <div className="form-group">
                   <label>Ngày sinh</label>
                   <input
                     type="date"
-                    className="form-control custom-input"
+                    className="form-control"
                     value={dateOfBirth}
                     onChange={(e) => setDateOfBirth(e.target.value)}
                     disabled={disabled}
@@ -169,12 +186,12 @@ export default function DormitoryRegistration() {
                 </div>
               </div>
 
-              <div className="col-sm-6">
+              <div className="col-md-6">
                 <div className="form-group">
                   <label>Lớp</label>
                   <input
                     type="text"
-                    className="form-control custom-input"
+                    className="form-control"
                     value={className}
                     onChange={(e) => setClassName(e.target.value)}
                     disabled={disabled}
@@ -189,7 +206,7 @@ export default function DormitoryRegistration() {
               <label>Email</label>
               <input
                 type="email"
-                className="form-control custom-input"
+                className="form-control"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={disabled}
@@ -202,7 +219,7 @@ export default function DormitoryRegistration() {
               <label>Số điện thoại</label>
               <input
                 type="text"
-                className="form-control custom-input"
+                className="form-control"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 disabled={disabled}
@@ -212,48 +229,73 @@ export default function DormitoryRegistration() {
 
             {/* Gender */}
             <div className="form-group">
-              <label>Giới tính</label> <br />
-              <label className="radio-inline">
-                <input
-                  type="radio"
-                  name="gender"
-                  checked={gender === false}
-                  onChange={() => setGender(false)}
-                  disabled={disabled}
-                />{" "}
-                Nam
-              </label>
-              <label className="radio-inline" style={{ marginLeft: "20px" }}>
-                <input
-                  type="radio"
-                  name="gender"
-                  checked={gender === true}
-                  onChange={() => setGender(true)}
-                  disabled={disabled}
-                />{" "}
-                Nữ
-              </label>
+              <label>Giới tính</label>
+
+              <div style={{ marginTop: "8px" }}>
+                <label className="radio-inline">
+                  <input
+                    type="radio"
+                    name="gender"
+                    checked={gender === false}
+                    onChange={() => setGender(false)}
+                    disabled={disabled}
+                  />{" "}
+                  Nam
+                </label>
+
+                <label
+                  className="radio-inline"
+                  style={{ marginLeft: "25px" }}
+                >
+                  <input
+                    type="radio"
+                    name="gender"
+                    checked={gender === true}
+                    onChange={() => setGender(true)}
+                    disabled={disabled}
+                  />{" "}
+                  Nữ
+                </label>
+              </div>
             </div>
 
-            <button type="submit" className="btn submit-btn" style={submitStyle} disabled={disabled}>
+            <button
+              type="submit"
+              className="btn"
+              style={submitStyle}
+              disabled={disabled}
+            >
               Gửi đăng ký
             </button>
 
             {message && (
-              <div className="mt-3 text-center fw-bold" style={{ color: messageColor }}>
+              <div
+                style={{
+                  textAlign: "center",
+                  marginTop: "20px",
+                  color: messageColor,
+                  fontWeight: "600",
+                }}
+              >
                 {message}
               </div>
             )}
           </form>
         </div>
       </div>
-
-      <Script />
     </div>
-  );
+
+    <Script />
+    <style>{`
+        .content-wrapper {
+          background: #FFF8E7 !important;
+          min-height: 100vh !important;
+      }
+      `}</style>
+  </div>
+);
 }
 
-/* Style tách riêng giống HTML */
 const inputStyle = {
   border: "none",
   borderBottom: "1px solid #555",

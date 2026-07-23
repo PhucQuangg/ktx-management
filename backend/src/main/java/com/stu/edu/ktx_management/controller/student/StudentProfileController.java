@@ -1,4 +1,4 @@
-package com.stu.edu.ktx_management.controller;
+package com.stu.edu.ktx_management.controller.student;
 
 import com.stu.edu.ktx_management.dto.PasswordChangeRequest;
 import com.stu.edu.ktx_management.dto.StudentProfileDTO;

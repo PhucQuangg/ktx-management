@@ -1,0 +1,9 @@
+
+`	java:S112"FDefine and throw a dedicated exception instead of using a generic one.(Ê°ƒÿûÿÿÿÿ
+b
+java:S1128"@Remove this unused import 'org.springframework.http.HttpStatus'.(íŸ¤Šúÿÿÿÿ8¡ÒÒê3
+f
+java:S1128	"DRemove this unused import 'org.springframework.http.ResponseEntity'.(¶¯ø¦úÿÿÿÿ8¡ÒÒê3
+h
+java:S1128
+"FRemove this unused import 'org.springframework.stereotype.Controller'.(øŠ—Öùÿÿÿÿ8¡ÒÒê3

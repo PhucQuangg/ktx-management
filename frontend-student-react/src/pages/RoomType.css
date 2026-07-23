@@ -4,7 +4,6 @@
   flex-direction: row;
   justify-content: center; 
   gap: 50px;              
-  margin-top: 70px;
   flex-wrap: wrap;     
 }
 .content-wrapper {
@@ -174,4 +173,51 @@
 
 .back-button:hover {
   background-color: #0652dd;
+}
+.room-page{
+  padding-top:90px;
+  padding-bottom:40px;
+  min-height:100vh;
+}
+
+
+.room-page-title{
+  text-align:center;
+  margin-bottom:45px;
+}
+
+.room-page-title h2{
+  margin-top:15px;
+  margin-bottom:10px;
+  font-size:34px;
+  font-weight:700;
+  color:#23486a;
+}
+
+.room-page-title i{
+  margin-right:10px;
+  color:#3ba6ff;
+}
+
+.room-page-title p{
+  color:#777;
+  font-size:16px;
+  margin-top:5px;
+}
+
+.title-line{
+  display:block;
+  width:90px;
+  height:5px;
+  border-radius:50px;
+  background:#4BA3FF;
+  margin:auto;
+}
+
+
+.room-list-title{
+  text-align:center;
+  font-weight:700;
+  margin-bottom:30px;
+  color:#23486a;
 }

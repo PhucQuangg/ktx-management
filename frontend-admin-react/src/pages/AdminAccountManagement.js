@@ -24,10 +24,13 @@ export default function DormitoryRegistration() {
   });
 
   const token = localStorage.getItem("admin_token");
+  useEffect(() => {
+    if (!token) {
+      window.location.href("http://localhost:3000/login");
+    }
+  }, [token]);
 
   useEffect(() => {
-    if (!token) return;
-  
     fetch("http://localhost:8080/api/admin/accounts/all", {
       headers: {
         Authorization: `Bearer ${token}`

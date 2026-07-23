@@ -16,14 +16,6 @@ function Script() {
       window.location.href = "http://localhost:3000/login";
       return;
     }
-    
-
-    fetch("http://localhost:8080/api/admin/dashboard", {
-      headers: { Authorization: "Bearer " + savedToken },
-    })
-      .then((r) => r.json())
-      .then((data) => console.log("Admin data:", data))
-      .catch((e) => console.error("Lỗi:", e));
   }, []);
 
   // --- KHỞI TẠO CHART ---

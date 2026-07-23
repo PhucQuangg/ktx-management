@@ -1,6 +1,15 @@
 export default function Header() {
     return (
-      <header className="main-header">
+      <header
+      className="main-header"
+      style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100%",
+          zIndex: 1030
+      }}
+  >
         <a href="/" className="logo">
         <span className="logo-mini"><b>STU</b></span>
         <span className="logo-lg">

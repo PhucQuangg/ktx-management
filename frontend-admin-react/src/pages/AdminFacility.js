@@ -26,10 +26,13 @@ export default function AdminListFacility() {
 
   const navigate = useNavigate();
   const token = localStorage.getItem("admin_token");
-
+  useEffect(() => {
+    if (!token) {
+      window.location.href("http://localhost:3000/login");
+    }
+  }, [token]);
   // LOAD DATA
   useEffect(() => {
-    if (!token) return;
 
     fetch("http://localhost:8080/api/admin/facilities", {
       headers: {
@@ -543,92 +546,35 @@ export default function AdminListFacility() {
       <Script />
       <style>{`
           .modern-modal-overlay{
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,.55);
-            backdrop-filter: blur(3px);
-            display:flex;
-            justify-content:center;
-            align-items:center;
-            z-index:9999;
-          }
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.55);
+  backdrop-filter: blur(3px);
+  z-index: 99999;
+}
 
-          .modern-modal{
-            width:650px;
-            max-width:95%;
-            background:#fff;
-            border-radius:20px;
-            overflow:hidden;
-            box-shadow:0 20px 50px rgba(0,0,0,.25);
-            animation:fadeIn .25s ease;
-          }
+.modern-modal{
+  position: fixed;
 
-          .modal-header-custom{
-            display:flex;
-            align-items:center;
-            gap:15px;
-            padding:25px;
-            background:linear-gradient(
-              135deg,
-              #212529,
-              #343a40
-            );
-          }
 
-          .modal-logo{
-            width:70px;
-            height:70px;
-            object-fit:contain;
-            background:white;
-            border-radius:50%;
-            padding:5px;
-          }
 
-          .modal-title{
-            color:white;
-            margin:0;
-            font-size:24px;
-            font-weight:700;
-          }
+  width: 650px;
+  max-width: 95%;
 
-          .modal-subtitle{
-            color:#d6d6d6;
-            margin:0;
-            font-size:14px;
-          }
+  background: white;
+  border-radius: 20px;
 
-          .modal-body-custom{
-            padding:25px;
-          }
+  overflow: hidden;
 
-          .modal-actions{
-            display:flex;
-            justify-content:flex-end;
-            gap:10px;
-            margin-top:25px;
-          }
-
-          .form-control,
-          .form-select{
-            border-radius:10px;
-            height:45px;
-          }
-
-          .form-control:focus,
-          .form-select:focus{
-            box-shadow:none;
-            border-color:#198754;
-          }
-
-          @keyframes fadeIn{
-            from{
-              opacity:0;
-              transform:translateY(-15px);
-            }
-            to{
-              opacity:1;
-              transform:translateY(0);
-            }
+  box-shadow: 0 20px 50px rgba(0,0,0,.25);
+  textarea.form-control{
+  min-height:180px;
+  resize:none;
+  border:1px solid #ced4da !important;
+  border-radius:10px;
+  padding:12px;
+  line-height:1.6;
+}
           }
           `}</style>
     </div>

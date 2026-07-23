@@ -17,7 +17,11 @@ export default function ContractDetail() {
   const contractId = params.get("id");
 
   const token = localStorage.getItem("admin_token");
-
+  useEffect(() => {
+    if (!token) {
+      window.location.href("http://localhost:3000/login");
+    }
+  }, [token]);
   // LOAD DATA
   useEffect(() => {
     if (!contractId) return;
@@ -98,7 +102,7 @@ export default function ContractDetail() {
             {/* HEADER */}
             <div className="d-flex justify-content-between text-center mb-4">
               <div>
-                <strong>TRƯỜNG ĐẠI HỌC ABC</strong><br />
+                <strong>TRƯỜNG ĐẠI HỌC CÔNG NGHỆ SÀI GÒN</strong><br />
                 <span>Ký túc xá sinh viên</span>
               </div>
 

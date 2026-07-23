@@ -300,6 +300,24 @@ public class ContractService {
         return contract;
     }
 
+    public Contract cancelByStudent(Integer contractId, String reason) {
+
+        Contract contract = contractRepository.findById(contractId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy hợp đồng"));
+
+        if (contract.getStatus() != ContractStatus.PENDING) {
+            throw new RuntimeException("Chỉ được hủy hợp đồng đang chờ duyệt");
+        }
+
+        contract.setStatus(ContractStatus.CANCELED);
+
+        contractRepository.save(contract);
+
+        emailService.sendCancelContract(contract, reason);
+
+        return contract;
+    }
+
     // ================= EXPIRE =================
     public void expireContracts() {
         LocalDate today = LocalDate.now();

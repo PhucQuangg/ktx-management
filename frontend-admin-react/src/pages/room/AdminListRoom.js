@@ -16,6 +16,12 @@ export default function RoomList() {
   const [roomStatus, setRoomStatus] = useState("ALL");
 
   useEffect(() => {
+    if (!token) {
+      window.location.href("http://localhost:3000/login");
+    }
+  }, [token]);
+  
+  useEffect(() => {
     if (!token) return;
 
     fetch("http://localhost:8080/api/admin/rooms", {

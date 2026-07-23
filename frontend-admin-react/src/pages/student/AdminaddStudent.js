@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, {useEffect, useState } from "react";
 import Sidebar from "../../components/Sidebar";
 import SettingsPanel from "../../components/SettingsPanel";
 import Script from "../../components/Script";
@@ -22,7 +22,11 @@ export default function AddStudent() {
   });
 
   const token = localStorage.getItem("admin_token");
-
+  useEffect(() => {
+    if (!token) {
+      window.location.href("http://localhost:3000/login");
+    }
+  }, [token]);
   // 👉 handle change
   const handleChange = (e) => {
     const { name, value, type } = e.target;

@@ -13,7 +13,6 @@ import java.util.Map;
 @RequestMapping("/api/payment")
 @RequiredArgsConstructor
 public class PaymentController {
-
     private final VnpayService vnpayService;
 
     @GetMapping("/create/{invoiceId}")

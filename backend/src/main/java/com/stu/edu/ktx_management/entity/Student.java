@@ -31,8 +31,8 @@ public class Student {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "approval_status")
-
     private ApprovalStatus approvalStatus = ApprovalStatus.PENDING;
+
     @Enumerated(EnumType.STRING)
     private Role role;
 

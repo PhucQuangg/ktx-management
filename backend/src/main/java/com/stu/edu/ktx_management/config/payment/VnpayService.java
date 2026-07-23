@@ -157,7 +157,6 @@ public class VnpayService {
 
         if (invoice != null && "00".equals(responseCode)) {
             invoice.setStatus(InvoiceStatus.PAID);
-            emailService.sendPaymentSuccessEmail(invoice);
             invoiceRepository.save(invoice);
         }
     }
@@ -236,6 +235,7 @@ public class VnpayService {
         if (invoice.getStatus() != InvoiceStatus.PAID) {
             invoice.setStatus(InvoiceStatus.PAID);
             invoiceRepository.save(invoice);
+            emailService.sendPaymentSuccessEmail(invoice);
         }
 
         return "SUCCESS";

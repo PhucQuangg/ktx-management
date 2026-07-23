@@ -74,13 +74,21 @@ export default function MyInvoices() {
       <Header />
       <Sidebar />
 
-      <div className="content-wrapper">
+      <div
+        className="content-wrapper"
+        style={{
+          paddingTop: "50px",      
+          paddingBottom: "40px",
+          minHeight: "100vh",
+        }}
+      >
+        
       <div className="container-fluid py-4 content-body">
 
         {/* 👉 LIST */}
         {!selected && (
           <>
-            <h3 style={{fontWeight:"bold"}}>Hóa đơn của tôi</h3>
+            <h3 className="page-title">Hóa đơn của tôi</h3>
 
             <div className="filter-bar">
               <input
@@ -360,6 +368,25 @@ export default function MyInvoices() {
         font-weight: bold;
         color: #ef4444;
       }
+        .page-title {
+      text-align: center;
+      font-size: 34px;
+      font-weight: 700;
+      color: #2c3e50;
+      margin: 20px 0 35px;
+      position: relative;
+      letter-spacing: 0.5px;
+    }
+
+    .page-title::after {
+      content: "";
+      display: block;
+      width: 90px;
+      height: 4px;
+      background: linear-gradient(90deg, #4BA3FF, #00C6FF);
+      margin: 14px auto 0;
+      border-radius: 50px;
+    }
       `}</style>
     </div>
   );

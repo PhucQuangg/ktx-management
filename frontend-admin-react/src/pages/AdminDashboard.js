@@ -28,18 +28,15 @@ export default function AdminDashboard() {
 
   const [tab, setTab] = useState("overview");
 
-  const [token, setToken] = useState(null);
-
-  useEffect(() => {
-    setToken(localStorage.getItem("admin_token"));
-  }, []);
+  const token = localStorage.getItem("admin_token");
   
-
   useEffect(() => {
-    if (!token) return;
-  
+    if (!token) {
+      window.location.href("http://localhost:3000/login");
+    }
     loadData();
   }, [token]);
+
   const loadData = async () => {
     const headers = {
       Authorization: `Bearer ${token}`,
@@ -80,21 +77,7 @@ export default function AdminDashboard() {
     return Number(money || 0).toLocaleString("vi-VN") + " VNĐ";
   };
 
-  // ================= EXPORT EXCEL =================
-  const exportExcel = () => {
-    window.open(
-      "http://localhost:8080/api/admin/reports/export/excel",
-      "_blank"
-    );
-  };
 
-  // ================= EXPORT PDF =================
-  const exportPDF = () => {
-    window.open(
-      "http://localhost:8080/api/admin/reports/export/pdf",
-      "_blank"
-    );
-  };
 
   return (
     <div className="g-sidenav-show">
@@ -184,23 +167,6 @@ export default function AdminDashboard() {
                     Biểu đồ doanh thu theo tháng
                   </h6>
 
-                  <div className="d-flex gap-2">
-
-                    <button
-                      className="btn btn-success btn-sm"
-                      onClick={exportExcel}
-                    >
-                      Xuất Excel
-                    </button>
-
-                    <button
-                      className="btn btn-danger btn-sm"
-                      onClick={exportPDF}
-                    >
-                      Xuất PDF
-                    </button>
-
-                  </div>
 
                 </div>
 

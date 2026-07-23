@@ -34,7 +34,7 @@ export default function ContractList() {
   const token = localStorage.getItem("admin_token");
 
   useEffect(() => {
-    if (!token) return;
+    if (!token)  window.location.href("http://localhost:3000/login");;
     reload();
   }, [token]);
 

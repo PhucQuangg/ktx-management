@@ -26,9 +26,8 @@ const Sidebar = ({ color }) => {
         ></i>
         <a
           className="navbar-brand px-4 py-3 m-0"
-          href="https://demos.creative-tim.com/material-dashboard/pages/dashboard"
-          target="_blank"
           rel="noopener noreferrer"
+          href="/"
         >
           <img
             src="/assets/images/logo-ct-dark.png"
@@ -52,7 +51,7 @@ const Sidebar = ({ color }) => {
           <li className="nav-item">
             <a className="nav-link text-dark" href="/admin/accounts">
               <i className="material-symbols-rounded opacity-5">table_view</i>
-              <span className="nav-link-text ms-1">Quản lý tài khoản</span>
+              <span className="nav-link-text ms-1">Quản lý đăng ký nội trú</span>
             </a>
           </li>
      
@@ -84,6 +83,12 @@ const Sidebar = ({ color }) => {
             <a className="nav-link text-dark" href="/admin/invoices">
               <i className="material-symbols-rounded opacity-5">receipt_long</i>
               <span className="nav-link-text ms-1">Quản lý hóa đơn</span>
+            </a>
+          </li>
+          <li className="nav-item">
+            <a className="nav-link text-dark" href="/admin/notifications">
+              <i className="material-symbols-rounded opacity-5">receipt_long</i>
+              <span className="nav-link-text ms-1">Quản lý thông báo</span>
             </a>
           </li>
         

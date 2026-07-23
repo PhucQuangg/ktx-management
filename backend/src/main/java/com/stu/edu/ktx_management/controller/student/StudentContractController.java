@@ -1,4 +1,4 @@
-package com.stu.edu.ktx_management.controller;
+package com.stu.edu.ktx_management.controller.student;
 
 
 import com.stu.edu.ktx_management.entity.Contract;
@@ -51,7 +51,7 @@ public class StudentContractController {
 
     @PostMapping("/cancel/{id}")
     public ResponseEntity<?> cancel(@PathVariable Integer id,@RequestParam String reason) {
-        return ResponseEntity.ok(contractService.cancelContract(id,reason));
+        return ResponseEntity.ok(contractService.cancelByStudent(id,reason));
     }
 }
 

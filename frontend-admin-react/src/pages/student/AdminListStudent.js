@@ -14,11 +14,14 @@ export default function UserList() {
 
   const navigate = useNavigate();
   const token = localStorage.getItem("admin_token");
+  
+  useEffect(() => {
+    if (!token) {
+      window.location.href("http://localhost:3000/login");
+    }
+  }, [token]);
 
-  // 👉 LOAD DATA
-  // 👉 LOAD DATA
 const fetchStudents = () => {
-  if (!token) return;
 
   let url = `http://localhost:8080/api/admin/students/filter?fullName=${fullName}&className=${className}`;
 
