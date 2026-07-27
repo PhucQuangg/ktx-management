@@ -28,12 +28,9 @@ export default function AdminDashboard() {
 
   const [tab, setTab] = useState("overview");
 
-  const token = localStorage.getItem("admin_token");
+  const token = sessionStorage.getItem("admin_token");
   
   useEffect(() => {
-    if (!token) {
-      window.location.href("http://localhost:3000/login");
-    }
     loadData();
   }, [token]);
 

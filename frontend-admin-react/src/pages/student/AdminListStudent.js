@@ -13,13 +13,8 @@ export default function UserList() {
   const [className, setClassName] = useState("");
 
   const navigate = useNavigate();
-  const token = localStorage.getItem("admin_token");
+  const token = sessionStorage.getItem("admin_token");
   
-  useEffect(() => {
-    if (!token) {
-      window.location.href("http://localhost:3000/login");
-    }
-  }, [token]);
 
 const fetchStudents = () => {
 

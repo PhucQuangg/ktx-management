@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Sidebar from "../components/Sidebar";
 import SettingsPanel from "../components/SettingsPanel";
 import Script from "../components/Script";
@@ -6,13 +6,6 @@ import Script from "../components/Script";
 export default function IndexPage() {
   const [sidebarColor, setSidebarColor] = useState("bg-white");
 
-  useEffect(() => {
-    const token = localStorage.getItem("admin_token");
-
-    if (!token) {
-      window.location.href = "/login";
-    }
-  }, []);
 
   const modules = [
     {

@@ -12,17 +12,11 @@ export default function RoomList() {
   const [sidebarColor, setSidebarColor] = useState("bg-white");
   const [showAddModal, setShowAddModal] = useState(false);
   const navigate = useNavigate();
-  const token = localStorage.getItem("admin_token");
+  const token = sessionStorage.getItem("admin_token");
   const [roomStatus, setRoomStatus] = useState("ALL");
 
-  useEffect(() => {
-    if (!token) {
-      window.location.href("http://localhost:3000/login");
-    }
-  }, [token]);
   
   useEffect(() => {
-    if (!token) return;
 
     fetch("http://localhost:8080/api/admin/rooms", {
       headers: { Authorization: "Bearer " + token },

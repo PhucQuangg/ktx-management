@@ -25,12 +25,7 @@ export default function AdminListFacility() {
   });
 
   const navigate = useNavigate();
-  const token = localStorage.getItem("admin_token");
-  useEffect(() => {
-    if (!token) {
-      window.location.href("http://localhost:3000/login");
-    }
-  }, [token]);
+  const token = sessionStorage.getItem("admin_token");
   // LOAD DATA
   useEffect(() => {
 

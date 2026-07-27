@@ -22,13 +22,7 @@ export default function UpdateRoom() {
 
   const params = new URLSearchParams(window.location.search);
   const roomId = params.get("id");
-  const token = localStorage.getItem("admin_token");
-
-  useEffect(() => {
-    if (!token) {
-      window.location.href("http://localhost:3000/login");
-    }
-  }, [token]);
+  const token = sessionStorage.getItem("admin_token");
   
   useEffect(() => {
     if (!roomId) return;

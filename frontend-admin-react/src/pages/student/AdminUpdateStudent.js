@@ -10,13 +10,9 @@ export default function UpdateStudent() {
   const params = new URLSearchParams(window.location.search);
   const studentId = params.get("id");
 
-  const token = localStorage.getItem("admin_token");
+  const token = sessionStorage.getItem("admin_token");
   
-  useEffect(() => {
-    if (!token) {
-      window.location.href("http://localhost:3000/login");
-    }
-  }, [token]);
+
   const [form, setForm] = useState({
     fullName: "",
     username: "",

@@ -31,10 +31,9 @@ export default function ContractList() {
     customReason: ""
   });
 
-  const token = localStorage.getItem("admin_token");
+  const token = sessionStorage.getItem("admin_token");
 
   useEffect(() => {
-    if (!token)  window.location.href("http://localhost:3000/login");;
     reload();
   }, [token]);
 

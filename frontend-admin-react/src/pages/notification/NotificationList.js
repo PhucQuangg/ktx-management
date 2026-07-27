@@ -23,14 +23,8 @@ export default function NotificationList() {
   const [keyword, setKeyword] = useState("");
 
   const navigate = useNavigate();
-  const token = localStorage.getItem("admin_token");
+  const token = sessionStorage.getItem("admin_token");
   
-  useEffect(() => {
-    if (!token) {
-      window.location.href("http://localhost:3000/login");
-    }
-  }, [token]);
-
   const fetchNotifications = () => {
     fetch("http://localhost:8080/api/admin/notifications", {
       method: "GET",

@@ -23,12 +23,7 @@ export default function DormitoryRegistration() {
     customReason: ""
   });
 
-  const token = localStorage.getItem("admin_token");
-  useEffect(() => {
-    if (!token) {
-      window.location.href("http://localhost:3000/login");
-    }
-  }, [token]);
+  const token = sessionStorage.getItem("admin_token");
 
   useEffect(() => {
     fetch("http://localhost:8080/api/admin/accounts/all", {
