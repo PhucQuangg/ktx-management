@@ -149,6 +149,7 @@ export default function AddStudent() {
                   <label className="fw-bold">Ngày sinh</label>
                   <input
                     type="date"
+                    max={new Date().toISOString().split("T")[0]}
                     name="dateOfBirth"
                     className="form-control border border-dark"
                     value={form.dateOfBirth}

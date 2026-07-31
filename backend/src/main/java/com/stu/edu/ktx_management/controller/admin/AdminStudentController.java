@@ -26,9 +26,7 @@ public class AdminStudentController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> getAllStudents() {
         try {
-            return ResponseEntity.ok(studentService.getAllStudents().stream()
-            .filter(s -> s.getApprovalStatus() == ApprovalStatus.APPROVED)
-            .filter(s -> s.getRole() == Role.STUDENT));
+            return ResponseEntity.ok(studentService.getAllStudents());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Lỗi khi tải danh sách sinh viên: " + e.getMessage());

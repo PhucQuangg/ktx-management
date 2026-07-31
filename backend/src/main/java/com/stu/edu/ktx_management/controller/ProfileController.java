@@ -1,7 +1,7 @@
-package com.stu.edu.ktx_management.controller.student;
+package com.stu.edu.ktx_management.controller;
 
 import com.stu.edu.ktx_management.dto.PasswordChangeRequest;
-import com.stu.edu.ktx_management.dto.StudentProfileDTO;
+import com.stu.edu.ktx_management.dto.ProfileDTO;
 import com.stu.edu.ktx_management.entity.Student;
 import com.stu.edu.ktx_management.service.ForgotPasswordService;
 import com.stu.edu.ktx_management.service.StudentService;
@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 
 @RestController
-@RequestMapping("/api/student")
-public class StudentProfileController {
+@RequestMapping("/api")
+public class ProfileController {
 
     @Autowired
     private StudentService studentService;
@@ -24,16 +24,14 @@ public class StudentProfileController {
     private ForgotPasswordService passwordService;
 
     @GetMapping("/profile")
-    @PreAuthorize("hasRole('STUDENT')")
-    public StudentProfileDTO getMyProfile(@AuthenticationPrincipal UserDetails userDetails) {
+    public ProfileDTO getMyProfile(@AuthenticationPrincipal UserDetails userDetails) {
         String username = userDetails.getUsername();
         return studentService.getStudentByUsername(username);
     }
 
     @PutMapping("/profile/update")
-    @PreAuthorize("hasRole('STUDENT')")
     public Student updateMyProfile(@AuthenticationPrincipal UserDetails userDetails,
-                                   @RequestBody StudentProfileDTO request) {
+                                   @RequestBody ProfileDTO request) {
         String username = userDetails.getUsername();
         return studentService.updateMyProfile(username, request);
     }
@@ -43,6 +41,7 @@ public class StudentProfileController {
         passwordService.updatePassword(username, req.getOldPassword(), req.getNewPassword());
         return ResponseEntity.ok("Cập nhật mật khẩu thành công");
     }
+
 
 
 }

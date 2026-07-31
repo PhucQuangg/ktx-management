@@ -1,11 +1,10 @@
 package com.stu.edu.ktx_management.service;
 import com.stu.edu.ktx_management.dto.StudentDTO;
-import com.stu.edu.ktx_management.dto.StudentProfileDTO;
+import com.stu.edu.ktx_management.dto.ProfileDTO;
 import com.stu.edu.ktx_management.entity.*;
 import com.stu.edu.ktx_management.repository.ContractRepository;
 import com.stu.edu.ktx_management.repository.StudentRepository;
 import com.stu.edu.ktx_management.repository.StudentVerificationRepository;
-import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -38,7 +37,12 @@ public class StudentService {
 
 
     public List<Student> getAllStudents() {
-        return studentRepository.findAll();
+
+        return studentRepository.findAll()
+                .stream()
+                .filter(s -> s.getApprovalStatus() == ApprovalStatus.APPROVED)
+                .filter(s -> s.getRole() == Role.STUDENT)
+                .toList();
     }
 
     public Student approveStudent(Integer studentId) {
@@ -215,14 +219,14 @@ public class StudentService {
 
 
 
-    public StudentProfileDTO getStudentByUsername(String username) {
+    public ProfileDTO getStudentByUsername(String username) {
         Student student = studentRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy sinh viên: " + username));
 
-        return modelMapper.map(student, StudentProfileDTO.class);
+        return modelMapper.map(student, ProfileDTO.class);
     }
 
-    public Student updateMyProfile(String username, StudentProfileDTO request) {
+    public Student updateMyProfile(String username, ProfileDTO request) {
         Student student = studentRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy tài khoản: " + username));
 

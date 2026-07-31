@@ -13,6 +13,7 @@ import Dashboard from "./pages/AdminDashboard";
 import AdminFacility from "./pages/AdminFacility.js";
 import NotificationList from "./pages/notification/NotificationList.js";
 import IndexPage from "./pages/IndexPage.js";
+import AdminProfile from "./pages/profile.js";
 function App() {
   return (
     <Router>
@@ -30,6 +31,7 @@ function App() {
         <Route path="/admin/dashboard" element={<Dashboard />} />
         <Route path="/admin/facilities" element={<AdminFacility />} />
         <Route path="/admin/notifications" element={<NotificationList />} />
+        <Route path="/admin/profile" element={<AdminProfile />} />
       </Routes>
       <Popup />
     </Router>

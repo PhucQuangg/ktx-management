@@ -9,6 +9,7 @@ export default function UpdateStudent() {
 
   const params = new URLSearchParams(window.location.search);
   const studentId = params.get("id");
+  
 
   const token = sessionStorage.getItem("admin_token");
   

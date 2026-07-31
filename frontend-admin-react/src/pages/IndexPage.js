@@ -1,12 +1,19 @@
-import React, { useState } from "react";
+import React, { useEffect,useState } from "react";
 import Sidebar from "../components/Sidebar";
 import SettingsPanel from "../components/SettingsPanel";
 import Script from "../components/Script";
+import { data } from "react-router-dom";
 
 export default function IndexPage() {
   const [sidebarColor, setSidebarColor] = useState("bg-white");
+  const [adminName, setAdminName] = useState("");
+  useEffect(() => {
+    const name = sessionStorage.getItem("admin_fullname");
 
-
+    if (name) {
+        setAdminName(name);
+    }
+}, []);
   const modules = [
     {
       title: "Quản lý sinh viên",
@@ -105,13 +112,22 @@ export default function IndexPage() {
               </h1>
 
               <p
-                style={{
-                  fontSize: 20,
-                  marginTop: 15,
-                }}
-              >
-                Trang quản trị dành cho Ban Quản lý Ký túc xá
-              </p>
+  style={{
+    fontSize: 20,
+    marginTop: 15,
+  }}
+>
+  Xin chào <b>{adminName}</b>
+</p>
+
+<p
+  style={{
+    fontSize: 18,
+    marginTop: 10,
+  }}
+>
+  Trang quản trị dành cho Ban Quản lý Ký túc xá
+</p>
             </div>
           </section>
 

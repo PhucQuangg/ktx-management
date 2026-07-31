@@ -1,8 +1,6 @@
 
 B
 backend/.gitignore,7\e\7e16691a9fc60084a157565ec422c8094d3df67c
-{
-Kbackend/src/main/java/com/stu/edu/ktx_management/dto/StudentProfileDTO.java,3\1\31141186e6824b4bb5e2cde25ed6708d633f2ea9
 x
 Hbackend/src/main/java/com/stu/edu/ktx_management/dto/AuthRequestDTO.java,f\f\ff26d1525821872e615254769b18ffb5ce413104
 |
@@ -15,8 +13,6 @@ w
 Gbackend/src/main/java/com/stu/edu/ktx_management/entity/RoomStatus.java,d\b\dbc0fb7c396c5a17ea9c57a451c99ee22f05a4e7
 ~
 Nbackend/src/main/java/com/stu/edu/ktx_management/KtxManagementApplication.java,b\a\ba35066ef325f98f00dccda8a2417ee7c3c58998
-Ç
-Rbackend/src/main/java/com/stu/edu/ktx_management/repository/StudentRepository.java,e\c\ec7455a6279fc4952d117831f3b4f1972b574105
 
 Obackend/src/main/java/com/stu/edu/ktx_management/repository/RoomRepository.java,b\3\b318105359fb911a7128056ce9e98cff8f59dbbd
 v
@@ -69,8 +65,6 @@ Ibackend/src/main/java/com/stu/edu/ktx_management/dto/RevenueChartDTO.java,a\e\
 \backend/src/main/java/com/stu/edu/ktx_management/controller/admin/AdminReportController.java,3\1\316f083bae7df55125fe7c21d078c9c7d25d8782
 í
 bbackend/src/main/java/com/stu/edu/ktx_management/controller/admin/AdminRoomFacilityController.java,9\e\9e91b9bd4bb5294f9f199247823ab425e927e432
-ç
-]backend/src/main/java/com/stu/edu/ktx_management/controller/admin/AdminStudentController.java,6\7\67355404c08a93eacce47d53cf1346fb9155168a
 
 Obackend/src/main/java/com/stu/edu/ktx_management/service/PdfInvoiceService.java,b\3\b34effa6050cc75ae87ef104bdfdecbbfd2ec4be
 è
@@ -87,8 +81,6 @@ Sbackend/src/main/java/com/stu/edu/ktx_management/service/ForgotPasswordService.
 Obackend/src/main/java/com/stu/edu/ktx_management/dto/PasswordChangeRequest.java,0\d\0d4d53beb281f4021ccbf7cf861aec7880d5d2f3
 ë
 abackend/src/main/java/com/stu/edu/ktx_management/controller/student/StudentInvoiceController.java,d\b\db2e4ae7a3bdfb5d0c3983a3aa7b1310e912e377
-ë
-abackend/src/main/java/com/stu/edu/ktx_management/controller/student/StudentProfileController.java,7\d\7d632e4e559a7237572d945f20b3d76cf86eb278
 é
 ^backend/src/main/java/com/stu/edu/ktx_management/controller/student/StudentRoomController.java,6\9\697e2afd3b30ba1de2add3c0c498a9e1ed7a5294
 y
@@ -123,11 +115,13 @@ z
 Jbackend/src/main/java/com/stu/edu/ktx_management/entity/InvoiceStatus.java,6\f\6f307ae525e99fc038c556d24f098bfd3cf62b0a
 {
 Kbackend/src/main/java/com/stu/edu/ktx_management/entity/ApprovalStatus.java,6\6\66e195f3b8f64f82355b60a9a88585428470b605
-t
-Dbackend/src/main/java/com/stu/edu/ktx_management/entity/Student.java,6\9\6927e2aa21722c5829a21e471eceab379e2bf6f8
 î
 dbackend/src/main/java/com/stu/edu/ktx_management/controller/admin/AdminAccountManagerController.java,5\9\59897cba88c2cf4cacc21115acd6b5c3dc818319
 {
 Kbackend/src/main/java/com/stu/edu/ktx_management/entity/ContractStatus.java,3\0\30bbf7b47dc2ae32adcd116a1f2a469a029e18cc
-
-Obackend/src/main/java/com/stu/edu/ktx_management/controller/AuthController.java,1\1\11b87daf1fe0b8004647541cf5a3e07b9425f0d4
+Å
+Qbackend/src/main/java/com/stu/edu/ktx_management/config/payment/VnpayService.java,5\f\5f63f18fa21729af1ec7ff793c69baa464d92afe
+Å
+Qbackend/src/main/java/com/stu/edu/ktx_management/config/jwt/JwtRequestFilter.java,3\3\33b502487e9aa7f45818d5b39b97a69c645238b0
+t
+Dbackend/src/main/java/com/stu/edu/ktx_management/entity/Invoice.java,4\4\4445e7098d544e0d9c92d22940d8d4cab5b3e03b

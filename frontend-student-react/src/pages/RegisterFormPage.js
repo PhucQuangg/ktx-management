@@ -178,6 +178,7 @@ export default function DormitoryRegistration() {
                   <input
                     type="date"
                     className="form-control"
+                    max={new Date().toISOString().split("T")[0]}
                     value={dateOfBirth}
                     onChange={(e) => setDateOfBirth(e.target.value)}
                     disabled={disabled}

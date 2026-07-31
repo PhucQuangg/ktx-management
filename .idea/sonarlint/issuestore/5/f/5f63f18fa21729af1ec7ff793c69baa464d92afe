@@ -1,0 +1,21 @@
+
+`	java:S112h"FDefine and throw a dedicated exception instead of using a generic one.(‹Èï½ûÿÿÿÿ
+a	java:S112–"FDefine and throw a dedicated exception instead of using a generic one.(‰à®Çøÿÿÿÿ
+a
+java:S11921"KDefine a constant instead of duplicating this literal "vnp_TxnRef" 3 times.(©¶Æ³
+j
+java:S1192"ODefine a constant instead of duplicating this literal "vnp_SecureHash" 4 times.(°¯èÀşÿÿÿÿ
+C
+java:S1172".Remove this unused method parameter "request".( ÷¤-
+S	java:S106Y"9Replace this use of System.out or System.err by a logger.(›ÿ³ûÿÿÿÿ
+N	java:S106Z"9Replace this use of System.out or System.err by a logger.(Ö­ÙÕ
+S	java:S106\"9Replace this use of System.out or System.err by a logger.(…ôˆ•ùÿÿÿÿ
+N	java:S106]"9Replace this use of System.out or System.err by a logger.(ÂÇÜÓ
+N	java:S106_"9Replace this use of System.out or System.err by a logger.(”˜ß¿
+N	java:S106`"9Replace this use of System.out or System.err by a logger.(ØĞğ
+O	java:S106Ò"9Replace this use of System.out or System.err by a logger.(Ğ•¸Á
+O	java:S106Ó"9Replace this use of System.out or System.err by a logger.(ÏšŸÇ
+T	java:S106Ô"9Replace this use of System.out or System.err by a logger.(èÚœêÿÿÿÿÿ
+N	java:S106Õ"9Replace this use of System.out or System.err by a logger.(†ş–L
+G
+java:S1144¥"0Remove this unused private "getClientIp" method.(É“üá

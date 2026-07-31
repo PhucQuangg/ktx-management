@@ -40,7 +40,7 @@ function ProfilePage() {
     }
 
     try {
-      const res = await fetch("http://localhost:8080/api/student/profile", {
+      const res = await fetch("http://localhost:8080/api/profile", {
         headers: { Authorization: "Bearer " + token },
       });
       if (!res.ok) throw new Error("Không thể tải thông tin sinh viên");
@@ -79,7 +79,7 @@ function ProfilePage() {
     }
 
     try {
-      const res = await fetch("http://localhost:8080/api/student/profile/update", {
+      const res = await fetch("http://localhost:8080/api/profile/update", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -118,7 +118,7 @@ function ProfilePage() {
     }
 
     try {
-      const res = await fetch("http://localhost:8080/api/student/change-password", {
+      const res = await fetch("http://localhost:8080/api/change-password", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -201,6 +201,7 @@ function ProfilePage() {
                     <input
                     type={field.type}
                     className="form-control"
+                    max={new Date().toISOString().split("T")[0]}
                     style={{ fontSize: "1.5rem", padding: "0.75rem 1rem" }}
                     value={profile[field.id === "dob" ? "dateOfBirth" : field.id]}
                     readOnly={!editing}

@@ -73,10 +73,11 @@ public class AuthController {
 
         String role = student.getRole().name();
         String token = jwtUtil.generateToken(student.getUsername(), role);
-
+        String fullName = student.getFullName();
         return Map.of(
                 "token", token,
-                "role", role
+                "role", role,
+                "fullname",fullName
         );
     }
 

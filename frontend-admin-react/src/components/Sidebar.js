@@ -98,7 +98,7 @@ const Sidebar = ({ color }) => {
             </h6>
           </li>
           <li className="nav-item">
-            <a className="nav-link text-dark" href="/profile">
+            <a className="nav-link text-dark" href="/admin/profile">
               <i className="material-symbols-rounded opacity-5">person</i>
               <span className="nav-link-text ms-1">Thông tin cá nhân</span>
             </a>
