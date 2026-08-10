@@ -1,0 +1,138 @@
+body{
+  background:#f5f7fb;
+}
+
+.login-page{
+  min-height:100vh;
+
+  display:flex;
+  align-items:center;
+
+  background:linear-gradient(
+      135deg,
+      #eaf4ff,
+      #ffffff
+  );
+}
+
+.left-panel{
+
+  width:100%;
+
+  display:flex;
+  flex-direction:column;
+
+  justify-content:center;
+  align-items:center;
+
+  text-align:center;
+
+  padding:60px;
+  margin-top: 15%;
+
+}
+
+.stu-logo{
+
+  width:200px;
+
+  margin-bottom:20px;
+
+}
+
+.left-panel h1{
+
+  font-size:36px;
+
+  font-weight:700;
+
+  color:#0d6efd;
+
+  line-height:55px;
+
+  margin-top:20px;
+
+}
+
+.left-panel p{
+
+  color:#666;
+
+  font-size:22px;
+
+  margin-bottom:40px;
+
+}
+
+.dorm-image{
+
+  width:85%;
+
+}
+
+.login-card{
+
+  border:none;
+
+  border-radius:20px;
+
+  padding:40px;
+
+  max-width:480px;
+
+  width:100%;
+
+  margin:auto;
+
+
+}
+
+.login-card label{
+  margin-top: 10px;
+  font-weight:600;
+
+}
+
+.login-card input{
+
+  height:54px;
+
+  border-radius:12px;
+
+  font-size:16px;
+
+}
+.login-btn{
+
+  display:block;
+
+  width:70%;
+
+  margin:35px auto 10px;
+
+  height:52px;
+
+  border-radius:12px;
+
+  font-size:18px;
+
+  font-weight:600;
+
+  background:#0d6efd;
+
+  border:none;
+
+  transition:.3s;
+
+}
+.login-btn:hover{
+
+  background:#0056d2;
+
+}
+
+.alert{
+  margin-top: 20px;
+  border-radius:10px;
+
+}

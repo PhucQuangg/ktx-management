@@ -1,4 +1,3 @@
-// src/components/Popup.js
 import { useState, useEffect } from "react";
 
 function Popup() {

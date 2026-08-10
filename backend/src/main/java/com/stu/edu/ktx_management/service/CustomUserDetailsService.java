@@ -18,15 +18,15 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Student student = studentRepository.findByUsername(username)
+        Student student = studentRepository.findByUsernameIgnoreCase(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         GrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + student.getRole().name());
 
         return new org.springframework.security.core.userdetails.User(
                 student.getUsername(),
-                student.getPassword(), // password đã mã hóa
-                Collections.singletonList(authority) // danh sách authorities
+                student.getPassword(),
+                Collections.singletonList(authority)
         );
     }
 }

@@ -5,19 +5,18 @@ import Login from "./pages/LoginPage";
 import ForgotPassword from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import StudentProfile from "./pages/StudentProfilePage";
-import RegisterForm from "./pages/RegisterFormPage"
-import RoomPage from "./pages/RoomPage"
-import RoomDetailPage from "./pages/RoomDetailPage"
+import RegisterForm from "./pages/RegisterFormPage";
+import RoomPage from "./pages/RoomPage";
+import RoomDetailPage from "./pages/RoomDetailPage";
 import MyContractPage from "./pages/MyContractPage";
 import ContractDetailPage from "./pages/ContractDetail";
 import InvoicePage from "./pages/invoices/MyInvoicePage";
-import PaymentResult from "./pages/invoices/PaymentResult"; 
+import PaymentResult from "./pages/invoices/PaymentResult";
 import StudentNotifications from "./pages/NotificationPage";
 import ContactPage from "./pages/ContactPage";
 function App() {
   return (
     <Router>
-      {/* Các route */}
       <Routes>
         <Route path="/" element={<IndexPage />} />
         <Route path="/login" element={<Login />} />

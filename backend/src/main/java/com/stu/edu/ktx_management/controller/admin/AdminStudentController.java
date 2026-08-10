@@ -32,10 +32,11 @@ public class AdminStudentController {
                     .body("Lỗi khi tải danh sách sinh viên: " + e.getMessage());
         }
     }
+
     @GetMapping("/edit/{id}")
     public ResponseEntity<?> getStudentById(@PathVariable Integer id) {
         try {
-            Student student = studentService.getStudentById(id);
+            StudentDTO student = studentService.getStudentById(id);
             return ResponseEntity.ok(student);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
@@ -46,8 +47,8 @@ public class AdminStudentController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> createStudent(@RequestBody StudentDTO studentDTO) {
         try {
-            Student savedStudent = studentService.createStudentByAdmin(studentDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body(savedStudent);
+            studentService.createStudentByAdmin(studentDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Thêm mới sinh viên thành công!");
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
@@ -56,10 +57,10 @@ public class AdminStudentController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> updateStudent(@PathVariable Integer id, @RequestBody Student student) {
+    public ResponseEntity<?> updateStudent(@PathVariable Integer id, @RequestBody StudentDTO student) {
         try {
-            Student updatedStudent = studentService.updateStudent(id, student);
-            return ResponseEntity.ok(updatedStudent);
+            studentService.updateStudent(id, student);
+            return ResponseEntity.ok("Cập nhật sinh viên thành công!");
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
@@ -70,7 +71,7 @@ public class AdminStudentController {
     public ResponseEntity<String> deleteStudent(@PathVariable Integer id) {
         try {
             studentService.deleteStudent(id);
-            return ResponseEntity.ok("Xoá sinh viên thành công");
+            return ResponseEntity.ok("Xoá sinh viên thành công!");
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
@@ -83,6 +84,4 @@ public class AdminStudentController {
     ) {
         return studentService.filterStudents(fullName, className);
     }
-
-
 }

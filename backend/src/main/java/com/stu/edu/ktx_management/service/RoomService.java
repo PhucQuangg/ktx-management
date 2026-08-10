@@ -7,9 +7,7 @@ import com.stu.edu.ktx_management.entity.RoomStatus;
 import com.stu.edu.ktx_management.entity.TypeRoom;
 import com.stu.edu.ktx_management.repository.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -28,16 +26,14 @@ public class RoomService {
 
     public Room getRoomById(Integer id) {
 
-        return roomRepository.findById(id)
-                .orElseThrow(() ->
+        return roomRepository.findById(id).orElseThrow(() ->
                         new RuntimeException(
                                 "Không tìm thấy phòng với id: " + id
                         ));
     }
     public RoomDetailDTO getRoomByIdWithStu(Integer id) {
 
-        Room room = roomRepository.findById(id)
-                .orElseThrow(() ->
+        Room room = roomRepository.findById(id).orElseThrow(() ->
                         new RuntimeException(
                                 "Không tìm thấy phòng với id: " + id
                         ));
@@ -45,13 +41,18 @@ public class RoomService {
         RoomDetailDTO dto = new RoomDetailDTO();
 
         dto.setId(room.getId());
-        dto.setName(room.getName());
-        dto.setCapacity(room.getCapacity());
-        dto.setCurrent_people(room.getCurrent_people());
-        dto.setPrice(room.getPrice());
-        dto.setStatus(room.getStatus().name());
-        dto.setType(room.getType().name());
 
+        dto.setName(room.getName());
+
+        dto.setCapacity(room.getCapacity());
+
+        dto.setCurrent_people(room.getCurrent_people());
+
+        dto.setPrice(room.getPrice());
+
+        dto.setStatus(room.getStatus().name());
+
+        dto.setType(room.getType().name());
 
         List<RoomFacilityDTO> facilityDTOs =
                 room.getRoomFacilities()
@@ -66,21 +67,13 @@ public class RoomService {
 
                             facility.setRoomName(room.getName());
 
-                            facility.setFacilityTypeId(
-                                    f.getFacilityType().getId()
-                            );
+                            facility.setFacilityTypeId(f.getFacilityType().getId());
 
-                            facility.setFacilityName(
-                                    f.getFacilityType().getName()
-                            );
+                            facility.setFacilityName(f.getFacilityType().getName());
 
-                            facility.setQuantity(
-                                    f.getQuantity()
-                            );
+                            facility.setQuantity(f.getQuantity());
 
-                            facility.setStatus(
-                                    f.getStatus().toString()
-                            );
+                            facility.setStatus(f.getStatus().toString());
 
                             return facility;
                         })
@@ -90,9 +83,11 @@ public class RoomService {
 
         return dto;
     }
+
     public List<Room> searchRooms(Integer id, String roomName){
         if(id != null){
-            Room room = roomRepository.findById(id).orElseThrow(()->new RuntimeException("Không tìm thấy phòng với id: "+id));
+            Room room = roomRepository.findById(id).orElseThrow(()->
+                    new RuntimeException("Không tìm thấy phòng với id: "+id));
             return List.of(room);
         }
         else if(roomName != null && !roomName.isEmpty())
@@ -110,12 +105,15 @@ public class RoomService {
         if (roomRepository.existsByName(room.getName())){
             throw new RuntimeException("Phòng đã tồn tại");
         }
-        room.setStatus(RoomStatus.AVAILABLE);
+
         room.setCurrent_people(0);
         return roomRepository.save(room);
     }
+
     public Room deleteRoom(Integer id){
-        Room room= roomRepository.findById(id).orElseThrow(()->new RuntimeException("Không tìm thấy phòng với id: "+id));
+        Room room= roomRepository.findById(id).orElseThrow(()->
+                new RuntimeException("Không tìm thấy phòng với id: "+id));
+
         if (room.getCurrent_people() > 0) {
             throw new RuntimeException("Không thể xoá phòng vì hiện có người đang ở!");
         }
@@ -123,6 +121,7 @@ public class RoomService {
         roomRepository.delete(room);
         return room;
     }
+
     public Room updateRoom(Integer id, Room roomDetails) {
         Room room = roomRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy phòng với id: " + id));
@@ -153,6 +152,7 @@ public class RoomService {
 
         return roomRepository.save(room);
     }
+
     public List<Room> getAvailableRoomsByType(TypeRoom type) {
         List<Room> rooms = roomRepository.findByStatusAndType(RoomStatus.AVAILABLE, type);
         return rooms;

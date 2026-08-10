@@ -26,65 +26,38 @@ public class AdminRoomFacilityController {
             @RequestBody RoomFacilityDTO dto
     ) {
         try {
-
-            RoomFacility facility =
-                    roomFacilityService.create(dto);
-
-            return ResponseEntity.ok(
-                    "Thêm cơ sở vật chất thành công!"
-            );
+            roomFacilityService.create(dto);
+            return ResponseEntity.ok("Thêm cơ sở vật chất thành công!");
 
         } catch (RuntimeException e) {
-
-            return ResponseEntity.badRequest()
-                    .body(e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
 
         } catch (Exception e) {
-
-            return ResponseEntity.internalServerError()
-                    .body("Có lỗi xảy ra!");
-
+            return ResponseEntity.internalServerError().body("Có lỗi xảy ra!");
         }
     }
 
     @DeleteMapping("/{id}")
-    public void delete(
-            @PathVariable Integer id
-    ) {
+    public void delete(@PathVariable Integer id) {
         roomFacilityService.delete(id);
     }
 
     @GetMapping("/{id}")
-    public RoomFacilityDTO getById(
-            @PathVariable Integer id
-    ) {
+    public RoomFacilityDTO getById(@PathVariable Integer id) {
         return roomFacilityService.getById(id);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(
-            @PathVariable Integer id,
-            @RequestBody RoomFacilityDTO dto
-    ) {
+    public ResponseEntity<?> update(@PathVariable Integer id, @RequestBody RoomFacilityDTO dto) {
         try {
-
-            RoomFacility facility =
-                    roomFacilityService.update(id,dto);
-
-            return ResponseEntity.ok(
-                    "Cập nhật cơ sở vật chất thành công!"
-            );
+            roomFacilityService.update(id,dto);
+            return ResponseEntity.ok("Cập nhật cơ sở vật chất thành công!");
 
         } catch (RuntimeException e) {
-
-            return ResponseEntity.badRequest()
-                    .body(e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
 
         } catch (Exception e) {
-
-            return ResponseEntity.internalServerError()
-                    .body("Có lỗi xảy ra!");
-
+            return ResponseEntity.internalServerError().body("Có lỗi xảy ra!");
         }
     }
 }

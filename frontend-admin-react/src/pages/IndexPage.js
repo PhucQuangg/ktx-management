@@ -1,280 +1,246 @@
-import React, { useEffect,useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import Sidebar from "../components/Sidebar";
-import SettingsPanel from "../components/SettingsPanel";
-import Script from "../components/Script";
-import { data } from "react-router-dom";
+
+import "../css/AdminHome.css";
 
 export default function IndexPage() {
-  const [sidebarColor, setSidebarColor] = useState("bg-white");
-  const [adminName, setAdminName] = useState("");
+  const navigate = useNavigate();
+
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [adminName, setAdminName] = useState("Quản trị viên");
+
   useEffect(() => {
     const name = sessionStorage.getItem("admin_fullname");
 
-    if (name) {
-        setAdminName(name);
+    if (name && name.trim()) {
+      setAdminName(name);
     }
-}, []);
+  }, []);
+
   const modules = [
     {
+      title: "Quản lý đăng ký nội trú",
+      icon: "fa fa-file-signature",
+      colorClass: "blue",
+      desc: "Xem và xét duyệt các đơn đăng ký nội trú của sinh viên.",
+      path: "/admin/accounts",
+    },
+    {
       title: "Quản lý sinh viên",
-      icon: "fa-users",
-      color: "#00c0ef",
-      desc: "Quản lý thông tin sinh viên nội trú",
+      icon: "fa fa-user-graduate",
+      colorClass: "cyan",
+      desc: "Quản lý hồ sơ và thông tin sinh viên đang nội trú.",
+      path: "/admin/students",
     },
     {
       title: "Quản lý phòng",
-      icon: "fa-building",
-      color: "#00a65a",
-      desc: "Quản lý phòng và sức chứa",
+      icon: "fa fa-door-open",
+      colorClass: "green",
+      desc: "Theo dõi phòng ở, sức chứa và số lượng sinh viên.",
+      path: "/admin/rooms",
     },
     {
-      title: "Quản lý hợp đồng",
-      icon: "fa-file-contract",
-        color: "#f39c12",
-      desc: "Quản lý hợp đồng lưu trú",
+      title: "Quản lý đăng ký phòng",
+      icon: "fa fa-file-contract",
+      colorClass: "orange",
+      desc: "Xem, phê duyệt và theo dõi các đăng ký phòng nội trú.",
+      path: "/admin/contracts",
     },
     {
       title: "Quản lý hóa đơn",
-      icon: "fa-credit-card",
-      color: "#dd4b39",
-      desc: "Quản lý thanh toán hóa đơn",
+      icon: "fa fa-file-invoice-dollar",
+      colorClass: "red",
+      desc: "Tạo hóa đơn, theo dõi và xác nhận các khoản thanh toán.",
+      path: "/admin/invoices",
     },
     {
       title: "Cơ sở vật chất",
-      icon: "fa-cubes",
-      color: "#605ca8",
-      desc: "Quản lý trang thiết bị",
+      icon: "fa fa-couch",
+      colorClass: "purple",
+      desc: "Quản lý trang thiết bị và cơ sở vật chất của từng phòng.",
+      path: "/admin/facilities",
     },
     {
-      title: "Thông báo",
-      icon: "fa-bullhorn",
-      color: "#39cccc",
-      desc: "Quản lý thông báo",
+      title: "Quản lý thông báo",
+      icon: "fa fa-bell",
+      colorClass: "yellow",
+      desc: "Đăng tải và cập nhật thông báo dành cho sinh viên.",
+      path: "/admin/notifications",
+    },
+    {
+      title: "Thông tin cá nhân",
+      icon: "fa fa-user-circle",
+      colorClass: "slate",
+      desc: "Xem và cập nhật thông tin tài khoản quản trị viên.",
+      path: "/admin/profile",
     },
   ];
 
   return (
-    <div className="g-sidenav-show">
-      <Sidebar color={sidebarColor} />
+    <div className="admin-home-layout">
+      <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
-      <main className="main-content position-relative">
-
-        <div
-          className="content-wrapper"
+      <main
+        className={`admin-home-content ${
+          sidebarOpen ? "" : "sidebar-collapsed"
+        }`}
+      >
+        <section
+          className="admin-home-banner"
           style={{
-            background: "#f5f7fa",
-            minHeight: "100vh",
+            backgroundImage: "url('/assets/images/logoSTU.png')",
           }}
         >
+          <div className="admin-home-banner-overlay"></div>
 
-          {/* Banner */}
+          <div className="admin-home-banner-decoration decoration-one"></div>
+          <div className="admin-home-banner-decoration decoration-two"></div>
 
-          <section
-            style={{
-              margin: 20,
-              height: 420,
-              borderRadius: 12,
-              overflow: "hidden",
-              position: "relative",
-              backgroundImage:
-                "url('/assets/images/illustrations/index.jpg')",
-              backgroundPosition: "center",
-              backgroundSize: "cover",
-            }}
-          >
-            <div
-              style={{
-                position: "absolute",
-                inset: 0,
-                background: "rgba(0,0,0,.55)",
-              }}
-            />
-
-            <div
-              style={{
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%,-50%)",
-                color: "#fff",
-                textAlign: "center",
-                width: "90%",
-              }}
-            >
-              <h1
-                style={{
-                  fontWeight: 700,
-                  fontSize: 48,
-                  color: "#fff",
-                }}
-              >
-                HỆ THỐNG QUẢN LÝ KÝ TÚC XÁ
-              </h1>
-
-              <p
-  style={{
-    fontSize: 20,
-    marginTop: 15,
-  }}
->
-  Xin chào <b>{adminName}</b>
-</p>
-
-<p
-  style={{
-    fontSize: 18,
-    marginTop: 10,
-  }}
->
-  Trang quản trị dành cho Ban Quản lý Ký túc xá
-</p>
-            </div>
-          </section>
-
-          {/* Giới thiệu */}
-
-          <div className="box" style={{ margin: 20 }}>
-            <div className="box-header">
-              <h3 className="box-title">
-                Giới thiệu hệ thống
-              </h3>
+          <div className="admin-home-banner-content">
+            <div className="admin-home-welcome-badge">
+              <i className="fa fa-shield-alt"></i>
+              Trang quản trị
             </div>
 
-            <div
-              className="box-body"
-              style={{
-                fontSize: 17,
-                lineHeight: "32px",
-              }}
+            <h1>HỆ THỐNG QUẢN LÝ KÝ TÚC XÁ</h1>
+
+            <p className="admin-welcome-text">
+              Xin chào, <strong>{adminName}</strong>
+            </p>
+
+            <p className="admin-home-banner-description">
+              Quản lý tập trung sinh viên, phòng ở, đăng ký phòng, hóa đơn và cơ
+              sở vật chất trong cùng một hệ thống.
+            </p>
+
+            <button
+              type="button"
+              className="admin-dashboard-button"
+              onClick={() => navigate("/admin/dashboard")}
             >
-              Hệ thống quản lý ký túc xá sinh viên được xây dựng nhằm hỗ trợ Ban
-              quản lý trong việc quản lý sinh viên, phòng ở, hợp đồng, hóa đơn,
-              cơ sở vật chất và thông báo. Hệ thống giúp số hóa quy trình quản
-              lý, nâng cao hiệu quả làm việc và giảm thời gian xử lý dữ liệu.
+              <i className="fa fa-chart-line"></i>
+              Xem báo cáo thống kê
+            </button>
+          </div>
+        </section>
+
+        <section className="admin-home-section admin-introduction">
+          <div className="admin-section-heading">
+            <div className="admin-section-icon">
+              <i className="fa fa-info-circle"></i>
+            </div>
+
+            <div>
+              <h2>Giới thiệu hệ thống</h2>
+              <p>Giải pháp hỗ trợ Ban quản lý ký túc xá</p>
             </div>
           </div>
 
-          {/* Module */}
+          <div className="admin-introduction-content">
+            <p>
+              Hệ thống quản lý ký túc xá được xây dựng nhằm hỗ trợ Ban quản lý
+              trong việc quản lý sinh viên, phòng ở, đăng ký phòng, hóa đơn, cơ
+              sở vật chất và thông báo.
+            </p>
 
-          <div className="row" style={{ margin: 20 }}>
+            <p>
+              Các chức năng được số hóa giúp giảm thời gian xử lý dữ liệu, hạn
+              chế sai sót và nâng cao hiệu quả quản lý nội trú.
+            </p>
+          </div>
+        </section>
 
-            {modules.map((item, index) => (
+        <section className="admin-modules-section">
+          <div className="admin-modules-heading">
+            <div>
+              <h2>Chức năng quản lý</h2>
+              <p>Truy cập nhanh các chức năng chính của hệ thống</p>
+            </div>
 
-              <div className="col-lg-4 col-md-6" key={index}>
+            <span className="module-count">{modules.length} chức năng</span>
+          </div>
 
-                <div
-                  style={{
-                    background: "#fff",
-                    borderRadius: 12,
-                    textAlign: "center",
-                    padding: 35,
-                    marginBottom: 25,
-                    boxShadow: "0 4px 15px rgba(0,0,0,.08)",
-                    transition: ".3s",
-                    cursor: "pointer",
-                  }}
-                >
-
-                  <i
-                    className={`fa ${item.icon}`}
-                    style={{
-                      fontSize: 45,
-                      color: item.color,
-                      marginBottom: 20,
-                    }}
-                  />
-
-                  <h4
-                    style={{
-                      fontWeight: 700,
-                    }}
-                  >
-                    {item.title}
-                  </h4>
-
-                  <p
-                    style={{
-                      color: "#666",
-                      marginTop: 10,
-                    }}
-                  >
-                    {item.desc}
-                  </p>
-
+          <div className="admin-module-grid">
+            {modules.map((item) => (
+              <button
+                type="button"
+                key={item.path}
+                className="admin-module-card"
+                onClick={() => navigate(item.path)}
+              >
+                <div className={`admin-module-icon ${item.colorClass}`}>
+                  <i className={item.icon}></i>
                 </div>
 
+                <div className="admin-module-body">
+                  <h3>{item.title}</h3>
+                  <p>{item.desc}</p>
+                </div>
+
+                <div className="admin-module-arrow">
+                  <i className="fa fa-arrow-right"></i>
+                </div>
+              </button>
+            ))}
+          </div>
+        </section>
+
+        <section className="admin-home-section admin-contact-section">
+          <div className="admin-section-heading">
+            <div className="admin-section-icon contact">
+              <i className="fa fa-headset"></i>
+            </div>
+
+            <div>
+              <h2>Thông tin liên hệ</h2>
+              <p>Ban Quản lý Ký túc xá Sinh viên STU</p>
+            </div>
+          </div>
+
+          <div className="admin-contact-grid">
+            <div className="admin-contact-item">
+              <div className="contact-item-icon">
+                <i className="fa fa-map-marker-alt"></i>
               </div>
 
-            ))}
-
-          </div>
-
-          
-          {/* Liên hệ */}
-
-          <div className="box" style={{ margin: 20 }}>
-
-            <div className="box-header">
-
-              <h3 className="box-title">
-
-                Thông tin liên hệ
-
-              </h3>
-
+              <div>
+                <label>Địa chỉ</label>
+                <span>180 Cao Lỗ, Phường 4, Quận 8, TP.HCM</span>
+              </div>
             </div>
 
-            <div
-              className="box-body"
-              style={{
-                lineHeight: "32px",
-                fontSize: 16,
-              }}
-            >
+            <div className="admin-contact-item">
+              <div className="contact-item-icon">
+                <i className="fa fa-phone"></i>
+              </div>
 
-              <p>
-                <b>Ban Quản lý Ký túc xá Sinh viên</b>
-              </p>
-
-              <p>
-                <i className="fa fa-map-marker"></i> 180 Cao Lỗ, Phường 4,
-                Quận 8, TP.HCM
-              </p>
-
-              <p>
-                <i className="fa fa-phone"></i> (028) 3850 5520
-              </p>
-
-              <p>
-                <i className="fa fa-envelope"></i> ktx@stu.edu.vn
-              </p>
-
+              <div>
+                <label>Điện thoại</label>
+                <span>(028) 3850 5520</span>
+              </div>
             </div>
 
+            <div className="admin-contact-item">
+              <div className="contact-item-icon">
+                <i className="fa fa-envelope"></i>
+              </div>
+
+              <div>
+                <label>Email</label>
+                <span>ktx@stu.edu.vn</span>
+              </div>
+            </div>
           </div>
+        </section>
 
-          {/* Footer */}
+        <footer className="admin-home-footer">
+          <span>© 2026 Hệ thống quản lý Ký túc xá STU</span>
 
-          <div
-            style={{
-              textAlign: "center",
-              color: "#888",
-              padding: 30,
-            }}
-          >
-            © 2026 Student Dormitory Management System
-          </div>
-
-        </div>
-
+          <span>Phiên bản dành cho quản trị viên</span>
+        </footer>
       </main>
-
-      <SettingsPanel
-        sidebarColor={sidebarColor}
-        setSidebarColor={setSidebarColor}
-      />
-
-      <Script />
     </div>
   );
 }

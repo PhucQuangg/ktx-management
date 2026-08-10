@@ -17,12 +17,16 @@ public class Room {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
     @Column(name = "room_name", nullable = false)
     private String name;
+
     @Column(name = "capacity", nullable = false)
     private Integer capacity;
+
     @Column(name = "current_occupancy")
     private Integer current_people;
+
     private Double price;
 
     @Enumerated(EnumType.STRING)
@@ -33,7 +37,11 @@ public class Room {
     @Column(name = "type")
     private TypeRoom type;
 
-    @OneToMany(mappedBy = "room")
+    @OneToMany(
+            mappedBy = "room",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     @JsonIgnore
     private List<RoomFacility> roomFacilities;
 }

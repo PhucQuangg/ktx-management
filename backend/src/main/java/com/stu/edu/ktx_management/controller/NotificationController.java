@@ -1,6 +1,7 @@
 package com.stu.edu.ktx_management.controller;
 
 import com.stu.edu.ktx_management.dto.NotificationDTO;
+import com.stu.edu.ktx_management.entity.Notification;
 import com.stu.edu.ktx_management.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +19,9 @@ import org.springframework.web.bind.annotation.*;
             @RequestBody NotificationDTO dto
     ) {
         try {
+            notificationService.create(dto);
             return ResponseEntity.ok(
-                    notificationService.create(dto)
+                    "Thêm thông báo thành công!"
             );
         } catch (Exception e) {
             return ResponseEntity.badRequest()
@@ -30,6 +32,7 @@ import org.springframework.web.bind.annotation.*;
     @GetMapping("/admin/notifications")
     public ResponseEntity<?> getAll() {
         try {
+            notificationService.getAll();
             return ResponseEntity.ok(
                     notificationService.getAll()
             );
@@ -38,27 +41,35 @@ import org.springframework.web.bind.annotation.*;
                     .body(e.getMessage());
         }
     }
-    @DeleteMapping("/notifications/{id}")
+    @DeleteMapping("/admin/notifications/{id}")
     public ResponseEntity<?> delete(
             @PathVariable Integer id
     ) {
         try {
             notificationService.delete(id);
-            return ResponseEntity.ok("Xóa thành công");
+            return ResponseEntity.ok("Xóa thông báo thành công! ");
         } catch (Exception e) {
             return ResponseEntity.badRequest()
                     .body(e.getMessage());
         }
     }
-    @PutMapping("/{id}/publish")
+    @PutMapping("/admin/notifications/{id}/publish")
     public ResponseEntity<?> publish(
             @PathVariable Integer id
     ) {
         try {
-            return ResponseEntity.ok(
-                    notificationService.togglePublish(id)
-            );
+
+            Notification notification =
+                    notificationService.togglePublish(id);
+
+            String message = notification.getPublished()
+                    ? "Đăng thông báo thành công!"
+                    : "Ẩn thông báo thành công!";
+
+            return ResponseEntity.ok(message);
+
         } catch (Exception e) {
+
             return ResponseEntity.badRequest()
                     .body(e.getMessage());
         }
@@ -69,8 +80,9 @@ import org.springframework.web.bind.annotation.*;
             @RequestBody NotificationDTO dto
     ) {
         try {
+            notificationService.update(id, dto);
             return ResponseEntity.ok(
-                    notificationService.update(id, dto)
+                    "Cập nhật thông báo thành công!"
             );
         } catch (Exception e) {
             return ResponseEntity.badRequest()

@@ -1,11 +1,9 @@
 
-A
-java:S1452"&Remove usage of generic wildcard type.(—Ääïşÿÿÿÿ
-<
-java:S1452"&Remove usage of generic wildcard type.(—êÕ
-A
-java:S1452'"&Remove usage of generic wildcard type.(Ï‹ã½üÿÿÿÿ
-c
-java:S1128"MRemove this unused import 'com.stu.edu.ktx_management.entity.ApprovalStatus'.(ı¦
 ^
-java:S1128"CRemove this unused import 'com.stu.edu.ktx_management.entity.Role'.(¾Ñğøÿÿÿÿ
+java:S1854 "<Remove this useless assignment to local variable "approved".(Í†üÜúÿÿÿÿ8×ÎÆ„ş3
+C
+java:S1452"&Remove usage of generic wildcard type.(—êÕ8×ÎÆ„ş3
+O
+java:S1481 "-Remove this unused "approved" local variable.(Í†üÜúÿÿÿÿ8ØÎÆ„ş3
+H
+java:S1452("&Remove usage of generic wildcard type.(Ï‹ã½üÿÿÿÿ8ØÎÆ„ş3

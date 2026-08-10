@@ -30,34 +30,21 @@ public class RoomFacilityService {
                 .stream()
                 .map(rf -> {
 
-                    RoomFacilityDTO dto =
-                            new RoomFacilityDTO();
+                    RoomFacilityDTO dto = new RoomFacilityDTO();
 
                     dto.setId(rf.getId());
 
-                    dto.setRoomId(
-                            rf.getRoom().getId()
-                    );
+                    dto.setRoomId(rf.getRoom().getId());
 
-                    dto.setRoomName(
-                            rf.getRoom().getName()
-                    );
+                    dto.setRoomName(rf.getRoom().getName());
 
-                    dto.setFacilityTypeId(
-                            rf.getFacilityType().getId()
-                    );
+                    dto.setFacilityTypeId(rf.getFacilityType().getId());
 
-                    dto.setFacilityName(
-                            rf.getFacilityType().getName()
-                    );
+                    dto.setFacilityName(rf.getFacilityType().getName());
 
-                    dto.setQuantity(
-                            rf.getQuantity()
-                    );
+                    dto.setQuantity(rf.getQuantity());
 
-                    dto.setStatus(
-                            rf.getStatus()
-                    );
+                    dto.setStatus(rf.getStatus());
 
                     return dto;
 
@@ -68,55 +55,36 @@ public class RoomFacilityService {
     public RoomFacility create(RoomFacilityDTO dto) {
 
         Room room =
-                roomRepository.findById(
-                        dto.getRoomId()
-                ).orElseThrow(() ->
+                roomRepository.findById(dto.getRoomId()).orElseThrow(() ->
                         new RuntimeException(
                                 "Không tìm thấy phòng"
                         ));
 
-        FacilityType facilityType =
-                facilityTypeRepository
-                        .findByName(
+        FacilityType facilityType = facilityTypeRepository.findByName(
                                 dto.getFacilityName()
                         )
                         .orElse(null);
 
         if (facilityType == null) {
 
-            facilityType =
-                    new FacilityType();
+            facilityType = new FacilityType();
 
-            facilityType.setName(
-                    dto.getFacilityName()
-            );
+            facilityType.setName(dto.getFacilityName());
 
-            facilityType =
-                    facilityTypeRepository.save(
-                            facilityType
-                    );
+            facilityType = facilityTypeRepository.save(facilityType);
         }
 
-        RoomFacility rf =
-                new RoomFacility();
+        RoomFacility rf = new RoomFacility();
 
         rf.setRoom(room);
 
-        rf.setFacilityType(
-                facilityType
-        );
+        rf.setFacilityType(facilityType);
 
-        rf.setQuantity(
-                dto.getQuantity()
-        );
+        rf.setQuantity(dto.getQuantity());
 
-        rf.setStatus(
-                dto.getStatus()
-        );
+        rf.setStatus(dto.getStatus());
 
-        return roomFacilityRepository.save(
-                rf
-        );
+        return roomFacilityRepository.save(rf);
     }
 
     public void delete(Integer id) {
@@ -125,45 +93,29 @@ public class RoomFacilityService {
 
     public RoomFacilityDTO getById(Integer id) {
 
-        RoomFacility rf = roomFacilityRepository
-                .findById(id)
-                .orElseThrow(() ->
+        RoomFacility rf = roomFacilityRepository.findById(id).orElseThrow(() ->
                         new RuntimeException("Không tìm thấy thiết bị"));
 
         RoomFacilityDTO dto = new RoomFacilityDTO();
 
         dto.setId(rf.getId());
 
-        dto.setRoomId(
-                rf.getRoom().getId()
-        );
+        dto.setRoomId(rf.getRoom().getId());
 
-        dto.setRoomName(
-                rf.getRoom().getName()
-        );
+        dto.setRoomName(rf.getRoom().getName());
 
-        dto.setFacilityName(
-                rf.getFacilityType().getName()
-        );
+        dto.setFacilityName(rf.getFacilityType().getName());
 
-        dto.setQuantity(
-                rf.getQuantity()
-        );
+        dto.setQuantity(rf.getQuantity());
 
-        dto.setStatus(
-                rf.getStatus()
-        );
+        dto.setStatus(rf.getStatus());
 
         return dto;
     }
-    public RoomFacility update(
-            Integer id,
-            RoomFacilityDTO dto
-    ) {
+    public RoomFacility update(Integer id, RoomFacilityDTO dto) {
 
         RoomFacility rf =
-                roomFacilityRepository.findById(id)
-                        .orElseThrow(() ->
+                roomFacilityRepository.findById(id).orElseThrow(() ->
                                 new RuntimeException("Không tìm thấy thiết bị"));
 
         rf.setQuantity(dto.getQuantity());

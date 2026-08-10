@@ -29,39 +29,23 @@ public class ReportService {
 
         DashboardDTO dto = new DashboardDTO();
 
-        dto.setTotalStudents(
-                studentRepository.countByRole(Role.STUDENT)
-        );
+        dto.setTotalStudents(studentRepository.countByRole(Role.STUDENT));
 
-        dto.setTotalRooms(
-                roomRepository.count()
-        );
+        dto.setTotalRooms(roomRepository.count());
 
-        dto.setAvailableRooms(
-                roomRepository.countByStatus(RoomStatus.AVAILABLE)
-        );
+        dto.setAvailableRooms(roomRepository.countByStatus(RoomStatus.AVAILABLE));
 
-        dto.setTotalInvoices(
-                invoiceRepository.count()
-        );
+        dto.setTotalInvoices(invoiceRepository.count());
 
-        dto.setActiveContracts(
-                contractRepository.countByStatus(ContractStatus.ACTIVE)
-        );
+        dto.setActiveContracts(contractRepository.countByStatus(ContractStatus.ACTIVE));
 
-        dto.setRevenue(
-                invoiceRepository.getTotalRevenue()
-        );
-        dto.setPaidInvoices(
-                invoiceRepository.countByStatus(InvoiceStatus.PAID)
-        );
-        dto.setUnpaidInvoices(
-                invoiceRepository.countByStatus(InvoiceStatus.UNPAID)
-        );
+        dto.setRevenue(invoiceRepository.getTotalRevenue());
 
-        dto.setUnpaidAmount(
-                invoiceRepository.getTotalUnpaidAmount()
-        );
+        dto.setPaidInvoices(invoiceRepository.countByStatus(InvoiceStatus.PAID));
+
+        dto.setUnpaidInvoices(invoiceRepository.countByStatus(InvoiceStatus.UNPAID));
+
+        dto.setUnpaidAmount(invoiceRepository.getTotalUnpaidAmount());
 
         return dto;
     }
@@ -70,21 +54,13 @@ public class ReportService {
 
         FinancialDTO dto = new FinancialDTO();
 
-        dto.setTotalRevenue(
-                invoiceRepository.getTotalRevenue()
-        );
+        dto.setTotalRevenue(invoiceRepository.getTotalRevenue());
 
-        dto.setPaidInvoices(
-                invoiceRepository.countPaidInvoices()
-        );
+        dto.setPaidInvoices(invoiceRepository.countPaidInvoices());
 
-        dto.setUnpaidInvoices(
-                invoiceRepository.countUnpaidInvoices()
-        );
+        dto.setUnpaidInvoices(invoiceRepository.countUnpaidInvoices());
 
-        dto.setUnpaidAmount(
-                invoiceRepository.getTotalUnpaidAmount()
-        );
+        dto.setUnpaidAmount(invoiceRepository.getTotalUnpaidAmount());
 
         return dto;
     }

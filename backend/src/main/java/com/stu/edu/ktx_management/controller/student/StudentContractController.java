@@ -18,24 +18,13 @@ public class StudentContractController {
     private ContractService contractService;
 
     @PostMapping("/register/semester")
-    public ResponseEntity<?> registerBySemester(
-            @RequestParam Integer roomId) {
-
+    public ResponseEntity<?> registerBySemester(@RequestParam Integer roomId) {
         try {
-
-            Contract contract =
-                    contractService.registerRoomBySemester(roomId);
-
+            Contract contract = contractService.registerRoomBySemester(roomId);
             return ResponseEntity.ok(contract);
 
         } catch (RuntimeException e) {
-
-            return ResponseEntity
-                    .badRequest()
-                    .body(Map.of(
-                            "message",
-                            e.getMessage()
-                    ));
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
         }
     }
 

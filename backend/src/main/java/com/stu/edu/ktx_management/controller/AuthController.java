@@ -2,6 +2,7 @@ package com.stu.edu.ktx_management.controller;
 
 import com.stu.edu.ktx_management.config.jwt.JwtUtil;
 import com.stu.edu.ktx_management.dto.AuthRequestDTO;
+import com.stu.edu.ktx_management.dto.RegisterStudentDTO;
 import com.stu.edu.ktx_management.entity.ApprovalStatus;
 import com.stu.edu.ktx_management.entity.PasswordResetToken;
 import com.stu.edu.ktx_management.entity.Role;
@@ -16,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,8 +28,6 @@ import java.util.Map;
 @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class AuthController {
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -47,9 +45,9 @@ public class AuthController {
     private StudentService studentService;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody Student student) {
+    public ResponseEntity<?> register(@RequestBody RegisterStudentDTO dto) {
         try {
-            studentService.registerStudent(student);
+            studentService.registerStudent(dto);
             return ResponseEntity.ok("Đăng ký thành công! Hồ sơ của bạn đang chờ xét duyệt.");
 
         } catch (RuntimeException e) {
@@ -59,7 +57,7 @@ public class AuthController {
 
     @PostMapping("/login")
     @ResponseBody
-    public Object login(@RequestBody AuthRequestDTO req, HttpServletResponse response) {
+    public Object login(@RequestBody AuthRequestDTO req) {
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(req.getUsername(), req.getPassword())

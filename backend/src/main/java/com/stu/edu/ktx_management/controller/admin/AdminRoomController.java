@@ -27,8 +27,8 @@ public class AdminRoomController {
     @PostMapping
     public ResponseEntity<?> createRoom(@RequestBody Room room) {
         try {
-            Room savedRoom = roomService.createRoom(room);
-            return ResponseEntity.status(HttpStatus.CREATED).body(savedRoom);
+            roomService.createRoom(room);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Thêm phòng mới thành công! ");
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
@@ -47,7 +47,7 @@ public class AdminRoomController {
     public ResponseEntity<String> deleteRoom(@PathVariable Integer id){
         try {
             roomService.deleteRoom(id);
-            return ResponseEntity.ok("Xoá phòng thành công với id: " + id);
+            return ResponseEntity.ok("Xoá phòng thành công! ");
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
@@ -67,8 +67,8 @@ public class AdminRoomController {
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateRoom(@PathVariable Integer id, @RequestBody Room roomDetails) {
         try {
-            Room updatedRoom = roomService.updateRoom(id, roomDetails);
-            return ResponseEntity.ok(updatedRoom);
+            roomService.updateRoom(id, roomDetails);
+            return ResponseEntity.ok("Cập nhật phòng thành công!");
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }

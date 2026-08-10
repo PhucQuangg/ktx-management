@@ -1,6 +1,17 @@
 import React, { useEffect, useState } from "react";
+import Header from "../components/Header";
+import Sidebar from "../components/Sidebar";
 
-function ProfilePage() {
+import "../css/Profile.css";
+
+export default function ProfilePage() {
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [showPassword, setShowPassword] = useState({
+    old: false,
+    new: false,
+    confirm: false,
+  });
+
   const [profile, setProfile] = useState({
     fullName: "",
     email: "",
@@ -8,43 +19,72 @@ function ProfilePage() {
     dateOfBirth: "",
     phone: "",
     className: "",
+
+    residenceInfo: {
+      identityNumber: "",
+      identityIssueDate: "",
+      identityIssuePlace: "",
+
+      nationality: "",
+      placeOfBirth: "",
+      ethnicity: "",
+      religion: "",
+
+      province: "",
+      district: "",
+      ward: "",
+      address: "",
+    },
   });
+
   const [editing, setEditing] = useState(false);
+
   const [showPasswordSection, setShowPasswordSection] = useState(false);
+
   const [passwords, setPasswords] = useState({
     oldPassword: "",
     newPassword: "",
     confirmPassword: "",
   });
+  const handleResidenceChange = (field, value) => {
+    setProfile({
+      ...profile,
 
-  useEffect(() => {
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.href = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css";
-    document.head.appendChild(link);
-    loadProfile();
-    return () => {
-      document.head.removeChild(link);
-    };
-  }, []);
+      residenceInfo: {
+        ...profile.residenceInfo,
+        [field]: value,
+      },
+    });
+  };
 
   const getToken = () => sessionStorage.getItem("token");
 
-  // 🔹 Load thông tin sinh viên
+  useEffect(() => {
+    loadProfile();
+  }, []);
+
   const loadProfile = async () => {
     const token = getToken();
+
     if (!token) {
-      window.showPopup("Vui lòng đăng nhập lại!", true);
-      window.location.href = "http://localhost:3000/login";
+      window.showPopup?.("Vui lòng đăng nhập!", true);
+      window.location.href = "/login";
       return;
     }
 
     try {
       const res = await fetch("http://localhost:8080/api/profile", {
-        headers: { Authorization: "Bearer " + token },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
-      if (!res.ok) throw new Error("Không thể tải thông tin sinh viên");
+
+      if (!res.ok) {
+        throw new Error();
+      }
+
       const data = await res.json();
+
       setProfile({
         fullName: data.fullName || "",
         email: data.email || "",
@@ -52,29 +92,67 @@ function ProfilePage() {
         dateOfBirth: data.dateOfBirth || "",
         phone: data.phone || "",
         className: data.className || "",
+
+        residenceInfo: {
+          identityNumber: data.residenceInfo?.identityNumber || "",
+
+          identityIssueDate: data.residenceInfo?.identityIssueDate || "",
+
+          identityIssuePlace: data.residenceInfo?.identityIssuePlace || "",
+
+          nationality: data.residenceInfo?.nationality || "",
+
+          placeOfBirth: data.residenceInfo?.placeOfBirth || "",
+
+          ethnicity: data.residenceInfo?.ethnicity || "",
+
+          religion: data.residenceInfo?.religion || "",
+
+          province: data.residenceInfo?.province || "",
+
+          district: data.residenceInfo?.district || "",
+
+          ward: data.residenceInfo?.ward || "",
+
+          address: data.residenceInfo?.address || "",
+        },
       });
     } catch (e) {
       console.error(e);
-      window.showPopup("❌ Lỗi khi tải thông tin cá nhân!", true);
+      window.showPopup?.("Không thể tải thông tin cá nhân!", true);
     }
   };
 
-  // 🔹 Bắt đầu chỉnh sửa
-  const handleEdit = () => setEditing(true);
+  const handleEdit = () => {
+    setEditing(true);
+  };
 
-  // 🔹 Hủy chỉnh sửa
   const handleCancel = () => {
     setEditing(false);
     loadProfile();
   };
 
-  // 🔹 Lưu cập nhật
   const handleSave = async () => {
     const token = getToken();
-    const { fullName, email, gender, dateOfBirth, phone, className } = profile;
 
-    if (!fullName || !email || !dateOfBirth || !phone || !className || gender === "") {
-      window.showPopup("❌ Vui lòng nhập đầy đủ các trường thông tin!", true);
+    const {
+      fullName,
+      email,
+      gender,
+      dateOfBirth,
+      phone,
+      className,
+      residenceInfo,
+    } = profile;
+    if (
+      !fullName ||
+      !email ||
+      !phone ||
+      !className ||
+      !dateOfBirth ||
+      gender === ""
+    ) {
+      window.showPopup?.("Vui lòng nhập đầy đủ thông tin!", true);
       return;
     }
 
@@ -83,7 +161,7 @@ function ProfilePage() {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: "Bearer " + token,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           fullName,
@@ -92,28 +170,37 @@ function ProfilePage() {
           dateOfBirth,
           phone,
           className,
+
+          residenceInfo: residenceInfo,
         }),
       });
-      if (!res.ok) throw new Error();
-      window.showPopup("✅ Cập nhật thông tin thành công!");
+
+      if (!res.ok) {
+        throw new Error();
+      }
+
+      window.showPopup?.("Cập nhật thành công!");
+
       setEditing(false);
-      setTimeout(() => window.location.reload(), 2000);
+
+      loadProfile();
     } catch {
-      window.showPopup("❌ Lỗi khi cập nhật thông tin!", true);
+      window.showPopup?.("Không thể cập nhật thông tin!", true);
     }
   };
 
-  // 🔹 Đổi mật khẩu
   const handlePasswordChange = async () => {
-    const { oldPassword, newPassword, confirmPassword } = passwords;
     const token = getToken();
 
+    const { oldPassword, newPassword, confirmPassword } = passwords;
+
     if (!oldPassword || !newPassword || !confirmPassword) {
-      window.showPopup("❌ Vui lòng nhập đầy đủ các trường!", true);
+      window.showPopup?.("Vui lòng nhập đầy đủ!", true);
       return;
     }
+
     if (newPassword !== confirmPassword) {
-      window.showPopup("❌ Mật khẩu xác nhận không khớp!", true);
+      window.showPopup?.("Mật khẩu xác nhận không khớp!", true);
       return;
     }
 
@@ -122,231 +209,483 @@ function ProfilePage() {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: "Bearer " + token,
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ oldPassword, newPassword }),
+        body: JSON.stringify({
+          oldPassword,
+          newPassword,
+        }),
       });
-      if (!res.ok) throw new Error();
-      window.showPopup("🔒 Đổi mật khẩu thành công!");
-      setPasswords({ oldPassword: "", newPassword: "", confirmPassword: "" });
+
+      if (!res.ok) {
+        throw new Error();
+      }
+
+      window.showPopup?.("Đổi mật khẩu thành công!");
+
+      setPasswords({
+        oldPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
+
       setShowPasswordSection(false);
     } catch {
-      window.showPopup("❌ Lỗi khi đổi mật khẩu!", true);
+      window.showPopup?.("Đổi mật khẩu thất bại!", true);
     }
   };
 
   return (
-    <div className="container py-5">
-      <style>{`
-        :root{
-          --accent: #2563eb;
-          --card-bg: #ffffff;
-        }
-        body{
-          background: linear-gradient(180deg,#f6f8fb 0%, #eef2f6 100%);
-          color:#0f172a;
-        }
-        .topbar{
-          background: linear-gradient(90deg, rgba(37,99,235,0.09), rgba(245,158,11,0.06));
-          border-radius: 12px;
-          padding: 40px;
-          display:flex;
-          align-items:center;
-          gap:16px;
-          box-shadow: 0 6px 18px rgba(15,23,42,0.06);
-        }
-        .stu-logo {
-          width: 170px;
-          height: auto;
-          object-fit: contain;
-          margin-left: 10px;
-        }
-        .card-modern{
-          border:0;
-          border-radius:12px;
-          background: linear-gradient(180deg, rgba(255,255,255,0.95), var(--card-bg));
-          box-shadow: 0 12px 30px rgba(2,6,23,0.08);
-        }
- 
-      `}</style>
+    <div className="wrapper">
+      <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
-      {/* Header */}
-      <div className="topbar mb-4">
-        <div className="brand">
-          <img src="/assets/images/small-logos/Logo_STU.png" alt="STU Logo" className="stu-logo img-fluid" />
-          <h1 className="fs-2 fst-italic text-uppercase">Đại Học Công Nghệ Sài Gòn</h1>
-        </div>
-      </div>
+      <Sidebar sidebarOpen={sidebarOpen} />
 
-      {/* Card */}
-    <div className="card card-modern p-4">
-        <div className="row g-4 align-items-center">
-            {/* Avatar */}
-            <div className="col-md-3 text-center">
-            <i className="bi bi-person-circle" style={{ fontSize: "18rem", color: "#2563eb" }}></i>
-            </div>
+      <div
+        className="content-wrapper"
+        style={{
+          marginLeft: sidebarOpen ? "230px" : "80px",
+          marginTop: "65px",
+          transition: ".3s",
+          minHeight: "100vh",
+        }}
+      >
+        <div className="profile-page">
+          <div className="profile-banner">
+            <h2>
+              <i className="fa fa-user-circle"></i>
+              Thông tin cá nhân
+            </h2>
 
-            {/* Info Form */}
-            <div className="col-md-9">
-            <form className="row g-4">
-                {[
-                { id: "fullName", label: "Họ và tên", type: "text" },
-                { id: "email", label: "Email", type: "email" },
-                { id: "dob", label: "Ngày sinh", type: "date" },
-                { id: "phone", label: "Số điện thoại", type: "text" },
-                { id: "className", label: "Lớp", type: "text" },
-                ].map((field) => (
-                <div key={field.id} className="col-md-6">
-                    <label className="form-label fw-semibold" style={{ fontSize: "1.5rem" }}>{field.label}</label>
-                    <input
-                    type={field.type}
-                    className="form-control"
-                    max={new Date().toISOString().split("T")[0]}
-                    style={{ fontSize: "1.5rem", padding: "0.75rem 1rem" }}
-                    value={profile[field.id === "dob" ? "dateOfBirth" : field.id]}
+            <p>Quản lý thông tin cá nhân và thay đổi mật khẩu</p>
+          </div>
+
+          <div className="profile-card">
+            <div className="profile-form">
+              <div className="profile-grid">
+                <div className="form-group">
+                  <label>Họ và tên</label>
+
+                  <input
+                    type="text"
+                    value={profile.fullName}
                     readOnly={!editing}
                     onChange={(e) =>
-                        setProfile({
+                      setProfile({
                         ...profile,
-                        [field.id === "dob" ? "dateOfBirth" : field.id]: e.target.value,
-                        })
+                        fullName: e.target.value,
+                      })
                     }
-                    />
+                  />
                 </div>
-                ))}
 
-                {/* Gender */}
-                <div className="col-md-6">
-                <label className="form-label fw-semibold" style={{ fontSize: "1.5rem" }}>Giới tính</label>
-                <select
-                    className="form-select"
-                    style={{ fontSize: "1.2rem", padding: "0.75rem 1rem" }}
+                <div className="form-group">
+                  <label>Email</label>
+
+                  <input
+                    type="email"
+                    value={profile.email}
+                    readOnly={!editing}
+                    onChange={(e) =>
+                      setProfile({
+                        ...profile,
+                        email: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Ngày sinh</label>
+
+                  <input
+                    type="date"
+                    max={new Date().toISOString().split("T")[0]}
+                    value={profile.dateOfBirth}
+                    readOnly={!editing}
+                    onChange={(e) =>
+                      setProfile({
+                        ...profile,
+                        dateOfBirth: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Số điện thoại</label>
+
+                  <input
+                    type="text"
+                    value={profile.phone}
+                    readOnly={!editing}
+                    onChange={(e) =>
+                      setProfile({
+                        ...profile,
+                        phone: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Lớp</label>
+
+                  <input
+                    type="text"
+                    value={profile.className}
+                    readOnly={!editing}
+                    onChange={(e) =>
+                      setProfile({
+                        ...profile,
+                        className: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Giới tính</label>
+
+                  <select
                     value={profile.gender}
                     disabled={!editing}
-                    onChange={(e) => setProfile({ ...profile, gender: e.target.value })}
-                >
-                    <option value="">--Chọn--</option>
-                    <option value="true">Nữ</option>
-                    <option value="false">Nam</option>
-                </select>
-                </div>
-
-                {/* Buttons */}
-                <div className="col-12 d-flex justify-content-center gap-3 mt-4 flex-wrap">
-                {!editing ? (
-                    <>
-                        <button
-                        key="back"
-                        type="button"
-                        onClick={() => (window.location.href = "/")}
-                        className="btn btn-outline-primary"
-                        style={{ fontSize: "1.5rem", padding: "0.75rem 1.5rem" }}
-                        >
-                        <i className="bi bi-arrow-left"></i> Trở về
-                        </button>
-
-                        <button
-                        key="edit"
-                        onClick={handleEdit}
-                        className="btn btn-warning fw-bold"
-                        style={{ fontSize: "1.5rem", padding: "0.75rem 1.5rem" }}
-                        >
-                        Cập nhật thông tin
-                        </button>
-
-                        <button
-                        key="password"
-                        type="button"
-                        onClick={() => setShowPasswordSection(true)}
-                        className="btn btn-danger fw-bold"
-                        style={{ fontSize: "1.5rem", padding: "0.75rem 1.5rem" }}
-                        >
-                        Đổi mật khẩu
-                        </button>
-                    </>
-                    ) : (
-                    <>
-                        <button
-                        key="save"
-                        onClick={handleSave}
-                        type="button"
-                        className="btn btn-success fw-bold"
-                        style={{ fontSize: "1.5rem", padding: "0.75rem 1.5rem" }}
-                        >
-                        Lưu
-                        </button>
-                        <button
-                        key="cancel"
-                        onClick={handleCancel}
-                        type="button"
-                        className="btn btn-outline-secondary fw-bold"
-                        style={{ fontSize: "1.5rem", padding: "0.75rem 1.5rem" }}
-                        >
-                        Hủy
-                        </button>
-                    </>
-                    )}
-
-                </div>
-            </form>
-            </div>
-        </div>
-
-
-        {/* Đổi mật khẩu */}
-        {showPasswordSection && (
-        <div className="mt-4">
-            <div className="card p-4 shadow-sm rounded-3" style={{ background: "#f8f9fa" }}>
-            <h4 className="mb-3 text-primary fw-bold">
-                <i className="bi bi-key me-2"></i>Đổi mật khẩu
-            </h4>
-            <div className="row g-3">
-                {["oldPassword", "newPassword", "confirmPassword"].map((id, idx) => (
-                <div key={id} className="col-md-4 col-12">
-                    <input
-                    type="password"
-                    id={id}
-                    className="form-control form-control-lg"
-                    placeholder={
-                        id === "oldPassword"
-                        ? "Nhập mật khẩu hiện tại"
-                        : id === "newPassword"
-                        ? "Nhập mật khẩu mới"
-                        : "Xác nhận mật khẩu"
+                    onChange={(e) =>
+                      setProfile({
+                        ...profile,
+                        gender: e.target.value,
+                      })
                     }
-                    value={passwords[id]}
-                    onChange={(e) => setPasswords({ ...passwords, [id]: e.target.value })}
-                    />
+                  >
+                    <option value="">-- Chọn giới tính --</option>
+                    <option value="false">Nam</option>
+                    <option value="true">Nữ</option>
+                  </select>
                 </div>
-                ))}
-            </div>
+              </div>
+              <div className="residence-section">
+                <h3 className="card-title">
+                  <i className="fa fa-home"></i>
+                  Thông tin cư trú
+                </h3>
 
-            <div className="mt-3 d-flex flex-wrap gap-2 justify-content-end">
+                <div className="profile-grid">
+                  <div className="form-group">
+                    <label>Số CCCD</label>
+
+                    <input
+                      value={profile.residenceInfo.identityNumber}
+                      readOnly={!editing}
+                      onChange={(e) =>
+                        setProfile({
+                          ...profile,
+                          residenceInfo: {
+                            ...profile.residenceInfo,
+                            identityNumber: e.target.value,
+                          },
+                        })
+                      }
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label>Ngày cấp</label>
+
+                    <input
+                      type="date"
+                      value={profile.residenceInfo.identityIssueDate}
+                      readOnly={!editing}
+                      onChange={(e) =>
+                        handleResidenceChange(
+                          "identityIssueDate",
+                          e.target.value
+                        )
+                      }
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label>Nơi cấp</label>
+
+                    <input
+                      value={profile.residenceInfo.identityIssuePlace}
+                      readOnly={!editing}
+                      onChange={(e) =>
+                        handleResidenceChange(
+                          "identityIssuePlace",
+                          e.target.value
+                        )
+                      }
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Quốc tịch</label>
+
+                    <input
+                      value={profile.residenceInfo.nationality}
+                      readOnly={!editing}
+                      onChange={(e) =>
+                        handleResidenceChange("nationality", e.target.value)
+                      }
+                      placeholder="Ví dụ: Việt Nam"
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label>Dân tộc</label>
+
+                    <input
+                      value={profile.residenceInfo.ethnicity}
+                      readOnly={!editing}
+                      onChange={(e) =>
+                        handleResidenceChange("ethnicity", e.target.value)
+                      }
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label>Tôn giáo</label>
+
+                    <input
+                      value={profile.residenceInfo.religion}
+                      readOnly={!editing}
+                      onChange={(e) =>
+                        handleResidenceChange("religion", e.target.value)
+                      }
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label>Nơi sinh</label>
+
+                    <input
+                      value={profile.residenceInfo.placeOfBirth}
+                      readOnly={!editing}
+                      onChange={(e) =>
+                        handleResidenceChange("placeOfBirth", e.target.value)
+                      }
+                    />
+                  </div>
+                </div>
+
+                <h4 style={{ marginTop: 25 }}>Địa chỉ thường trú</h4>
+
+                <div className="profile-grid">
+                  <div className="form-group">
+                    <label>Tỉnh / Thành phố</label>
+
+                    <input
+                      value={profile.residenceInfo.province}
+                      readOnly={!editing}
+                      onChange={(e) =>
+                        handleResidenceChange("province", e.target.value)
+                      }
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label>Quận / Huyện</label>
+
+                    <input
+                      value={profile.residenceInfo.district}
+                      readOnly={!editing}
+                      onChange={(e) =>
+                        handleResidenceChange("district", e.target.value)
+                      }
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label>Phường / Xã</label>
+
+                    <input
+                      value={profile.residenceInfo.ward}
+                      readOnly={!editing}
+                      onChange={(e) =>
+                        handleResidenceChange("ward", e.target.value)
+                      }
+                    />
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label>Địa chỉ</label>
+
+                  <textarea
+                    rows="3"
+                    value={profile.residenceInfo.address}
+                    readOnly={!editing}
+                    onChange={(e) =>
+                      handleResidenceChange("address", e.target.value)
+                    }
+                  />
+                </div>
+              </div>
+
+              <div className="profile-action">
+                {!editing ? (
+                  <>
+                    <button className="btn-edit" onClick={handleEdit}>
+                      <i className="fa fa-pencil"></i>
+                      Cập nhật thông tin
+                    </button>
+
+                    <button
+                      className="btn-password"
+                      onClick={() => setShowPasswordSection(true)}
+                    >
+                      <i className="fa fa-lock"></i>
+                      Đổi mật khẩu
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button className="btn-save" onClick={handleSave}>
+                      <i className="fa fa-check"></i>
+                      Lưu thay đổi
+                    </button>
+
+                    <button className="btn-cancel" onClick={handleCancel}>
+                      <i className="fa fa-times"></i>
+                      Hủy
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {showPasswordSection && (
+            <div className="profile-card password-card">
+              <h3 className="card-title">
+                <i className="fa fa-lock"></i>
+                Đổi mật khẩu
+              </h3>
+
+              <div className="password-grid">
+                <div className="form-group">
+                  <label>Mật khẩu hiện tại</label>
+
+                  <div className="password-input">
+                    <input
+                      type={showPassword.old ? "text" : "password"}
+                      placeholder="Nhập mật khẩu hiện tại"
+                      value={passwords.oldPassword}
+                      onChange={(e) =>
+                        setPasswords({
+                          ...passwords,
+                          oldPassword: e.target.value,
+                        })
+                      }
+                    />
+
+                    <button
+                      type="button"
+                      className="password-toggle"
+                      onClick={() =>
+                        setShowPassword({
+                          ...showPassword,
+                          old: !showPassword.old,
+                        })
+                      }
+                    >
+                      <i
+                        className={
+                          showPassword.old ? "fa fa-eye-slash" : "fa fa-eye"
+                        }
+                      ></i>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label>Mật khẩu mới</label>
+
+                  <div className="password-input">
+                    <input
+                      type={showPassword.new ? "text" : "password"}
+                      placeholder="Nhập mật khẩu mới"
+                      value={passwords.newPassword}
+                      onChange={(e) =>
+                        setPasswords({
+                          ...passwords,
+                          newPassword: e.target.value,
+                        })
+                      }
+                    />
+
+                    <button
+                      type="button"
+                      className="password-toggle"
+                      onClick={() =>
+                        setShowPassword({
+                          ...showPassword,
+                          new: !showPassword.new,
+                        })
+                      }
+                    >
+                      <i
+                        className={
+                          showPassword.new ? "fa fa-eye-slash" : "fa fa-eye"
+                        }
+                      ></i>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label>Xác nhận mật khẩu</label>
+
+                  <div className="password-input">
+                    <input
+                      type={showPassword.confirm ? "text" : "password"}
+                      placeholder="Nhập lại mật khẩu"
+                      value={passwords.confirmPassword}
+                      onChange={(e) =>
+                        setPasswords({
+                          ...passwords,
+                          confirmPassword: e.target.value,
+                        })
+                      }
+                    />
+
+                    <button
+                      type="button"
+                      className="password-toggle"
+                      onClick={() =>
+                        setShowPassword({
+                          ...showPassword,
+                          confirm: !showPassword.confirm,
+                        })
+                      }
+                    >
+                      <i
+                        className={
+                          showPassword.confirm ? "fa fa-eye-slash" : "fa fa-eye"
+                        }
+                      ></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="password-action">
+                <button className="btn-save" onClick={handlePasswordChange}>
+                  <i className="fa fa-check-circle"></i>
+                  Xác nhận
+                </button>
+
                 <button
-                onClick={() =>
-                    ["oldPassword", "newPassword", "confirmPassword"].forEach((id) => {
-                    const field = document.getElementById(id);
-                    field.type = field.type === "password" ? "text" : "password";
-                    })
-                }
-                className="btn btn-outline-secondary btn-lg"
+                  className="btn-cancel"
+                  onClick={() => setShowPasswordSection(false)}
                 >
-                <i className="bi bi-eye"></i>
+                  <i className="fa fa-times-circle"></i>
+                  Hủy
                 </button>
-                <button onClick={handlePasswordChange} className="btn btn-success btn-lg">
-                Xác nhận
-                </button>
-                <button onClick={() => setShowPasswordSection(false)} className="btn btn-secondary btn-lg">
-                Hủy
-                </button>
+              </div>
             </div>
-            </div>
+          )}
         </div>
-        )}
-
       </div>
     </div>
   );
 }
-
-export default ProfilePage;

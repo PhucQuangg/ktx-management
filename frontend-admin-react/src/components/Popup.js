@@ -55,7 +55,7 @@ function Popup() {
         width: "100%",
         height: "100%",
         background: "rgba(0,0,0,0.5)",
-        zIndex: 2000,
+        zIndex: 1000000,
         justifyContent: "center",
         alignItems: "center",
         padding: "20px",

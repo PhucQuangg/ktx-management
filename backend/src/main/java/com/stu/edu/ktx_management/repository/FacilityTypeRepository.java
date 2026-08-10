@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface FacilityTypeRepository
-        extends JpaRepository<FacilityType,Integer> {
+public interface FacilityTypeRepository extends JpaRepository<FacilityType,Integer> {
     Optional<FacilityType> findByName(String name);
 }

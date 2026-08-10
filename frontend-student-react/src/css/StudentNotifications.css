@@ -1,0 +1,197 @@
+.notification-page {
+    max-width: 1100px;
+
+    margin: 0 auto;
+
+    padding: 35px;
+}
+
+.notification-banner {
+    background: linear-gradient(135deg, #1565c0, #1976d2, #42a5f5);
+
+    color: white;
+
+    padding: 35px 40px;
+
+    border-radius: 22px;
+
+    margin-bottom: 30px;
+
+    box-shadow: 0 15px 35px rgba(21, 101, 192, 0.18);
+}
+
+.notification-banner h2 {
+    margin: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    font-size: 32px;
+
+    font-weight: 700;
+}
+
+.notification-banner p {
+    margin-top: 14px;
+
+    margin-bottom: 0;
+
+    font-size: 16px;
+
+    opacity: 0.95;
+}
+
+.notification-empty {
+    background: #fff;
+
+    border-radius: 18px;
+
+    padding: 80px 20px;
+
+    text-align: center;
+
+    border: 1px solid #edf2f7;
+
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.05);
+}
+
+.notification-empty i {
+    font-size: 70px;
+
+    color: #b0bec5;
+
+    margin-bottom: 20px;
+}
+
+.notification-empty h3 {
+    color: #455a64;
+}
+
+.notification-empty p {
+    color: #78909c;
+}
+
+.notification-list {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 20px;
+}
+
+.notification-card {
+    background: white;
+
+    border-radius: 18px;
+
+    padding: 25px 28px;
+
+    border: 1px solid #e8eef5;
+
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.05);
+
+    transition: 0.25s;
+}
+
+.notification-card:hover {
+    transform: translateY(-3px);
+
+    box-shadow: 0 12px 28px rgba(21, 101, 192, 0.08);
+}
+
+.notification-left {
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 20px;
+}
+
+.notification-icon {
+    width: 72px;
+
+    height: 72px;
+
+    border-radius: 18px;
+
+    background: linear-gradient(135deg, #1565c0, #42a5f5);
+
+    color: white;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 30px;
+
+    flex-shrink: 0;
+
+    box-shadow: 0 8px 18px rgba(21, 101, 192, 0.25);
+}
+
+.notification-info h3 {
+    margin: 0;
+
+    font-size: 22px;
+
+    color: #263238;
+
+    font-weight: 700;
+}
+
+.notification-date {
+    margin-top: 10px;
+
+    color: #607d8b;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    font-size: 14px;
+}
+
+.notification-date i {
+    color: #1976d2;
+}
+
+.notification-content {
+    margin-top: 15px;
+
+    color: #607d8b;
+
+    line-height: 1.8;
+
+    white-space: pre-line;
+}
+
+@media (max-width: 768px) {
+    .notification-page {
+        padding: 20px;
+    }
+
+    .notification-banner {
+        padding: 25px;
+    }
+
+    .notification-banner h2 {
+        font-size: 26px;
+    }
+
+    .notification-left {
+        flex-direction: column;
+    }
+
+    .notification-icon {
+        width: 60px;
+
+        height: 60px;
+    }
+}

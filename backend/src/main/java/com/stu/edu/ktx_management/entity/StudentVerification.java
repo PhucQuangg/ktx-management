@@ -26,7 +26,9 @@ public class StudentVerification {
     private String className;
 
     private String email;
+
     private LocalDate dateOfBirth;
+
     @Enumerated(EnumType.STRING)
     private VerificationStatus status;
 }

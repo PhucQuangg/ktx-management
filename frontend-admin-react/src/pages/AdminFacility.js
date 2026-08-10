@@ -1,577 +1,806 @@
-import React, { useEffect, useState } from "react";
-import Sidebar from "../components/Sidebar";
-import SettingsPanel from "../components/SettingsPanel";
-import Script from "../components/Script";
+import React, { useEffect, useMemo, useState } from "react";
 
-import { useNavigate } from "react-router-dom";
+import Sidebar from "../components/Sidebar";
+
+import "../css/AdminFacilityList.css";
+
+const initialFacilityForm = {
+  roomId: "",
+  facilityName: "",
+  quantity: 1,
+  status: "GOOD",
+};
 
 export default function AdminListFacility() {
-  const [facilities, setFacilities] = useState([]);
-  const [filteredFacilities, setFilteredFacilities] = useState([]);
-  const [facilityStatus, setFacilityStatus] = useState("ALL");
-  const [roomFilter, setRoomFilter] = useState("ALL");
-  const [sidebarColor, setSidebarColor] = useState("bg-white");
+  const token =
+    sessionStorage.getItem("admin_token") ||
+    localStorage.getItem("admin_token");
 
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [isEdit, setIsEdit] = useState(false);
-  const [editingId, setEditingId] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  const [facilities, setFacilities] = useState([]);
+
   const [rooms, setRooms] = useState([]);
 
-  const [newFacility, setNewFacility] = useState({
-    roomId: "",
-    facilityName: "",
-    quantity: 1,
-    status: "GOOD",
-  });
+  const [loading, setLoading] = useState(true);
 
-  const navigate = useNavigate();
-  const token = sessionStorage.getItem("admin_token");
-  // LOAD DATA
-  useEffect(() => {
+  const [processing, setProcessing] = useState(false);
 
-    fetch("http://localhost:8080/api/admin/facilities", {
-      headers: {
-        Authorization: "Bearer " + token,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setFacilities(data);
-        setFilteredFacilities(data);
-      })
-      .catch((err) => console.error(err));
-  }, [token]);
+  const [facilityStatus, setFacilityStatus] = useState("ALL");
+
+  const [roomFilter, setRoomFilter] = useState("ALL");
+
+  const [keyword, setKeyword] = useState("");
+
+  const [showModal, setShowModal] = useState(false);
+
+  const [isEdit, setIsEdit] = useState(false);
+
+  const [editingId, setEditingId] = useState(null);
+
+  const [facilityForm, setFacilityForm] = useState(initialFacilityForm);
 
   useEffect(() => {
-    fetch("http://localhost:8080/api/admin/rooms", {
-      headers: {
-        Authorization: "Bearer " + token,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setRooms(data);
-      })
-      .catch((err) => console.error(err));
-  }, [token]);
-
-  // DANH SÁCH PHÒNG
-  const roomList = [...new Set(facilities.map((f) => f.roomName))];
-
-  // FILTER
-  useEffect(() => {
-    let filtered = facilities;
-
-    if (roomFilter !== "ALL") {
-      filtered = filtered.filter((f) => f.roomName === roomFilter);
+    if (!token) {
+      window.location.href = "/login";
+      return;
     }
 
-    if (facilityStatus !== "ALL") {
-      filtered = filtered.filter((f) => f.status === facilityStatus);
+    loadInitialData();
+  }, [token]);
+
+  const parseJsonResponse = async (response, fallbackValue) => {
+    const responseText = await response.text();
+
+    if (!response.ok) {
+      throw new Error(responseText || "Không thể tải dữ liệu.");
     }
 
-    setFilteredFacilities(filtered);
-  }, [roomFilter, facilityStatus, facilities]);
-  const handleAddFacility = async () => {
+    if (!responseText) {
+      return fallbackValue;
+    }
+
     try {
-      const res = await fetch("http://localhost:8080/api/admin/facilities", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + token,
-        },
-        body: JSON.stringify(newFacility),
-      });
-
-      const message = await res.text();
-
-      if (res.ok) {
-        window.showPopup(message || "Thêm thiết bị thành công!");
-
-        setShowAddModal(false);
-
-        setTimeout(() => {
-          window.location.reload();
-        }, 1500);
-      } else {
-        window.showPopup(message, true);
-      }
-    } catch (err) {
-      console.error(err);
-      window.showPopup("Có lỗi xảy ra!", true);
+      return JSON.parse(responseText);
+    } catch {
+      return fallbackValue;
     }
   };
 
-  const handleUpdateFacility = async () => {
+  const loadInitialData = async () => {
     try {
-      const res = await fetch(
-        `http://localhost:8080/api/admin/facilities/${editingId}`,
+      setLoading(true);
+
+      await Promise.all([fetchFacilities(), fetchRooms()]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchFacilities = async () => {
+    try {
+      const response = await fetch(
+        "http://localhost:8080/api/admin/facilities",
         {
-          method: "PUT",
           headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + token,
+            Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify(newFacility),
         }
       );
 
-      const message = await res.text();
+      const data = await parseJsonResponse(response, []);
 
-      if (res.ok) {
-        window.showPopup(message || "Cập nhật thành công!");
+      setFacilities(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error("Lỗi tải cơ sở vật chất:", error);
 
-        setShowAddModal(false);
-
-        setTimeout(() => {
-          window.location.reload();
-        }, 1500);
-      } else {
-        window.showPopup(message, true);
-      }
-    } catch (err) {
-      console.error(err);
-      window.showPopup("Có lỗi xảy ra!", true);
+      window.showPopup?.(
+        error.message || "Lỗi khi tải danh sách cơ sở vật chất.",
+        true
+      );
     }
   };
-  // DELETE
-  const handleDelete = async (facilityId) => {
-    window.showPopup(
-      "Bạn có chắc chắn muốn xoá thiết bị này không?",
+
+  const fetchRooms = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/api/admin/rooms", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await parseJsonResponse(response, []);
+
+      setRooms(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error("Lỗi tải phòng:", error);
+
+      window.showPopup?.(error.message || "Lỗi khi tải danh sách phòng.", true);
+    }
+  };
+
+  const filteredFacilities = useMemo(() => {
+    const normalizedKeyword = keyword.trim().toLowerCase();
+
+    return facilities.filter((facility) => {
+      const matchesRoom =
+        roomFilter === "ALL" || facility.roomName === roomFilter;
+
+      const matchesStatus =
+        facilityStatus === "ALL" || facility.status === facilityStatus;
+
+      const matchesKeyword =
+        !normalizedKeyword ||
+        facility.facilityName?.toLowerCase().includes(normalizedKeyword) ||
+        facility.roomName?.toLowerCase().includes(normalizedKeyword);
+
+      return matchesRoom && matchesStatus && matchesKeyword;
+    });
+  }, [facilities, roomFilter, facilityStatus, keyword]);
+
+  const statistics = useMemo(() => {
+    const good = facilities.filter(
+      (facility) => facility.status === "GOOD"
+    ).length;
+
+    const broken = facilities.filter(
+      (facility) => facility.status === "BROKEN"
+    ).length;
+
+    const maintenance = facilities.filter(
+      (facility) => facility.status === "MAINTENANCE"
+    ).length;
+
+    const totalQuantity = facilities.reduce(
+      (total, facility) => total + Number(facility.quantity || 0),
+      0
+    );
+
+    return {
+      total: facilities.length,
+      totalQuantity,
+      good,
+      broken,
+      maintenance,
+    };
+  }, [facilities]);
+
+  const roomList = useMemo(() => {
+    return [
+      ...new Set(
+        facilities.map((facility) => facility.roomName).filter(Boolean)
+      ),
+    ];
+  }, [facilities]);
+
+  const getStatusText = (status) => {
+    const statusMap = {
+      GOOD: "Tốt",
+      BROKEN: "Hỏng",
+      MAINTENANCE: "Bảo trì",
+    };
+
+    return statusMap[status] || status || "Chưa xác định";
+  };
+
+  const openAddModal = () => {
+    setIsEdit(false);
+    setEditingId(null);
+    setFacilityForm(initialFacilityForm);
+    setShowModal(true);
+  };
+
+  const openEditModal = (facility) => {
+    setIsEdit(true);
+    setEditingId(facility.id);
+
+    setFacilityForm({
+      roomId: facility.roomId || "",
+      facilityName: facility.facilityName || "",
+      quantity: Number(facility.quantity || 1),
+      status: facility.status || "GOOD",
+    });
+
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    if (processing) {
+      return;
+    }
+
+    setShowModal(false);
+    setIsEdit(false);
+    setEditingId(null);
+    setFacilityForm(initialFacilityForm);
+  };
+
+  const handleFacilityChange = (event) => {
+    const { name, value, type } = event.target;
+
+    setFacilityForm((previous) => ({
+      ...previous,
+      [name]: type === "number" ? Number(value) : value,
+    }));
+  };
+
+  const validateFacility = () => {
+    if (!facilityForm.roomId) {
+      window.showPopup?.("Vui lòng chọn phòng.", true);
+
+      return false;
+    }
+
+    if (!facilityForm.facilityName.trim()) {
+      window.showPopup?.("Vui lòng nhập tên thiết bị.", true);
+
+      return false;
+    }
+
+    if (!facilityForm.quantity || Number(facilityForm.quantity) <= 0) {
+      window.showPopup?.("Số lượng phải lớn hơn 0.", true);
+
+      return false;
+    }
+
+    if (!facilityForm.status) {
+      window.showPopup?.("Vui lòng chọn tình trạng.", true);
+
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleSaveFacility = async () => {
+    if (!validateFacility()) {
+      return;
+    }
+
+    try {
+      setProcessing(true);
+
+      const payload = {
+        roomId: Number(facilityForm.roomId),
+        facilityName: facilityForm.facilityName.trim(),
+        quantity: Number(facilityForm.quantity),
+        status: facilityForm.status,
+      };
+
+      const url = isEdit
+        ? `http://localhost:8080/api/admin/facilities/${editingId}`
+        : "http://localhost:8080/api/admin/facilities";
+
+      const response = await fetch(url, {
+        method: isEdit ? "PUT" : "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const message = await response.text();
+
+      if (!response.ok) {
+        throw new Error(
+          message ||
+            (isEdit
+              ? "Không thể cập nhật thiết bị."
+              : "Không thể thêm thiết bị.")
+        );
+      }
+
+      closeModal();
+
+      await fetchFacilities();
+
+      setTimeout(() => {
+        window.showPopup?.(
+          message ||
+            (isEdit
+              ? "Cập nhật thiết bị thành công!"
+              : "Thêm thiết bị thành công!")
+        );
+      }, 250);
+    } catch (error) {
+      console.error("Lỗi lưu thiết bị:", error);
+
+      window.showPopup?.(
+        error.message || "Có lỗi xảy ra khi lưu thiết bị.",
+        true
+      );
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const handleDelete = (facilityId) => {
+    window.showPopup?.(
+      "Bạn có chắc chắn muốn xóa thiết bị này không?",
       false,
       true,
       async () => {
         try {
-          const res = await fetch(
+          setProcessing(true);
+
+          const response = await fetch(
             `http://localhost:8080/api/admin/facilities/${facilityId}`,
             {
               method: "DELETE",
               headers: {
-                Authorization: "Bearer " + token,
+                Authorization: `Bearer ${token}`,
               },
             }
           );
 
-          if (res.ok) {
-            setFacilities((prev) => prev.filter((f) => f.id !== facilityId));
+          const message = await response.text();
 
-            setTimeout(() => {
-              window.showPopup("Xóa thành công!");
-            }, 300);
-          } else {
-            const err = await res.text();
-            window.showPopup(err, true);
+          if (!response.ok) {
+            throw new Error(message || "Không thể xóa thiết bị.");
           }
-        } catch (err) {
-          console.error(err);
-          window.showPopup("Có lỗi xảy ra!", true);
+
+          setFacilities((previous) =>
+            previous.filter((facility) => facility.id !== facilityId)
+          );
+
+          setTimeout(() => {
+            window.showPopup?.(message || "Xóa thiết bị thành công!");
+          }, 250);
+        } catch (error) {
+          console.error("Lỗi xóa thiết bị:", error);
+
+          setTimeout(() => {
+            window.showPopup?.(
+              error.message || "Có lỗi xảy ra khi xóa thiết bị.",
+              true
+            );
+          }, 250);
+        } finally {
+          setProcessing(false);
         }
       }
     );
   };
 
+  const clearFilters = () => {
+    setRoomFilter("ALL");
+    setFacilityStatus("ALL");
+    setKeyword("");
+  };
+
   return (
-    <div className="g-sidenav-show">
-      <Sidebar color={sidebarColor} />
+    <div className="admin-facility-layout">
+      <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
-      <main className="main-content position-relative max-height-vh-100 h-100 border-radius-lg">
-        {/* NAVBAR */}
-        <nav className="navbar navbar-main navbar-expand-lg px-0 mx-3 shadow-none border-radius-xl">
-          <div className="container-fluid py-1 px-3">
-            <nav aria-label="breadcrumb">
-              <ol className="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
-                <li className="breadcrumb-item text-sm">
-                  <a className="opacity-5 text-dark" href="#">
-                    Trang
-                  </a>
-                </li>
+      <main
+        className={`admin-facility-content ${
+          sidebarOpen ? "" : "sidebar-collapsed"
+        }`}
+      >
+        <section className="facility-list-banner">
+          <div>
+            <div className="facility-list-banner-badge">
+              <i className="fa fa-couch"></i>
+              Quản lý cơ sở vật chất
+            </div>
 
-                <li
-                  className="breadcrumb-item text-sm text-dark active"
-                  aria-current="page"
-                >
-                  Quản lý cơ sở vật chất
-                </li>
-              </ol>
-            </nav>
+            <h1>Danh sách cơ sở vật chất</h1>
 
-            <ul className="navbar-nav d-flex align-items-center justify-content-end">
-              <li className="nav-item d-xl-none ps-3 d-flex align-items-center">
-                <a
-                  href="#"
-                  className="nav-link text-body p-0"
-                  id="iconNavbarSidenav"
-                >
-                  <div className="sidenav-toggler-inner">
-                    <i className="sidenav-toggler-line"></i>
-                    <i className="sidenav-toggler-line"></i>
-                    <i className="sidenav-toggler-line"></i>
-                  </div>
-                </a>
-              </li>
-
-              <li className="nav-item px-3 d-flex align-items-center">
-                <a href="#" className="nav-link text-body p-0">
-                  <i className="material-symbols-rounded fixed-plugin-button-nav">
-                    settings
-                  </i>
-                </a>
-              </li>
-
-              <li className="nav-item d-flex align-items-center">
-                <a
-                  href="http://localhost:3000/login"
-                  className="nav-link text-body font-weight-bold px-0"
-                >
-                  <i className="material-symbols-rounded">account_circle</i>
-                </a>
-              </li>
-            </ul>
+            <p>
+              Theo dõi thiết bị theo từng phòng, cập nhật số lượng và tình trạng
+              sử dụng trong ký túc xá.
+            </p>
           </div>
-        </nav>
 
-        {/* CONTENT */}
-        <div className="container-fluid py-2">
-          <div className="row">
-            <div className="col-12">
-              <div className="card my-4">
-                <div className="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
-                  <div className="bg-gradient-dark shadow-dark border-radius-lg pt-4 pb-3">
-                    <h6 className="text-white text-capitalize ps-3">
-                      Danh sách cơ sở vật chất
-                    </h6>
-                  </div>
-                </div>
+          <div className="facility-list-banner-icon">
+            <i className="fa fa-toolbox"></i>
+          </div>
+        </section>
 
-                <div className="card-body px-0 pb-2">
-                  <div className="table-responsive p-0">
-                    {/* FILTER */}
-                    <div className="d-flex justify-content-between align-items-center px-4 pt-3">
-                      <div className="d-flex gap-2">
-                        <select
-                          value={roomFilter}
-                          onChange={(e) => setRoomFilter(e.target.value)}
-                          className="form-select"
-                          style={{
-                            width: "180px",
-                          }}
+        <section className="facility-summary-grid">
+          <div className="facility-summary-card total">
+            <div className="facility-summary-icon">
+              <i className="fa fa-cubes"></i>
+            </div>
+
+            <div>
+              <span>Loại thiết bị</span>
+
+              <strong>{statistics.total}</strong>
+            </div>
+          </div>
+
+          <div className="facility-summary-card quantity">
+            <div className="facility-summary-icon">
+              <i className="fa fa-layer-group"></i>
+            </div>
+
+            <div>
+              <span>Tổng số lượng</span>
+
+              <strong>{statistics.totalQuantity}</strong>
+            </div>
+          </div>
+
+          <div className="facility-summary-card good">
+            <div className="facility-summary-icon">
+              <i className="fa fa-check-circle"></i>
+            </div>
+
+            <div>
+              <span>Tình trạng tốt</span>
+
+              <strong>{statistics.good}</strong>
+            </div>
+          </div>
+
+          <div className="facility-summary-card issue">
+            <div className="facility-summary-icon">
+              <i className="fa fa-triangle-exclamation"></i>
+            </div>
+
+            <div>
+              <span>Hỏng / Bảo trì</span>
+
+              <strong>{statistics.broken + statistics.maintenance}</strong>
+            </div>
+          </div>
+        </section>
+
+        <section className="facility-list-section">
+          <div className="facility-list-toolbar">
+            <div>
+              <h2>Danh sách thiết bị</h2>
+
+              <p>Tìm kiếm và lọc thiết bị theo phòng hoặc tình trạng.</p>
+            </div>
+
+            <button
+              type="button"
+              className="facility-add-button"
+              onClick={openAddModal}
+            >
+              <i className="fa fa-plus"></i>
+              Thêm thiết bị
+            </button>
+          </div>
+
+          <div className="facility-filter-panel">
+            <div className="facility-filter-group facility-search-group">
+              <label htmlFor="facility-keyword">Tìm kiếm</label>
+
+              <div className="facility-search-input">
+                <i className="fa fa-search"></i>
+
+                <input
+                  id="facility-keyword"
+                  type="text"
+                  placeholder="Tìm theo tên thiết bị hoặc phòng..."
+                  value={keyword}
+                  onChange={(event) => setKeyword(event.target.value)}
+                />
+
+                {keyword && (
+                  <button type="button" onClick={() => setKeyword("")}>
+                    <i className="fa fa-times"></i>
+                  </button>
+                )}
+              </div>
+            </div>
+
+            <div className="facility-filter-group">
+              <label htmlFor="facility-room">Phòng</label>
+
+              <select
+                id="facility-room"
+                value={roomFilter}
+                onChange={(event) => setRoomFilter(event.target.value)}
+              >
+                <option value="ALL">Tất cả phòng</option>
+
+                {roomList.map((room) => (
+                  <option key={room} value={room}>
+                    {room}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="facility-filter-group">
+              <label htmlFor="facility-status">Tình trạng</label>
+
+              <select
+                id="facility-status"
+                value={facilityStatus}
+                onChange={(event) => setFacilityStatus(event.target.value)}
+              >
+                <option value="ALL">Tất cả tình trạng</option>
+
+                <option value="GOOD">Tốt</option>
+
+                <option value="BROKEN">Hỏng</option>
+
+                <option value="MAINTENANCE">Bảo trì</option>
+              </select>
+            </div>
+
+            {(keyword || roomFilter !== "ALL" || facilityStatus !== "ALL") && (
+              <button
+                type="button"
+                className="facility-clear-filter"
+                onClick={clearFilters}
+              >
+                <i className="fa fa-times"></i>
+                Xóa bộ lọc
+              </button>
+            )}
+
+            <span className="facility-result-count">
+              {filteredFacilities.length} kết quả
+            </span>
+          </div>
+
+          {loading ? (
+            <div className="facility-list-loading">
+              <i className="fa fa-spinner fa-spin"></i>
+
+              <p>Đang tải danh sách thiết bị...</p>
+            </div>
+          ) : filteredFacilities.length === 0 ? (
+            <div className="facility-list-empty">
+              <div className="facility-empty-icon">
+                <i className="fa fa-box-open"></i>
+              </div>
+
+              <h3>Không có thiết bị phù hợp</h3>
+
+              <p>Không tìm thấy thiết bị theo điều kiện lọc hiện tại.</p>
+            </div>
+          ) : (
+            <div className="facility-table-wrapper">
+              <table className="facility-table">
+                <thead>
+                  <tr>
+                    <th>Phòng</th>
+                    <th>Thiết bị</th>
+                    <th>Số lượng</th>
+                    <th>Tình trạng</th>
+                    <th>Thao tác</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {filteredFacilities.map((facility) => (
+                    <tr key={facility.id}>
+                      <td>
+                        <span className="facility-room-badge">
+                          <i className="fa fa-door-open"></i>
+
+                          {facility.roomName || "Chưa cập nhật"}
+                        </span>
+                      </td>
+
+                      <td>
+                        <div className="facility-name-cell">
+                          <div className="facility-item-icon">
+                            <i className="fa fa-couch"></i>
+                          </div>
+
+                          <div>
+                            <strong>
+                              {facility.facilityName || "Chưa cập nhật"}
+                            </strong>
+
+                            <span>Mã thiết bị #{facility.id}</span>
+                          </div>
+                        </div>
+                      </td>
+
+                      <td>
+                        <span className="facility-quantity-badge">
+                          {facility.quantity || 0}
+                        </span>
+                      </td>
+
+                      <td>
+                        <span
+                          className={`facility-status-badge ${
+                            facility.status ? facility.status.toLowerCase() : ""
+                          }`}
                         >
-                          <option value="ALL">Tất cả phòng</option>
+                          {getStatusText(facility.status)}
+                        </span>
+                      </td>
 
-                          {roomList.map((room) => (
-                            <option key={room} value={room}>
-                              {room}
-                            </option>
-                          ))}
-                        </select>
-
-                        <select
-                          value={facilityStatus}
-                          onChange={(e) => setFacilityStatus(e.target.value)}
-                          className="form-select"
-                          style={{
-                            width: "180px",
-                          }}
-                        >
-                          <option value="ALL">Tất cả tình trạng</option>
-
-                          <option value="GOOD">Tốt</option>
-
-                          <option value="BROKEN">Hỏng</option>
-
-                          <option value="MAINTENANCE">Bảo trì</option>
-                        </select>
-                      </div>
-
-                      <button
-                        className="btn btn-dark"
-                        onClick={() => {
-                          setIsEdit(false);
-                          setEditingId(null);
-
-                          setNewFacility({
-                            roomId: "",
-                            facilityName: "",
-                            quantity: 1,
-                            status: "GOOD",
-                          });
-
-                          setShowAddModal(true);
-                        }}
-                      >
-                        + Thêm thiết bị
-                      </button>
-                    </div>
-
-                    {/* TABLE */}
-                    <table className="table align-middle mb-0">
-                      <thead>
-                        <tr className="text-center">
-                          <th>Phòng</th>
-                          <th>Thiết bị</th>
-                          <th>Số lượng</th>
-                          <th>Tình trạng</th>
-                          <th
-                            style={{
-                              width: "100px",
-                            }}
+                      <td>
+                        <div className="facility-action-buttons">
+                          <button
+                            type="button"
+                            className="facility-edit-button"
+                            onClick={() => openEditModal(facility)}
                           >
-                            Hành động
-                          </th>
-                        </tr>
-                      </thead>
+                            <i className="fa fa-pen"></i>
+                            Sửa
+                          </button>
 
-                      <tbody>
-                        {filteredFacilities.length > 0 ? (
-                          filteredFacilities.map((f) => (
-                            <tr key={f.id} className="text-center">
-                              <td>{f.roomName}</td>
+                          <button
+                            type="button"
+                            className="facility-delete-button"
+                            onClick={() => handleDelete(facility.id)}
+                          >
+                            <i className="fa fa-trash"></i>
+                            Xóa
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </section>
+      </main>
 
-                              <td>{f.facilityName}</td>
+      {showModal && (
+        <div
+          className="facility-modal-overlay"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) {
+              closeModal();
+            }
+          }}
+        >
+          <div className="facility-modal">
+            <div className="facility-modal-header">
+              <div>
+                <span>Quản lý cơ sở vật chất</span>
 
-                              <td>{f.quantity}</td>
+                <h2>{isEdit ? "Cập nhật thiết bị" : "Thêm thiết bị"}</h2>
+              </div>
 
-                              <td>
-                                {f.status === "GOOD" && (
-                                  <span className="badge bg-success">Tốt</span>
-                                )}
+              <button type="button" onClick={closeModal} disabled={processing}>
+                <i className="fa fa-times"></i>
+              </button>
+            </div>
 
-                                {f.status === "BROKEN" && (
-                                  <span className="badge bg-danger">Hỏng</span>
-                                )}
+            <div className="facility-modal-body">
+              <div className="facility-modal-form-grid">
+                <div className="facility-modal-form-group full-width">
+                  <label htmlFor="roomId">
+                    Phòng
+                    <span>*</span>
+                  </label>
 
-                                {f.status === "MAINTENANCE" && (
-                                  <span className="badge bg-warning text-dark">
-                                    Bảo trì
-                                  </span>
-                                )}
-                              </td>
+                  <div className="facility-modal-input">
+                    <i className="fa fa-door-open"></i>
 
-                              <td>
-                                <i
-                                  className="fa-regular fa-pen-to-square text-secondary me-2"
-                                  style={{
-                                    cursor: "pointer",
-                                  }}
-                                  onClick={() => {
-                                    setIsEdit(true);
-                                    setEditingId(f.id);
+                    <select
+                      id="roomId"
+                      name="roomId"
+                      value={facilityForm.roomId}
+                      onChange={handleFacilityChange}
+                    >
+                      <option value="">-- Chọn phòng --</option>
 
-                                    setNewFacility({
-                                      roomId: f.roomId,
-                                      facilityName: f.facilityName,
-                                      quantity: f.quantity,
-                                      status: f.status,
-                                    });
+                      {rooms.map((room) => (
+                        <option key={room.id} value={room.id}>
+                          {room.name || room.roomName}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
 
-                                    setShowAddModal(true);
-                                  }}
-                                ></i>
+                <div className="facility-modal-form-group full-width">
+                  <label htmlFor="facilityName">
+                    Tên thiết bị
+                    <span>*</span>
+                  </label>
 
-                                <i
-                                  className="fa-solid fa-trash text-danger"
-                                  style={{
-                                    cursor: "pointer",
-                                  }}
-                                  onClick={() => handleDelete(f.id)}
-                                ></i>
-                              </td>
-                            </tr>
-                          ))
-                        ) : (
-                          <tr>
-                            <td colSpan="5" className="text-center py-3">
-                              Không có dữ liệu
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
+                  <div className="facility-modal-input">
+                    <i className="fa fa-couch"></i>
+
+                    <input
+                      id="facilityName"
+                      type="text"
+                      name="facilityName"
+                      placeholder="Ví dụ: Giường tầng, máy lạnh..."
+                      value={facilityForm.facilityName}
+                      onChange={handleFacilityChange}
+                    />
+                  </div>
+                </div>
+
+                <div className="facility-modal-form-group">
+                  <label htmlFor="quantity">
+                    Số lượng
+                    <span>*</span>
+                  </label>
+
+                  <div className="facility-modal-input">
+                    <i className="fa fa-layer-group"></i>
+
+                    <input
+                      id="quantity"
+                      type="number"
+                      name="quantity"
+                      min="1"
+                      value={facilityForm.quantity}
+                      onChange={handleFacilityChange}
+                    />
+                  </div>
+                </div>
+
+                <div className="facility-modal-form-group">
+                  <label htmlFor="status">
+                    Tình trạng
+                    <span>*</span>
+                  </label>
+
+                  <div className="facility-modal-input">
+                    <i className="fa fa-circle-info"></i>
+
+                    <select
+                      id="status"
+                      name="status"
+                      value={facilityForm.status}
+                      onChange={handleFacilityChange}
+                    >
+                      <option value="GOOD">Tốt</option>
+
+                      <option value="BROKEN">Hỏng</option>
+
+                      <option value="MAINTENANCE">Bảo trì</option>
+                    </select>
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-      </main>
-      {showAddModal && (
-        <div className="modern-modal-overlay">
-          <div className="modern-modal">
-            {/* HEADER */}
-            <div className="modal-header-custom">
-              <img
-                src="/assets/images/small-logos/Logo_STU.png"
-                alt="STU Logo"
-                className="modal-logo"
-              />
 
-              <div>
-                <h2 className="modal-title">
-                  {isEdit ? "Cập nhật cơ sở vật chất" : "Thêm cơ sở vật chất"}
-                </h2>
+              <div className="facility-modal-note">
+                <i className="fa fa-info-circle"></i>
 
-                <p className="modal-subtitle">Quản lý ký túc xá – STU</p>
+                <p>
+                  Vui lòng chọn đúng phòng, số lượng và tình trạng thực tế của
+                  thiết bị.
+                </p>
               </div>
             </div>
 
-            {/* FORM */}
-            <div className="modal-body-custom">
-              <div className="row g-3">
-                {/* PHÒNG */}
-                <div className="col-md-12">
-                  <label className="form-label">
-                    <strong>Phòng:</strong>
-                  </label>
+            <div className="facility-modal-footer">
+              <button
+                type="button"
+                className="facility-modal-cancel-button"
+                onClick={closeModal}
+                disabled={processing}
+              >
+                Đóng
+              </button>
 
-                  <select
-                    className="form-select"
-                    value={newFacility.roomId}
-                    onChange={(e) =>
-                      setNewFacility({
-                        ...newFacility,
-                        roomId: e.target.value,
-                      })
-                    }
-                    required
-                  >
-                    <option value="">-- Chọn phòng --</option>
+              <button
+                type="button"
+                className="facility-modal-save-button"
+                onClick={handleSaveFacility}
+                disabled={processing}
+              >
+                {processing ? (
+                  <>
+                    <i className="fa fa-spinner fa-spin"></i>
+                    Đang xử lý...
+                  </>
+                ) : (
+                  <>
+                    <i className={`fa ${isEdit ? "fa-save" : "fa-plus"}`}></i>
 
-                    {rooms.map((room) => (
-                      <option key={room.id} value={room.id}>
-                        {room.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* TÊN THIẾT BỊ */}
-                <div className="col-md-12">
-                  <label className="form-label">
-                    <strong>Tên thiết bị:</strong>
-                  </label>
-
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder="Ví dụ: Giường tầng, Máy lạnh..."
-                    value={newFacility.facilityName}
-                    onChange={(e) =>
-                      setNewFacility({
-                        ...newFacility,
-                        facilityName: e.target.value,
-                      })
-                    }
-                    required
-                  />
-                </div>
-
-                {/* SỐ LƯỢNG */}
-                <div className="col-md-6">
-                  <label className="form-label">
-                    <strong>Số lượng:</strong>
-                  </label>
-
-                  <input
-                    type="number"
-                    min="1"
-                    className="form-control"
-                    placeholder="Nhập số lượng"
-                    value={newFacility.quantity}
-                    onChange={(e) =>
-                      setNewFacility({
-                        ...newFacility,
-                        quantity: Number(e.target.value),
-                      })
-                    }
-                    required
-                  />
-                </div>
-
-                {/* TÌNH TRẠNG */}
-                <div className="col-md-6">
-                  <label className="form-label">
-                    <strong>Tình trạng:</strong>
-                  </label>
-
-                  <select
-                    className="form-select"
-                    value={newFacility.status}
-                    onChange={(e) =>
-                      setNewFacility({
-                        ...newFacility,
-                        status: e.target.value,
-                      })
-                    }
-                  >
-                    <option value="GOOD">Tốt</option>
-
-                    <option value="BROKEN">Hỏng</option>
-
-                    <option value="MAINTENANCE">Bảo trì</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* BUTTON */}
-              <div className="modal-actions">
-                <button
-                  type="button"
-                  className="btn btn-outline-secondary"
-                  onClick={() => setShowAddModal(false)}
-                >
-                  Đóng
-                </button>
-
-                <button
-                  className={`btn ${isEdit ? "btn-warning" : "btn-success"}`}
-                  onClick={isEdit ? handleUpdateFacility : handleAddFacility}
-                >
-                  {isEdit ? "Cập nhật" : "Thêm"}
-                </button>
-              </div>
+                    {isEdit ? "Lưu thay đổi" : "Thêm thiết bị"}
+                  </>
+                )}
+              </button>
             </div>
           </div>
         </div>
       )}
-      <SettingsPanel
-        sidebarColor={sidebarColor}
-        setSidebarColor={setSidebarColor}
-      />
-
-      <Script />
-      <style>{`
-          .modern-modal-overlay{
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,.55);
-  backdrop-filter: blur(3px);
-  z-index: 99999;
-}
-
-.modern-modal{
-  position: fixed;
-
-
-
-  width: 650px;
-  max-width: 95%;
-
-  background: white;
-  border-radius: 20px;
-
-  overflow: hidden;
-
-  box-shadow: 0 20px 50px rgba(0,0,0,.25);
-  textarea.form-control{
-  min-height:180px;
-  resize:none;
-  border:1px solid #ced4da !important;
-  border-radius:10px;
-  padding:12px;
-  line-height:1.6;
-}
-          }
-          `}</style>
     </div>
   );
 }

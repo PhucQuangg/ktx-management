@@ -30,16 +30,17 @@ public class ProfileController {
     }
 
     @PutMapping("/profile/update")
-    public Student updateMyProfile(@AuthenticationPrincipal UserDetails userDetails,
+    public ResponseEntity<?> updateMyProfile(@AuthenticationPrincipal UserDetails userDetails,
                                    @RequestBody ProfileDTO request) {
         String username = userDetails.getUsername();
-        return studentService.updateMyProfile(username, request);
+        studentService.updateMyProfile(username, request);
+        return ResponseEntity.ok("Cập nhật thông tin thành công!");
     }
     @PutMapping("/change-password")
     public ResponseEntity<?> updatePassword(@RequestBody PasswordChangeRequest req, Principal principal) {
         String username = principal.getName();
         passwordService.updatePassword(username, req.getOldPassword(), req.getNewPassword());
-        return ResponseEntity.ok("Cập nhật mật khẩu thành công");
+        return ResponseEntity.ok("Cập nhật mật khẩu thành công!");
     }
 
 

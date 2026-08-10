@@ -1,21 +1,15 @@
 
-`	java:S112h"FDefine and throw a dedicated exception instead of using a generic one.(‹Èï½ûÿÿÿÿ
-a	java:S112–"FDefine and throw a dedicated exception instead of using a generic one.(‰à®Çøÿÿÿÿ
-a
-java:S11921"KDefine a constant instead of duplicating this literal "vnp_TxnRef" 3 times.(©¶Æ³
-j
-java:S1192"ODefine a constant instead of duplicating this literal "vnp_SecureHash" 4 times.(°¯èÀşÿÿÿÿ
-C
-java:S1172".Remove this unused method parameter "request".( ÷¤-
-S	java:S106Y"9Replace this use of System.out or System.err by a logger.(›ÿ³ûÿÿÿÿ
-N	java:S106Z"9Replace this use of System.out or System.err by a logger.(Ö­ÙÕ
-S	java:S106\"9Replace this use of System.out or System.err by a logger.(…ôˆ•ùÿÿÿÿ
-N	java:S106]"9Replace this use of System.out or System.err by a logger.(ÂÇÜÓ
-N	java:S106_"9Replace this use of System.out or System.err by a logger.(”˜ß¿
-N	java:S106`"9Replace this use of System.out or System.err by a logger.(ØĞğ
-O	java:S106Ò"9Replace this use of System.out or System.err by a logger.(Ğ•¸Á
-O	java:S106Ó"9Replace this use of System.out or System.err by a logger.(ÏšŸÇ
-T	java:S106Ô"9Replace this use of System.out or System.err by a logger.(èÚœêÿÿÿÿÿ
-N	java:S106Õ"9Replace this use of System.out or System.err by a logger.(†ş–L
-G
-java:S1144¥"0Remove this unused private "getClientIp" method.(É“üá
+b	java:S112."FDefine and throw a dedicated exception instead of using a generic one.(ÃÔ÷ı8í„Àéı3
+h	java:S112—"FDefine and throw a dedicated exception instead of using a generic one.(‹Èï½ûÿÿÿÿ8˜¾÷ƒş3
+c	java:S112Ï"FDefine and throw a dedicated exception instead of using a generic one.(ÃÔ÷ı8˜¾÷ƒş3
+h
+java:S1192K"KDefine a constant instead of duplicating this literal "vnp_TxnRef" 3 times.(©¶Æ³8ò„Àéı3
+r
+java:S1192³"ODefine a constant instead of duplicating this literal "vnp_SecureHash" 4 times.(°¯èÀşÿÿÿÿ8˜¾÷ƒş3
+^	java:S125„"<This block of commented-out lines of code should be removed.(¼è÷ïøÿÿÿÿ8‹€„ş3
+^	java:S125ç"<This block of commented-out lines of code should be removed.(¼è÷ïøÿÿÿÿ8ª×„ş3
+V	java:S106‰"9Replace this use of System.out or System.err by a logger.(ÆÀûı8Ã€’„ş3
+V	java:S106"9Replace this use of System.out or System.err by a logger.(ÏšŸÇ8Ã€’„ş3
+[	java:S106"9Replace this use of System.out or System.err by a logger.(èÚœêÿÿÿÿÿ8Ã€’„ş3
+U	java:S106‘"9Replace this use of System.out or System.err by a logger.(†ş–L8Ä€’„ş3
+U	java:S106«"9Replace this use of System.out or System.err by a logger.(´¦£o8Š­®„ş3

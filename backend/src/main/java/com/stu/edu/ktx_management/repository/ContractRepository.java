@@ -22,7 +22,9 @@ public interface ContractRepository extends JpaRepository<Contract, Integer> {
     List<Contract> findByRoomId(Integer roomId);
 
     List<Contract> findByStatusAndEndDateBefore(ContractStatus status, LocalDate date);
+
     long countByStatus(ContractStatus status);
+
     boolean existsByStudentAndStatus(
             Student student,
             ContractStatus status

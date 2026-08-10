@@ -7,8 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface SemesterRegistrationRepository
-        extends JpaRepository<SemesterRegistration, Integer> {
+public interface SemesterRegistrationRepository extends JpaRepository<SemesterRegistration, Integer> {
 
     List<SemesterRegistration> findByActiveTrue();
 }

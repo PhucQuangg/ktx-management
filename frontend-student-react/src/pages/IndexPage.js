@@ -1,8 +1,9 @@
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import Script from "../components/Script";
-
+import { useState } from "react";
 export default function IndexPage() {
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const features = [
     {
       title: "Đăng ký nội trú",
@@ -49,21 +50,22 @@ export default function IndexPage() {
   ];
 
   return (
-    <div className="wrapper">
-      <Header />
-      <Sidebar />
+    <>
+      <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+
+      <Sidebar sidebarOpen={sidebarOpen} />
 
       <div
         className="content-wrapper"
         style={{
-          background: "#f7f9fc",
+          marginLeft: sidebarOpen ? "260px" : "80px",
+          marginTop: "70px",
+          transition: "all .3s ease",
+          background: "#eef4fb",
           minHeight: "100vh",
-          paddingTop: "70px",
           paddingBottom: "40px",
         }}
       >
-        {/* Banner */}
-
         <section
           style={{
             margin: "20px",
@@ -71,21 +73,19 @@ export default function IndexPage() {
             overflow: "hidden",
             position: "relative",
             height: "430px",
-            backgroundImage:
-              "url('/assets/images/illustrations/STUU.jpg')",
+            backgroundImage: "url('/assets/images/illustrations/STUU.jpg')",
             backgroundPosition: "center 25%",
             backgroundSize: "cover",
           }}
         >
+          {" "}
           <div
             style={{
               position: "absolute",
               inset: 0,
-              background:
-                "linear-gradient(rgba(0,0,0,.45),rgba(0,0,0,.35))",
+              background: "linear-gradient(rgba(0,0,0,.45),rgba(0,0,0,.35))",
             }}
           />
-
           <div
             style={{
               position: "absolute",
@@ -99,9 +99,9 @@ export default function IndexPage() {
           >
             <h1
               style={{
-                fontSize: "52px",
-                fontWeight: "700",
-                marginBottom: "20px",
+                fontSize: "48px",
+                fontWeight: 700,
+                letterSpacing: 1,
               }}
             >
               CHÀO MỪNG ĐẾN KÝ TÚC XÁ STU
@@ -109,21 +109,27 @@ export default function IndexPage() {
 
             <p
               style={{
-                fontSize: "22px",
-                marginBottom: "35px",
+                fontSize: 20,
+                marginTop: 20,
+                marginBottom: 35,
               }}
             >
-              Không gian học tập - Sinh hoạt - Phát triển toàn diện dành cho sinh
-              viên.
+              Không gian học tập - Sinh hoạt - Phát triển toàn diện dành cho
+              sinh viên
             </p>
 
             <a
-              href="/room-type"
-              className="btn btn-warning btn-lg"
+              href="/register-dorm"
               style={{
-                borderRadius: "30px",
-                padding: "13px 40px",
-                fontWeight: "bold",
+                background: "#1565C0",
+                color: "#fff",
+                padding: "14px 40px",
+                borderRadius: 35,
+                textDecoration: "none",
+                fontWeight: 600,
+                fontSize: 17,
+                display: "inline-block",
+                transition: ".3s",
               }}
             >
               Đăng ký phòng ngay
@@ -131,22 +137,20 @@ export default function IndexPage() {
           </div>
         </section>
 
-        {/* Giới thiệu */}
-
-        <div
+        <section
           style={{
-            margin: "20px",
+            margin: "25px",
             background: "#fff",
-            borderRadius: "15px",
-            padding: "35px",
-            boxShadow: "0 5px 20px rgba(0,0,0,.08)",
+            borderRadius: 20,
+            padding: 35,
+            boxShadow: "0 10px 25px rgba(0,0,0,.08)",
           }}
         >
           <h2
             style={{
-              color: "#2c3e50",
-              fontWeight: "700",
-              marginBottom: "20px",
+              color: "#0d47a1",
+              fontWeight: 700,
+              marginBottom: 20,
             }}
           >
             Giới thiệu
@@ -154,19 +158,18 @@ export default function IndexPage() {
 
           <p
             style={{
-              fontSize: "17px",
-              lineHeight: "32px",
+              lineHeight: "34px",
+              fontSize: 17,
+              color: "#555",
             }}
           >
             Hệ thống quản lý ký túc xá giúp sinh viên đăng ký nội trú, lựa chọn
-            phòng, quản lý hợp đồng, theo dõi hóa đơn, nhận thông báo và liên hệ
-            với Ban quản lý một cách nhanh chóng, thuận tiện và trực tuyến.
+            phòng, theo dõi hợp đồng, hóa đơn, nhận thông báo và liên hệ với Ban
+            quản lý hoàn toàn trực tuyến.
           </p>
-        </div>
+        </section>
 
-        {/* Chức năng */}
-
-        <div className="row" style={{ margin: "20px" }}>
+        <div className="row" style={{ margin: "25px" }}>
           {features.map((item, index) => (
             <div className="col-md-4" key={index}>
               <a
@@ -178,27 +181,37 @@ export default function IndexPage() {
                 <div
                   style={{
                     background: "#fff",
-                    borderRadius: "18px",
-                    padding: "35px",
-                    marginBottom: "25px",
+                    borderRadius: 18,
+                    padding: 35,
                     textAlign: "center",
-                    transition: ".35s",
-                    cursor: "pointer",
-                    boxShadow: "0 6px 20px rgba(0,0,0,.08)",
+                    marginBottom: 25,
+                    border: "1px solid #e9eef5",
+                    boxShadow: "0 8px 20px rgba(0,0,0,.08)",
+                    transition: ".3s",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = "translateY(-8px)";
+                    e.currentTarget.style.boxShadow =
+                      "0 15px 35px rgba(21,101,192,.18)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = "translateY(0)";
+                    e.currentTarget.style.boxShadow =
+                      "0 8px 20px rgba(0,0,0,.08)";
                   }}
                 >
                   <div
                     style={{
-                      width: "80px",
-                      height: "80px",
+                      width: 82,
+                      height: 82,
                       borderRadius: "50%",
                       background: item.color,
                       margin: "auto",
                       display: "flex",
-                      alignItems: "center",
                       justifyContent: "center",
+                      alignItems: "center",
                       color: "#fff",
-                      fontSize: "34px",
+                      fontSize: 34,
                     }}
                   >
                     <i className={`fa ${item.icon}`}></i>
@@ -206,9 +219,9 @@ export default function IndexPage() {
 
                   <h3
                     style={{
-                      marginTop: "25px",
-                      color: "#2c3e50",
-                      fontWeight: "600",
+                      marginTop: 25,
+                      color: "#1d3557",
+                      fontWeight: 700,
                     }}
                   >
                     {item.title}
@@ -216,8 +229,8 @@ export default function IndexPage() {
 
                   <p
                     style={{
-                      color: "#777",
-                      marginTop: "10px",
+                      color: "#6c757d",
+                      marginTop: 10,
                     }}
                   >
                     {item.desc}
@@ -228,40 +241,67 @@ export default function IndexPage() {
           ))}
         </div>
 
-        {/* Tiện ích */}
-
-        <div
+        <section
           style={{
-            margin: "20px",
+            margin: "25px",
             background: "#fff",
-            borderRadius: "15px",
-            padding: "35px",
-            boxShadow: "0 5px 18px rgba(0,0,0,.08)",
+            borderRadius: 20,
+            padding: 35,
+            boxShadow: "0 10px 25px rgba(0,0,0,.08)",
           }}
         >
-          <h2 style={{ fontWeight: "700", marginBottom: "25px" }}>
+          <h2
+            style={{
+              color: "#0d47a1",
+              fontWeight: 700,
+              marginBottom: 30,
+            }}
+          >
             Tiện ích ký túc xá
           </h2>
 
           <div className="row text-center">
+            {[
+              ["📶", "Wifi tốc độ cao"],
+              ["🚗", "Bãi giữ xe"],
+              ["🍱", "Nhà ăn"],
+              ["📚", "Khu tự học"],
+              ["🧺", "Giặt sấy"],
+              ["🛡️", "An ninh 24/7"],
+            ].map((item, index) => (
+              <div className="col-md-2" key={index}>
+                <div
+                  style={{
+                    width: 75,
+                    height: 75,
+                    borderRadius: "50%",
+                    background: "#e8f2ff",
+                    margin: "auto",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    fontSize: 35,
+                  }}
+                >
+                  {item[0]}
+                </div>
 
-            <div className="col-md-2"><h1>📶</h1><p>Wifi</p></div>
-
-            <div className="col-md-2"><h1>🚗</h1><p>Bãi xe</p></div>
-
-            <div className="col-md-2"><h1>🍱</h1><p>Nhà ăn</p></div>
-
-            <div className="col-md-2"><h1>📚</h1><p>Khu tự học</p></div>
-
-            <div className="col-md-2"><h1>🧺</h1><p>Giặt sấy</p></div>
-
-            <div className="col-md-2"><h1>🛡️</h1><p>An ninh 24/7</p></div>
-
+                <p
+                  style={{
+                    marginTop: 18,
+                    color: "#1d3557",
+                    fontWeight: 600,
+                  }}
+                >
+                  {item[1]}
+                </p>
+              </div>
+            ))}
           </div>
-        </div>
+        </section>
       </div>
 
       <Script />
-    </div>
+    </>
   );
 }

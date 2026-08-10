@@ -1,0 +1,455 @@
+.content-wrapper {
+    background: linear-gradient(135deg, #eef5fb 0%, #f7fbff 60%, #ffffff 100%);
+    min-height: 100vh;
+}
+
+.contracts-container {
+    max-width: 1100px;
+    margin: auto;
+    padding: 35px;
+}
+
+.loading-page {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: #1565c0;
+    font-size: 18px;
+}
+
+.loading-page i {
+    font-size: 48px;
+    margin-bottom: 20px;
+}
+
+.contracts-banner {
+    background: linear-gradient(135deg, #1565c0, #1976d2, #42a5f5);
+
+    color: #fff;
+
+    border-radius: 20px;
+
+    padding: 35px 40px;
+
+    margin-bottom: 30px;
+
+    box-shadow: 0 15px 35px rgba(21, 101, 192, 0.18);
+}
+
+.contracts-banner h2 {
+    margin: 0;
+
+    font-size: 34px;
+
+    font-weight: 700;
+}
+
+.contracts-banner h2 i {
+    margin-right: 12px;
+}
+
+.contracts-banner p {
+    margin-top: 15px;
+
+    margin-bottom: 0;
+
+    font-size: 16px;
+
+    opacity: 0.95;
+
+    line-height: 1.7;
+}
+
+.contracts-toolbar {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    background: #fff;
+
+    border-radius: 18px;
+
+    padding: 20px 25px;
+
+    margin-bottom: 25px;
+
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+}
+
+.contracts-toolbar h4 {
+    margin: 0;
+
+    color: #1565c0;
+
+    font-weight: 700;
+}
+
+.contracts-toolbar select {
+    width: 230px;
+
+    height: 45px;
+
+    border-radius: 10px;
+
+    border: 1px solid #d7e4f4;
+
+    padding: 0 12px;
+
+    outline: none;
+
+    transition: 0.25s;
+}
+
+.contracts-toolbar select:focus {
+    border-color: #1565c0;
+}
+
+.empty-contract {
+    background: #fff;
+
+    border-radius: 20px;
+
+    padding: 80px 30px;
+
+    text-align: center;
+
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+}
+
+.empty-contract i {
+    font-size: 70px;
+
+    color: #b0bec5;
+}
+
+.empty-contract h3 {
+    margin-top: 25px;
+
+    color: #455a64;
+}
+
+.empty-contract p {
+    color: #78909c;
+}
+
+.contract-list {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 20px;
+}
+
+.contract-card {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    background: #fff;
+
+    border-radius: 18px;
+
+    padding: 25px;
+
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+
+    transition: 0.3s;
+
+    border-left: 6px solid #1565c0;
+}
+
+.contract-card:hover {
+    transform: translateY(-4px);
+
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+}
+
+.contract-left {
+    display: flex;
+
+    align-items: center;
+
+    gap: 22px;
+}
+
+.contract-icon {
+    width: 72px;
+
+    height: 72px;
+
+    border-radius: 50%;
+
+    background: #e3f2fd;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+}
+
+.contract-icon i {
+    font-size: 30px;
+
+    color: #1565c0;
+}
+
+.contract-info h3 {
+    margin: 0;
+
+    font-size: 22px;
+
+    font-weight: 700;
+
+    color: #263238;
+}
+
+.contract-date {
+    margin-top: 10px;
+
+    color: #607d8b;
+}
+
+.contract-date i {
+    margin-right: 8px;
+}
+
+.status-badge {
+    display: inline-block;
+
+    margin-top: 14px;
+
+    padding: 7px 15px;
+
+    border-radius: 50px;
+
+    font-weight: 600;
+
+    font-size: 14px;
+}
+
+.status-badge.pending {
+    background: #fff4d8;
+
+    color: #f39c12;
+}
+
+.status-badge.active {
+    background: #d9f7e8;
+
+    color: #1e9e5a;
+}
+
+.status-badge.canceled {
+    background: #ffe4e4;
+
+    color: #e53935;
+}
+
+.status-badge.expired {
+    background: #eceff1;
+
+    color: #607d8b;
+}
+
+.status-badge.rejected {
+    background: #fdeaea;
+
+    color: #c62828;
+}
+
+.contract-right {
+    display: flex;
+
+    gap: 12px;
+}
+
+.contract-right button {
+    min-width: 130px;
+
+    height: 45px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    font-weight: 600;
+
+    transition: 0.25s;
+}
+
+.btn-detail {
+    background: #1565c0;
+
+    color: #fff;
+}
+
+.btn-detail:hover {
+    background: #0d47a1;
+}
+
+.btn-cancel {
+    background: #ef5350;
+
+    color: #fff;
+}
+
+.btn-cancel:hover {
+    background: #d32f2f;
+}
+
+.modal-backdrop-custom {
+    position: fixed;
+
+    inset: 0;
+
+    background: rgba(0, 0, 0, 0.45);
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    z-index: 9999;
+}
+
+.cancel-modal {
+    width: 560px;
+
+    background: #fff;
+
+    border-radius: 18px;
+
+    overflow: hidden;
+
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header-custom {
+    background: #1565c0;
+
+    color: #fff;
+
+    padding: 18px 25px;
+}
+
+.modal-header-custom h3 {
+    margin: 0;
+
+    font-size: 22px;
+}
+
+.modal-header-custom i {
+    margin-right: 10px;
+}
+
+.modal-body-custom {
+    padding: 25px;
+}
+
+.modal-body-custom p {
+    font-size: 15px;
+
+    margin-bottom: 15px;
+}
+
+.reason-input {
+    width: 100%;
+
+    resize: none;
+
+    border-radius: 12px;
+
+    border: 1px solid #d6e2f2;
+
+    padding: 15px;
+
+    outline: none;
+
+    transition: 0.25s;
+}
+
+.reason-input:focus {
+    border-color: #1565c0;
+}
+
+.modal-footer-custom {
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 12px;
+
+    padding: 20px 25px;
+
+    background: #fafafa;
+}
+
+.btn-close-modal {
+    background: #90a4ae;
+
+    color: #fff;
+
+    border: none;
+
+    border-radius: 10px;
+
+    padding: 10px 22px;
+}
+
+.btn-confirm-cancel {
+    background: #e53935;
+
+    color: #fff;
+
+    border: none;
+
+    border-radius: 10px;
+
+    padding: 10px 22px;
+}
+
+.btn-confirm-cancel:hover {
+    background: #c62828;
+}
+
+@media (max-width: 900px) {
+    .contracts-toolbar {
+        flex-direction: column;
+
+        gap: 15px;
+
+        align-items: flex-start;
+    }
+
+    .contracts-toolbar select {
+        width: 100%;
+    }
+
+    .contract-card {
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 20px;
+    }
+
+    .contract-right {
+        width: 100%;
+    }
+
+    .contract-right button {
+        flex: 1;
+    }
+
+    .cancel-modal {
+        width: 95%;
+    }
+}

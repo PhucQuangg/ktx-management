@@ -19,6 +19,7 @@ public class StudentDTO {
     private Boolean gender;
     private String role;
     private String approvalStatus;
+    private ResidenceInfoDTO residenceInfo;
 
     public StudentDTO(String fullName, String username, String className) {
         this.fullName = fullName;

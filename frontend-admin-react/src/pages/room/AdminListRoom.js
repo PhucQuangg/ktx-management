@@ -1,272 +1,455 @@
 import React, { useEffect, useState } from "react";
-import Sidebar from "../../components/Sidebar";
-import SettingsPanel from "../../components/SettingsPanel";
-import Script from "../../components/Script";
-import AddRoomModal from "../../components/AddRoomModal";
 import { useNavigate } from "react-router-dom";
 
+import Sidebar from "../../components/Sidebar";
+
+import "../../css/AdminRoomList.css";
+
 export default function RoomList() {
+  const navigate = useNavigate();
+
+  const token = sessionStorage.getItem("admin_token");
+
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+
   const [rooms, setRooms] = useState([]);
   const [filteredRooms, setFilteredRooms] = useState([]);
+
   const [roomType, setRoomType] = useState("ALL");
-  const [sidebarColor, setSidebarColor] = useState("bg-white");
-  const [showAddModal, setShowAddModal] = useState(false);
-  const navigate = useNavigate();
-  const token = sessionStorage.getItem("admin_token");
   const [roomStatus, setRoomStatus] = useState("ALL");
 
-  
-  useEffect(() => {
+  const [loading, setLoading] = useState(true);
 
-    fetch("http://localhost:8080/api/admin/rooms", {
-      headers: { Authorization: "Bearer " + token },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setRooms(data);
-        setFilteredRooms(data);
-      })
-      .catch((err) => console.error(err));
+  useEffect(() => {
+    if (!token) {
+      window.location.href = "/login";
+      return;
+    }
+
+    fetchRooms();
   }, [token]);
 
   useEffect(() => {
-    if (roomType === "ALL") {
-      setFilteredRooms(rooms);
-    } else {
-      setFilteredRooms(rooms.filter((r) => r.type === roomType));
-    }
-  }, [roomType, rooms]);
+    let filtered = [...rooms];
 
-  const handleDelete = async (roomId,current_people) => {
-    if(current_people > 0 ){
-      window.showPopup("Không thể xoá phòng vì hiện có người đang ở!", true);
+    if (roomType !== "ALL") {
+      filtered = filtered.filter((room) => room.type === roomType);
+    }
+
+    if (roomStatus !== "ALL") {
+      filtered = filtered.filter((room) => room.status === roomStatus);
+    }
+
+    setFilteredRooms(filtered);
+  }, [roomType, roomStatus, rooms]);
+
+  const fetchRooms = async () => {
+    try {
+      setLoading(true);
+
+      const res = await fetch("http://localhost:8080/api/admin/rooms", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const responseText = await res.text();
+
+      let data = [];
+
+      try {
+        data = responseText ? JSON.parse(responseText) : [];
+      } catch {
+        data = [];
+      }
+
+      if (!res.ok) {
+        throw new Error(responseText || "Không thể tải danh sách phòng.");
+      }
+
+      setRooms(data);
+    } catch (error) {
+      console.error(error);
+
+      window.showPopup?.(error.message || "Lỗi khi tải danh sách phòng.", true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async (roomId, currentPeople) => {
+    if (Number(currentPeople || 0) > 0) {
+      window.showPopup?.(
+        "Không thể xóa phòng vì hiện có sinh viên đang ở.",
+        true
+      );
+
       return;
     }
-    window.showPopup(
-      "Bạn có chắc chắn muốn xoá phòng này không?",
+
+    window.showPopup?.(
+      "Bạn có chắc chắn muốn xóa phòng này không?",
       false,
       true,
       async () => {
         try {
           const res = await fetch(
             `http://localhost:8080/api/admin/rooms/delete/${roomId}`,
-            { method: "DELETE", headers: { Authorization: "Bearer " + token } }
+            {
+              method: "DELETE",
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
           );
-          if (res.ok) {
-            setRooms((prev) => prev.filter((r) => r.id !== roomId));
-            setTimeout(() => {
-              window.showPopup("Xoá phòng thành công!");
-            }, 300);
-          } else {
-            const err = await res.text();
-            window.showPopup(err, true);
+
+          const message = await res.text();
+
+          if (!res.ok) {
+            throw new Error(message || "Không thể xóa phòng.");
           }
-        } catch (err) {
-          console.error(err);
-          window.showPopup("Có lỗi xảy ra khi xoá phòng!", true);
+
+          setRooms((prev) => prev.filter((room) => room.id !== roomId));
+
+          setTimeout(() => {
+            window.showPopup?.(message || "Xóa phòng thành công.");
+          }, 200);
+        } catch (error) {
+          console.error(error);
+
+          window.showPopup?.(error.message || "Lỗi khi xóa phòng.", true);
         }
       }
     );
   };
-  useEffect(() => {
-    let filtered = rooms;
-  
-    // FILTER TYPE
-    if (roomType !== "ALL") {
-      filtered = filtered.filter((r) => r.type === roomType);
+
+  const formatMoney = (amount) =>
+    Number(amount || 0).toLocaleString("vi-VN") + " đ";
+
+  const getRoomStatusText = (status) => {
+    switch (status) {
+      case "AVAILABLE":
+        return "Còn trống";
+
+      case "FULL":
+        return "Đã đầy";
+
+      case "MAINTENANCE":
+        return "Bảo trì";
+
+      default:
+        return status || "Chưa xác định";
     }
-  
-    // FILTER STATUS
-    if (roomStatus !== "ALL") {
-      filtered = filtered.filter((r) => r.status === roomStatus);
+  };
+
+  const getRoomTypeText = (type) => {
+    switch (type) {
+      case "NORMAL":
+        return "Tiêu chuẩn";
+
+      case "PLUS":
+        return "Tiện nghi";
+
+      default:
+        return type || "Chưa xác định";
     }
-  
-    setFilteredRooms(filtered);
-  }, [roomType, roomStatus, rooms]);
+  };
+
+  const countByStatus = (status) =>
+    rooms.filter((room) => room.status === status).length;
+
+  const clearFilters = () => {
+    setRoomType("ALL");
+    setRoomStatus("ALL");
+  };
 
   return (
-    <div className="g-sidenav-show">
-      <Sidebar color={sidebarColor} />
+    <div className="admin-room-layout">
+      <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
-      <main className="main-content position-relative max-height-vh-100 h-100 border-radius-lg">
-        <nav className="navbar navbar-main navbar-expand-lg px-0 mx-3 shadow-none border-radius-xl">
-        <div className="container-fluid py-1 px-3">
-            <nav aria-label="breadcrumb">
-              <ol className="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
-                <li className="breadcrumb-item text-sm">
-                  <a className="opacity-5 text-dark" href="#">
-                    Trang
-                  </a>
-                </li>
-                <li
-                  className="breadcrumb-item text-sm text-dark active"
-                  aria-current="page"
-                >
-                  Quản lý phòng
-                </li>
-              </ol>
-            </nav>
+      <main
+        className={`admin-room-content ${
+          sidebarOpen ? "" : "sidebar-collapsed"
+        }`}
+      >
+        <section className="room-list-banner">
+          <div>
+            <div className="room-list-banner-badge">
+              <i className="fa fa-door-open"></i>
+              Quản lý phòng
+            </div>
 
-            <ul className="navbar-nav d-flex align-items-center justify-content-end">
-              <li className="nav-item d-xl-none ps-3 d-flex align-items-center">
-                <a href="#" className="nav-link text-body p-0" id="iconNavbarSidenav">
-                  <div className="sidenav-toggler-inner">
-                    <i className="sidenav-toggler-line"></i>
-                    <i className="sidenav-toggler-line"></i>
-                    <i className="sidenav-toggler-line"></i>
-                  </div>
-                </a>
-              </li>
+            <h1>Danh sách phòng</h1>
 
-              <li className="nav-item px-3 d-flex align-items-center">
-                <a href="#" className="nav-link text-body p-0">
-                  <i className="material-symbols-rounded fixed-plugin-button-nav">
-                    settings
-                  </i>
-                </a>
-              </li>
-
-              <li className="nav-item d-flex align-items-center">
-                <a
-                  href="http://localhost:3000/login"
-                  className="nav-link text-body font-weight-bold px-0"
-                >
-                  <i className="material-symbols-rounded">account_circle</i>
-                </a>
-              </li>
-            </ul>
+            <p>
+              Theo dõi sức chứa, số lượng sinh viên, tình trạng và loại phòng
+              trong ký túc xá.
+            </p>
           </div>
-        </nav>
 
-        <div className="container-fluid py-2">
-          <div className="row">
-            <div className="col-12">
-              <div className="card my-4">
-                <div className="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
-                  <div className="bg-gradient-dark shadow-dark border-radius-lg pt-4 pb-3">
-                    <h6 className="text-white text-capitalize ps-3">Danh sách phòng</h6>
-                  </div>
-                </div>
+          <div className="room-list-banner-icon">
+            <i className="fa fa-building"></i>
+          </div>
+        </section>
 
-                <div className="card-body px-0 pb-2">
-                  <div className="table-responsive p-0">
-                  <div className="d-flex justify-content-between align-items-center px-4 pt-3">
+        <section className="room-summary-grid">
+          <div className="room-summary-card total">
+            <div className="room-summary-icon">
+              <i className="fa fa-building"></i>
+            </div>
 
-                      <div className="d-flex gap-2">
-
-                        {/* FILTER TYPE */}
-                        <select
-                          value={roomType}
-                          onChange={(e) => setRoomType(e.target.value)}
-                          className="form-select"
-                          style={{ width: "180px" }}
-                        >
-                          <option value="ALL">Tất cả loại phòng</option>
-                          <option value="NORMAL">Tiêu chuẩn</option>
-                          <option value="PLUS">Tiện nghi</option>
-                        </select>
-
-                        {/* FILTER STATUS */}
-                        <select
-                          value={roomStatus}
-                          onChange={(e) => setRoomStatus(e.target.value)}
-                          className="form-select"
-                          style={{ width: "180px" }}
-                        >
-                          <option value="ALL">Tất cả tình trạng</option>
-                          <option value="AVAILABLE">Còn trống</option>
-                          <option value="FULL">Đã đầy</option>
-                          <option value="MAINTENANCE">Bảo trì</option>
-                        </select>
-
-                      </div>
-
-                      <button
-                        className="btn btn-dark"
-                        onClick={() => setShowAddModal(true)}
-                      >
-                        + Thêm phòng
-                      </button>
-                      </div>
-
-                    <table className="table align-middle mb-0">
-                      <thead>
-                        <tr className="text-center">
-                          <th>Tên phòng</th>
-                          <th>Sức chứa</th>
-                          <th>SL hiện tại</th>
-                          <th>Giá</th>
-                          <th>Tình trạng</th>
-                          <th>Loại phòng</th>
-                          <th style={{ width: "100px" }}>Hành động</th>
-                        </tr>
-                      </thead>
-
-                      <tbody>
-                        {filteredRooms.length > 0 ? (
-                          filteredRooms.map((r) => (
-                            <tr key={r.id} className="text-center">
-                              <td style={{ whiteSpace: "nowrap" }}>{r.name}</td>
-                              <td>{r.capacity}</td>
-                              <td>{r.current_people}</td>
-                              <td>{r.price}</td>
-                              <td style={{ whiteSpace: "nowrap" }}>
-                                {r.status === "AVAILABLE" && "Còn trống"}
-                                {r.status === "FULL" && "Đã đầy"}
-                                {r.status === "MAINTENANCE" && "Bảo trì"}
-                              </td>
-
-                              <td>
-                                {r.type === "NORMAL" && "Tiêu chuẩn"}
-                                {r.type === "PLUS" && "Tiện nghi"}
-                              </td>
-                              <td>
-                                <i
-                                  className="fa-regular fa-pen-to-square text-secondary me-2"
-                                  style={{ cursor: "pointer" }}
-                                  onClick={() => navigate(`/admin/update-room?id=${r.id}`)}
-                                ></i>
-                                <i
-                                  className="fa-solid fa-trash text-danger"
-                                  style={{ cursor: "pointer" }}
-                                  onClick={() => handleDelete(r.id,r.current_people)}
-                                ></i>
-                              </td>
-                            </tr>
-                          ))
-                        ) : (
-                          <tr>
-                            <td colSpan="7" className="text-center py-3">
-                              Không có dữ liệu
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
+            <div>
+              <span>Tổng số phòng</span>
+              <strong>{rooms.length}</strong>
             </div>
           </div>
-        </div>
-      </main>
 
-      <SettingsPanel sidebarColor={sidebarColor} setSidebarColor={setSidebarColor} />
-      <Script />
-      <AddRoomModal
-        show={showAddModal}
-        onClose={() => setShowAddModal(false)}
-        onSuccess={() => {
-          fetch("http://localhost:8080/api/admin/rooms", {
-            headers: { Authorization: "Bearer " + token },
-          })
-            .then((res) => res.json())
-            .then((data) => {
-              setRooms(data);
-              setFilteredRooms(data);
-            });
-        }}
-      />
+          <div className="room-summary-card available">
+            <div className="room-summary-icon">
+              <i className="fa fa-door-open"></i>
+            </div>
+
+            <div>
+              <span>Phòng còn trống</span>
+              <strong>{countByStatus("AVAILABLE")}</strong>
+            </div>
+          </div>
+
+          <div className="room-summary-card full">
+            <div className="room-summary-icon">
+              <i className="fa fa-users"></i>
+            </div>
+
+            <div>
+              <span>Phòng đã đầy</span>
+              <strong>{countByStatus("FULL")}</strong>
+            </div>
+          </div>
+
+          <div className="room-summary-card maintenance">
+            <div className="room-summary-icon">
+              <i className="fa fa-tools"></i>
+            </div>
+
+            <div>
+              <span>Đang bảo trì</span>
+              <strong>{countByStatus("MAINTENANCE")}</strong>
+            </div>
+          </div>
+        </section>
+
+        <section className="room-list-section">
+          <div className="room-list-toolbar">
+            <div>
+              <h2>Danh sách phòng</h2>
+
+              <p>Lọc theo loại phòng hoặc tình trạng sử dụng.</p>
+            </div>
+
+            <button
+              type="button"
+              className="room-add-button"
+              onClick={() => navigate("/admin/add-room")}
+            >
+              <i className="fa fa-plus"></i>
+              Thêm phòng
+            </button>
+          </div>
+
+          <div className="room-filter-panel">
+            <div className="room-filter-group">
+              <label htmlFor="room-type-filter">Loại phòng</label>
+
+              <select
+                id="room-type-filter"
+                value={roomType}
+                onChange={(event) => setRoomType(event.target.value)}
+              >
+                <option value="ALL">Tất cả loại phòng</option>
+
+                <option value="NORMAL">Tiêu chuẩn</option>
+
+                <option value="PLUS">Tiện nghi</option>
+              </select>
+            </div>
+
+            <div className="room-filter-group">
+              <label htmlFor="room-status-filter">Tình trạng</label>
+
+              <select
+                id="room-status-filter"
+                value={roomStatus}
+                onChange={(event) => setRoomStatus(event.target.value)}
+              >
+                <option value="ALL">Tất cả tình trạng</option>
+
+                <option value="AVAILABLE">Còn trống</option>
+
+                <option value="FULL">Đã đầy</option>
+
+                <option value="MAINTENANCE">Bảo trì</option>
+              </select>
+            </div>
+
+            {(roomType !== "ALL" || roomStatus !== "ALL") && (
+              <button
+                type="button"
+                className="room-clear-filter"
+                onClick={clearFilters}
+              >
+                <i className="fa fa-times"></i>
+                Xóa bộ lọc
+              </button>
+            )}
+          </div>
+
+          {loading ? (
+            <div className="room-list-loading">
+              <i className="fa fa-spinner fa-spin"></i>
+
+              <p>Đang tải danh sách phòng...</p>
+            </div>
+          ) : filteredRooms.length === 0 ? (
+            <div className="room-list-empty">
+              <div className="room-empty-icon">
+                <i className="fa fa-door-closed"></i>
+              </div>
+
+              <h3>Không có phòng phù hợp</h3>
+
+              <p>Không tìm thấy phòng theo bộ lọc hiện tại.</p>
+            </div>
+          ) : (
+            <div className="room-table-wrapper">
+              <table className="room-table">
+                <thead>
+                  <tr>
+                    <th>Phòng</th>
+                    <th>Sức chứa</th>
+                    <th>Đang ở</th>
+                    <th>Tỷ lệ sử dụng</th>
+                    <th>Giá phòng</th>
+                    <th>Tình trạng</th>
+                    <th>Loại phòng</th>
+                    <th>Thao tác</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {filteredRooms.map((room) => {
+                    const currentPeople = Number(
+                      room.current_people ?? room.currentPeople ?? 0
+                    );
+
+                    const capacity = Number(room.capacity || 0);
+
+                    const occupancyPercent =
+                      capacity > 0
+                        ? Math.min(
+                            Math.round((currentPeople / capacity) * 100),
+                            100
+                          )
+                        : 0;
+
+                    return (
+                      <tr key={room.id}>
+                        <td>
+                          <div className="room-name-cell">
+                            <div className="room-avatar">
+                              <i className="fa fa-door-open"></i>
+                            </div>
+
+                            <div>
+                              <strong>
+                                {room.name || room.roomName || "Chưa đặt tên"}
+                              </strong>
+                            </div>
+                          </div>
+                        </td>
+
+                        <td>{capacity}</td>
+
+                        <td>{currentPeople}</td>
+
+                        <td>
+                          <div className="room-occupancy">
+                            <div className="room-progress">
+                              <div
+                                className={`room-progress-value ${
+                                  occupancyPercent >= 100
+                                    ? "full"
+                                    : occupancyPercent >= 70
+                                    ? "warning"
+                                    : ""
+                                }`}
+                                style={{
+                                  width: `${occupancyPercent}%`,
+                                }}
+                              ></div>
+                            </div>
+
+                            <span>{occupancyPercent}%</span>
+                          </div>
+                        </td>
+
+                        <td className="room-price-cell">
+                          {formatMoney(room.price)}
+                        </td>
+
+                        <td>
+                          <span
+                            className={`room-status-badge ${
+                              room.status ? room.status.toLowerCase() : ""
+                            }`}
+                          >
+                            {getRoomStatusText(room.status)}
+                          </span>
+                        </td>
+
+                        <td>
+                          <span
+                            className={`room-type-badge ${
+                              room.type ? room.type.toLowerCase() : ""
+                            }`}
+                          >
+                            {getRoomTypeText(room.type)}
+                          </span>
+                        </td>
+
+                        <td>
+                          <div className="room-action-buttons">
+                            <button
+                              type="button"
+                              className="room-edit-button"
+                              onClick={() =>
+                                navigate(`/admin/update-room?id=${room.id}`)
+                              }
+                            >
+                              <i className="fa fa-eye"></i>
+                              Xem
+                            </button>
+
+                            <button
+                              type="button"
+                              className="room-delete-button"
+                              onClick={() =>
+                                handleDelete(room.id, currentPeople)
+                              }
+                            >
+                              <i className="fa fa-trash"></i>
+                              Xóa
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </section>
+      </main>
     </div>
   );
 }

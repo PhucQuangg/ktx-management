@@ -2,11 +2,10 @@ package com.stu.edu.ktx_management.service;
 
 import com.stu.edu.ktx_management.dto.NotificationDTO;
 import com.stu.edu.ktx_management.entity.Notification;
-import com.stu.edu.ktx_management.entity.Student;
 import com.stu.edu.ktx_management.repository.NotificationRepository;
-import com.stu.edu.ktx_management.repository.StudentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -51,31 +50,21 @@ public class NotificationService {
     public void delete(Integer id) {
         notificationRepository.deleteById(id);
     }
-    public NotificationDTO togglePublish(Integer id) {
 
-        Notification notification =
-                notificationRepository.findById(id)
-                        .orElseThrow(() ->
-                                new RuntimeException("Không tìm thấy thông báo"));
+    @Transactional
+    public Notification togglePublish(Integer id) {
 
-        notification.setPublished(
-                !notification.getPublished()
+        Notification notification = notificationRepository.findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException("Không tìm thấy thông báo!")
+                );
+
+        notification.setPublished(!Boolean.TRUE.equals(notification.getPublished())
         );
 
-        notification = notificationRepository.save(notification);
-
-        return new NotificationDTO(
-                notification.getId(),
-                notification.getTitle(),
-                notification.getContent(),
-                notification.getPublished(),
-                notification.getCreatedAt()
-        );
+        return notificationRepository.save(notification);
     }
-    public NotificationDTO update(
-            Integer id,
-            NotificationDTO dto
-    ) {
+    public NotificationDTO update(Integer id, NotificationDTO dto) {
 
         Notification notification =
                 notificationRepository.findById(id)
@@ -110,5 +99,4 @@ public class NotificationService {
                         n.getCreatedAt()))
                 .toList();
     }
-
 }

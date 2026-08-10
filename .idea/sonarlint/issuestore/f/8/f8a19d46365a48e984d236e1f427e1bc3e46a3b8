@@ -1,15 +1,15 @@
 
-O
-java:S6126 "2Replace this String concatenation with Text block.(§ÀÙä8åö—Çï3
-O
-java:S6126-"2Replace this String concatenation with Text block.(ÁÊ8æö—Çï3
-s
-java:S3457@"Q%n should be used in place of \n to produce the platform-specific line separator.(¸¬‡Ôøÿÿÿÿ8èö—Çï3
-T
-java:S6126L"2Replace this String concatenation with Text block.(ùà°ÿÿÿÿÿ8èö—Çï3
-s
-java:S3457X"Q%n should be used in place of \n to produce the platform-specific line separator.(¸¬‡Ôøÿÿÿÿ8éö—Çï3
-s
-java:S3457|"Q%n should be used in place of \n to produce the platform-specific line separator.(¸¬‡Ôøÿÿÿÿ8ìö—Çï3
-M
-java:S1128"+Remove this unused import 'java.util.List'.(Õë±Äøÿÿÿÿ8ˆéˆÈï3
+p
+java:S1192«"SDefine a constant instead of duplicating this literal "ChÆ°a cáº­p nháº­t" 6 times.(Î—Ô8©†¡…ş3
+[	java:S106¹"9Replace this use of System.out or System.err by a logger.(ñ”åŞûÿÿÿÿ8Å‡¡…ş3
+[	java:S106¾"9Replace this use of System.out or System.err by a logger.(ş÷Ä³ıÿÿÿÿ8Å‡¡…ş3
+V	java:S106Ã"9Replace this use of System.out or System.err by a logger.(Ò•—Œ8Æ‡¡…ş3
+V	java:S106Ê"9Replace this use of System.out or System.err by a logger.(÷Ô±8Æ‡¡…ş3
+V	java:S106‘"9Replace this use of System.out or System.err by a logger.(à¤ïí8û—®…ş3
+V	java:S106•"9Replace this use of System.out or System.err by a logger.(øœüË8Ë‡¡…ş3
+V	java:S106—"9Replace this use of System.out or System.err by a logger.(¡°¿—8ü—®…ş3
+[	java:S106£"9Replace this use of System.out or System.err by a logger.(Ñ«®îøÿÿÿÿ8ş—®…ş3
+[	java:S106±"9Replace this use of System.out or System.err by a logger.(í°÷‘ûÿÿÿÿ8ş—®…ş3
+l
+java:S4042ƒ"NUse "java.nio.file.Files#delete" here for better messages on error conditions.(Õîê¡8è×½…ş3
+U	java:S106„"9Replace this use of System.out or System.err by a logger.(·Ñ­j8è×½…ş3

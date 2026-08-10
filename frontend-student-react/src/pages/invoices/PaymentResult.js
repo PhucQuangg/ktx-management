@@ -15,9 +15,7 @@ export default function PaymentReturn() {
 
     const queryString = window.location.search;
 
-    fetch(
-      `http://localhost:8080/api/payment/return${queryString}`
-    )
+    fetch(`http://localhost:8080/api/payment/return${queryString}`)
       .then((res) => res.text())
       .then((msg) => {
         console.log("Payment Result:", msg);
@@ -63,7 +61,7 @@ export default function PaymentReturn() {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        padding: "20px"
+        padding: "20px",
       }}
     >
       <div
@@ -74,15 +72,12 @@ export default function PaymentReturn() {
           boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
           textAlign: "center",
           minWidth: "380px",
-          maxWidth: "500px"
+          maxWidth: "500px",
         }}
       >
         {status === "loading" && (
           <>
-            <div
-              className="spinner-border text-primary mb-3"
-              role="status"
-            />
+            <div className="spinner-border text-primary mb-3" role="status" />
             <h3>Đang xử lý thanh toán...</h3>
             <p>Vui lòng chờ trong giây lát</p>
           </>
@@ -93,7 +88,7 @@ export default function PaymentReturn() {
             <div
               style={{
                 fontSize: "72px",
-                marginBottom: "10px"
+                marginBottom: "10px",
               }}
             >
               ✅
@@ -102,7 +97,7 @@ export default function PaymentReturn() {
             <h2
               style={{
                 color: "#16a34a",
-                fontWeight: "bold"
+                fontWeight: "bold",
               }}
             >
               Thanh toán thành công
@@ -110,7 +105,7 @@ export default function PaymentReturn() {
 
             <p
               style={{
-                color: "#666"
+                color: "#666",
               }}
             >
               Hóa đơn đã được cập nhật trạng thái.
@@ -119,7 +114,7 @@ export default function PaymentReturn() {
             <p
               style={{
                 color: "#999",
-                fontSize: "14px"
+                fontSize: "14px",
               }}
             >
               Đang chuyển về danh sách hóa đơn...
@@ -132,7 +127,7 @@ export default function PaymentReturn() {
             <div
               style={{
                 fontSize: "72px",
-                marginBottom: "10px"
+                marginBottom: "10px",
               }}
             >
               ❌
@@ -141,7 +136,7 @@ export default function PaymentReturn() {
             <h2
               style={{
                 color: "#dc2626",
-                fontWeight: "bold"
+                fontWeight: "bold",
               }}
             >
               {message}
@@ -149,16 +144,16 @@ export default function PaymentReturn() {
 
             <p
               style={{
-                color: "#666"
+                color: "#666",
               }}
-            >   
+            >
               Vui lòng kiểm tra lại hoặc liên hệ quản lý.
             </p>
 
             <p
               style={{
                 color: "#999",
-                fontSize: "14px"
+                fontSize: "14px",
               }}
             >
               Đang quay lại...

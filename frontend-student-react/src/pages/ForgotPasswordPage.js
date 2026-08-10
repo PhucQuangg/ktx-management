@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { Container, Row, Col, Card, Form, Button } from "react-bootstrap";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import "./AuthStyles.css"; 
 
 function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -10,10 +10,11 @@ function ForgotPassword() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const trimmedEmail = email.trim();
 
     if (!trimmedEmail) {
-      setMessage("Vui lòng nhập Email !");
+      setMessage("Vui lòng nhập Email.");
       setMessageColor("red");
       return;
     }
@@ -21,74 +22,115 @@ function ForgotPassword() {
     try {
       const res = await fetch(
         `http://localhost:8080/api/auth/forgot-password?email=${trimmedEmail}`,
-        { method: "POST" }
+        {
+          method: "POST",
+        }
       );
 
       if (res.ok) {
-        setMessage("Liên kết reset đã được gửi tới email của bạn !");
+        setMessage("Liên kết đặt lại mật khẩu đã được gửi đến Email của bạn.");
+
         setMessageColor("green");
       } else {
         const text = await res.text();
+
         setMessage(text);
+
         setMessageColor("red");
       }
-    } catch (err) {
-      console.error(err);
-      setMessage("Lỗi kết nối server!");
+    } catch {
+      setMessage("Không thể kết nối tới máy chủ.");
+
       setMessageColor("red");
     }
   };
 
   return (
-    <div className="auth-body">
-      <div className="container">
-        <div className="row align-items-center">
-          {/* Cột ảnh */}
-          <div className="col-md-6 text-center mb-4 mb-md-0">
-            <Link to="/">
+    <div className="login-page">
+      <Container fluid>
+        <Row className="min-vh-100 align-items-center justify-content-center">
+          <Col
+            lg={7}
+            className="d-none d-lg-flex justify-content-center align-items-center"
+          >
+            <div className="left-panel" style={{ marginTop: 0 }}>
               <img
-                src="/assets/images/dormitory.png"
-                alt="Dormitory"
-                className="img-fluid w-75"
-                style={{ width: "100%", height: "auto" }}
+                src="/assets/images/small-logos/Logo_STU.png"
+                className="stu-logo"
+                alt=""
               />
-            </Link>
-          </div>
 
-          {/* Cột form */}
-          <div className="col-md-6">
-            <div className="text-center mb-3">
-              <i className="bi bi-person-circle auth-icon"></i>
+              <h1>HỆ THỐNG KÝ TÚC XÁ SINH VIÊN</h1>
             </div>
-            <h2 className="auth-heading">Quên Mật Khẩu</h2>
+          </Col>
 
-            <form onSubmit={handleSubmit}>
-              <input
-                type="email"
-                className="form-control auth-input mb-3"
-                placeholder="Nhập email của bạn"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              
-            <p className="text-center mt-3 fw-bold" style={{ color: messageColor }}>
-              {message}
-            </p>
-              <button type="submit" className="btn-auth mt-4 fw-bold">
-                Xác nhận
-              </button>
-            </form>
+          <Col
+            lg={5}
+            className="d-flex justify-content-center align-items-center"
+          >
+            <Card className="login-card shadow-lg">
+              <Card.Body>
+                <div className="text-center mb-4">
+                  <i
+                    className="bi bi-envelope-lock-fill"
+                    style={{
+                      fontSize: "90px",
+                      color: "#0d6efd",
+                    }}
+                  ></i>
 
+                  <h2 className="mt-3 fw-bold">Quên mật khẩu</h2>
 
-            <div className="login-links mt-4">
-              <span>Trở lại trang đăng nhập ?</span>{" "}
-              <Link to="/login">
-                Đăng nhập
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div>
+                  <p className="text-muted">
+                    Nhập Email để nhận liên kết đặt lại mật khẩu
+                  </p>
+                </div>
+
+                <Form onSubmit={handleSubmit}>
+                  <Form.Group className="mb-4">
+                    <Form.Label>Email</Form.Label>
+
+                    <Form.Control
+                      type="email"
+                      placeholder="Nhập Email của bạn"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                    />
+                  </Form.Group>
+
+                  {message && (
+                    <div
+                      className={`alert ${
+                        messageColor === "green"
+                          ? "alert-success"
+                          : "alert-danger"
+                      }`}
+                    >
+                      {message}
+                    </div>
+                  )}
+
+                  <div className="d-grid">
+                    <Button type="submit" className="login-btn">
+                      Gửi liên kết
+                    </Button>
+                  </div>
+                </Form>
+
+                <div className="text-center mt-4">
+                  <Link
+                    to="/login"
+                    className="text-decoration-none fw-semibold"
+                  >
+                    <i className="bi bi-arrow-left me-2"></i>
+                    Quay lại đăng nhập
+                  </Link>
+                </div>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
+      </Container>
     </div>
   );
 }

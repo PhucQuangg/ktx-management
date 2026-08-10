@@ -13,7 +13,6 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    // THAY bằng giá trị mạnh hơn và lưu trong application.properties hoặc env var khi deploy
     private final String SECRET = "my-super-secret-key-for-jwt-1234567890";
     private final SecretKey key = Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
     private final long EXPIRATION_MS = 24 * 60 * 60 * 1000; // 1 day

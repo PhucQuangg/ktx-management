@@ -1,122 +1,158 @@
 import React from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
-const Sidebar = ({ color }) => {
+import "../css/Sidebar.css";
 
-  const logout = () => {
-    fetch("http://localhost:8080/api/auth/logout", {
-      method: "POST",
-    })
-      .then((response) => {
-        if (response.ok) {
-          localStorage.removeItem("admin_token");
-          window.location.href = "http://localhost:3000/login";
-        } else {
-          alert("Logout failed: " + response.status);
-        }
-      })
-      .catch(() => alert("Không thể kết nối tới server!"));
+export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const logout = async () => {
+    try {
+      await fetch("http://localhost:8080/api/auth/logout", {
+        method: "POST",
+      });
+    } catch (e) {}
+
+    localStorage.removeItem("admin_token");
+    sessionStorage.removeItem("admin_token");
+
+    navigate("/login");
   };
 
+  const menuItems = [
+    {
+      title: "TỔNG QUAN",
+      items: [
+        {
+          icon: "fa fa-chart-pie",
+          text: "Dashboard",
+          path: "/admin/dashboard",
+        },
+      ],
+    },
+
+    {
+      title: "QUẢN LÝ",
+      items: [
+        {
+          icon: "fa fa-file-signature",
+          text: "Đăng ký nội trú",
+          path: "/admin/accounts",
+        },
+
+        {
+          icon: "fa fa-user-graduate",
+          text: "Sinh viên",
+          path: "/admin/students",
+        },
+
+        {
+          icon: "fa fa-door-open",
+          text: "Phòng",
+          path: "/admin/rooms",
+        },
+
+        {
+          icon: "fa fa-couch",
+          text: "Cơ sở vật chất",
+          path: "/admin/facilities",
+        },
+
+        {
+          icon: "fa fa-file-contract",
+          text: "Đăng ký phòng",
+          path: "/admin/contracts",
+        },
+
+        {
+          icon: "fa fa-file-invoice-dollar",
+          text: "Hóa đơn",
+          path: "/admin/invoices",
+        },
+
+        {
+          icon: "fa fa-bell",
+          text: "Thông báo",
+          path: "/admin/notifications",
+        },
+      ],
+    },
+
+    {
+      title: "TÀI KHOẢN",
+      items: [
+        {
+          icon: "fa fa-user-circle",
+          text: "Thông tin cá nhân",
+          path: "/admin/profile",
+        },
+      ],
+    },
+  ];
+
   return (
-    <aside className={`sidenav navbar navbar-vertical navbar-expand-xs border-radius-lg fixed-start ms-2 bg-white my-2 ${color}`}>
-      <div className="sidenav-header">
+    <aside className={`sidebar ${sidebarOpen ? "open" : "close"}`}>
+      <button
+        className="sidebar-toggle"
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+      >
         <i
-          className="fas fa-times p-3 cursor-pointer text-dark opacity-5 position-absolute end-0 top-0 d-none d-xl-none"
-          aria-hidden="true"
+          className={`fa ${sidebarOpen ? "fa-angle-left" : "fa-angle-right"}`}
         ></i>
-        <a
-          className="navbar-brand px-4 py-3 m-0"
-          rel="noopener noreferrer"
-          href="/"
-        >
-          <img
-            src="/assets/images/logo-ct-dark.png"
-            className="navbar-brand-img"
-            width="26"
-            height="26"
-            alt="main_logo"
-          />
-          <span className="ms-1 text-sm text-dark">Dormitory Management</span>
-        </a>
+      </button>
+
+      <div
+        className="sidebar-logo"
+        onClick={() => (window.location.href = "/")}
+        style={{ cursor: "pointer" }}
+      >
+        <div className="logo-box">
+          <img src="/assets/images/Logo_STU.png" alt="STU" />
+        </div>
+
+        {sidebarOpen && (
+          <div className="logo-text">
+            <h3>KÝ TÚC XÁ STU</h3>
+
+            <p>Hệ thống quản lý</p>
+          </div>
+        )}
       </div>
-      <hr className="horizontal dark mt-0 mb-2" />
-      <div className="collapse navbar-collapse w-auto">
-        <ul className="navbar-nav">
-          <li className="nav-item">
-            <a className="nav-link text-dark" href="/admin/dashboard">
-              <i className="material-symbols-rounded opacity-5">dashboard</i>
-              <span className="nav-link-text ms-1">Thống kê</span>
-            </a>
-          </li>
-          <li className="nav-item">
-            <a className="nav-link text-dark" href="/admin/accounts">
-              <i className="material-symbols-rounded opacity-5">table_view</i>
-              <span className="nav-link-text ms-1">Quản lý đăng ký nội trú</span>
-            </a>
-          </li>
-     
-          <li className="nav-item">
-            <a className="nav-link text-dark" href="/admin/students">
-              <i className="material-symbols-rounded opacity-5">table_view</i>
-              <span className="nav-link-text ms-1">Quản lý sinh viên</span>
-            </a>
-          </li>
-          <li className="nav-item">
-            <a className="nav-link text-dark" href="/admin/rooms">
-              <i className="material-symbols-rounded opacity-5">table_view</i>
-              <span className="nav-link-text ms-1">Quản lý phòng</span>
-            </a>
-          </li>
-          <li className="nav-item">
-            <a className="nav-link text-dark" href="/admin/facilities">
-              <i className="material-symbols-rounded opacity-5">table_view</i>
-              <span className="nav-link-text ms-1">Quản lý cơ sở vật chất</span>
-            </a>
-          </li>
-          <li className="nav-item">
-            <a className="nav-link text-dark" href="/admin/contracts">
-              <i className="material-symbols-rounded opacity-5">receipt_long</i>
-              <span className="nav-link-text ms-1">Quản lý hợp đồng</span>
-            </a>
-          </li>
-          <li className="nav-item">
-            <a className="nav-link text-dark" href="/admin/invoices">
-              <i className="material-symbols-rounded opacity-5">receipt_long</i>
-              <span className="nav-link-text ms-1">Quản lý hóa đơn</span>
-            </a>
-          </li>
-          <li className="nav-item">
-            <a className="nav-link text-dark" href="/admin/notifications">
-              <i className="material-symbols-rounded opacity-5">receipt_long</i>
-              <span className="nav-link-text ms-1">Quản lý thông báo</span>
-            </a>
-          </li>
-        
-          <li className="nav-item mt-3">
-            <h6 className="ps-4 ms-2 text-uppercase text-xs text-dark font-weight-bolder opacity-5">
-              Account pages
-            </h6>
-          </li>
-          <li className="nav-item">
-            <a className="nav-link text-dark" href="/admin/profile">
-              <i className="material-symbols-rounded opacity-5">person</i>
-              <span className="nav-link-text ms-1">Thông tin cá nhân</span>
-            </a>
-          </li>
-          <li className="nav-item">
-            <button
-              className="nav-link text-dark btn"
-              style={{ textAlign: "left", paddingLeft: "1rem" }}
-              onClick={logout}
-            >
-              <i className="material-symbols-rounded opacity-5">logout</i>
-              <span className="nav-link-text ms-1">Đăng xuất</span>
-            </button>
-          </li>
-        </ul>
+
+      <div className="sidebar-menu">
+        {menuItems.map((group, index) => (
+          <div className="menu-group" key={index}>
+            {sidebarOpen && <div className="menu-title">{group.title}</div>}
+
+            {group.items.map((item) => {
+              const active = location.pathname === item.path;
+
+              return (
+                <div
+                  key={item.path}
+                  className={`menu-item ${active ? "active" : ""}`}
+                  onClick={() => navigate(item.path)}
+                >
+                  <div className="menu-icon">
+                    <i className={item.icon}></i>
+                  </div>
+
+                  {sidebarOpen && <span>{item.text}</span>}
+                </div>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+
+      <div className="sidebar-footer">
+        <button className="logout-btn" onClick={logout}>
+          <i className="fa fa-sign-out-alt"></i>
+
+          {sidebarOpen && <span>Đăng xuất</span>}
+        </button>
       </div>
     </aside>
   );
-};
-
-export default Sidebar;
+}

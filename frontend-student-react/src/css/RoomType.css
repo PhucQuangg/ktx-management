@@ -1,0 +1,165 @@
+.room-card {
+  background: #fff;
+
+  border-radius: 18px;
+
+  padding: 25px;
+
+  margin-bottom: 22px;
+
+  border: 1px solid #e4edf8;
+
+  box-shadow: 0 10px 30px rgba(21, 101, 192, 0.08);
+
+  transition: 0.3s;
+}
+
+.room-card:hover {
+  transform: translateY(-5px);
+
+  box-shadow: 0 18px 40px rgba(21, 101, 192, 0.15);
+}
+
+.room-header {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  margin-bottom: 25px;
+}
+
+.room-header h3 {
+  margin: 0;
+
+  color: #1565c0;
+
+  font-weight: 700;
+}
+
+.room-type-badge {
+  display: inline-block;
+
+  margin-top: 8px;
+
+  padding: 6px 14px;
+
+  border-radius: 30px;
+
+  background: #e8f1ff;
+
+  color: #1565c0;
+
+  font-size: 13px;
+
+  font-weight: 600;
+}
+
+.room-status {
+  color: #28a745;
+
+  font-weight: 600;
+
+  font-size: 15px;
+}
+
+.room-status i {
+  margin-right: 6px;
+}
+
+.room-info-grid {
+  display: grid;
+
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 20px;
+}
+
+.room-info-grid div {
+  background: #f8fbff;
+
+  border-radius: 12px;
+
+  padding: 18px;
+
+  text-align: center;
+}
+
+.room-info-grid i {
+  font-size: 28px;
+
+  color: #1565c0;
+
+  margin-bottom: 10px;
+}
+
+.room-info-grid span {
+  display: block;
+
+  color: #666;
+
+  margin-bottom: 6px;
+}
+
+.room-info-grid strong {
+  display: block;
+
+  color: #333;
+
+  font-size: 17px;
+}
+
+.price {
+  color: #1565c0 !important;
+
+  font-size: 22px !important;
+}
+
+.room-footer {
+  margin-top: 25px;
+
+  text-align: right;
+}
+
+.room-button {
+  background: #1565c0;
+
+  color: white;
+
+  border: none;
+
+  border-radius: 10px;
+
+  padding: 12px 28px;
+
+  font-weight: 600;
+
+  transition: 0.3s;
+}
+
+.room-button:hover {
+  background: #0d47a1;
+}
+
+@media (max-width: 768px) {
+  .room-info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .room-header {
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    gap: 12px;
+  }
+
+  .room-footer {
+    text-align: center;
+  }
+
+  .room-button {
+    width: 100%;
+  }
+}

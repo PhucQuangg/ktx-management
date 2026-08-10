@@ -32,9 +32,7 @@ public class StudentRoomController {
     }
 
     @GetMapping("/{id}")
-    public RoomDetailDTO getRoom(
-            @PathVariable Integer id
-    ) {
+    public RoomDetailDTO getRoom(@PathVariable Integer id) {
         return roomService.getRoomByIdWithStu(id);
     }
 }

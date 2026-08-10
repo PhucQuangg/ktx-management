@@ -21,7 +21,6 @@ public class AdminContractController {
     @Autowired
     private ContractService contractService;
 
-    // ================= GET STUDENTS IN ROOM =================
     @GetMapping("/room/{roomId}")
     public ResponseEntity<?> getStudentsInRoom(@PathVariable Integer roomId) {
         try {
@@ -33,7 +32,6 @@ public class AdminContractController {
         }
     }
 
-    // ================= GET ALL CONTRACT =================
     @GetMapping
     public ResponseEntity<?> getAllContract() {
         try {
@@ -54,11 +52,10 @@ public class AdminContractController {
     }
 
 
-    // ================= APPROVE =================
     @PutMapping("/approve/{id}")
     public ResponseEntity<?> approveContract(@PathVariable Integer id) {
         try {
-            Contract contract = contractService.approveContract(id);
+            contractService.approveContract(id);
             return ResponseEntity.ok("Duyệt hợp đồng thành công!");
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -66,30 +63,27 @@ public class AdminContractController {
         }
     }
 
-    // ================= REJECT =================
     @PutMapping("/reject/{id}")
     public ResponseEntity<?> rejectContract(@PathVariable Integer id,  @RequestParam String reason) {
         try {
-            Contract rejected = contractService.rejectContract(id, reason);
-            return ResponseEntity.ok("❌ Đã từ chối sinh viên: " + rejected.getStudent().getFullName());
+            contractService.rejectContract(id, reason);
+            return ResponseEntity.ok("Từ chối đơn đăng ký thành công! ");
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
-    // ================= CANCEL =================
     @PutMapping("/cancel/{id}")
     public ResponseEntity<?> cancelContract(@PathVariable Integer id,@RequestParam String reason) {
         try {
-            Contract contract = contractService.cancelContract(id,reason);
-            return ResponseEntity.ok(("❌ Đã hủy hợp đồng sinh viên: " + contract.getStudent().getFullName()));
+            contractService.cancelContract(id,reason);
+            return ResponseEntity.ok(("Hủy hợp đồng nội trú thành công! ") );
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(e.getMessage());
         }
     }
 
-    // ================= EXPIRE =================
     @PutMapping("/expire")
     public ResponseEntity<?> expireContracts() {
         try {

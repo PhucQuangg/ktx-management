@@ -1,13 +1,7 @@
 
-^
-java:S1854"<Remove this useless assignment to local variable "facility".(ÎÂùÏúÿÿÿÿ8˜©‘§í3
 H
 java:S1452"&Remove usage of generic wildcard type.(ì¦øşÿÿÿÿ8™Á‘§í3
-O
-java:S1481"-Remove this unused "facility" local variable.(ÎÂùÏúÿÿÿÿ8™©‘§í3
-^
-java:S1854G"<Remove this useless assignment to local variable "facility".(ÎÂùÏúÿÿÿÿ8©ç¯¨í3
-C
-java:S1452A"&Remove usage of generic wildcard type.(ØÒ£Ø8èã®¨í3
-O
-java:S1481G"-Remove this unused "facility" local variable.(ÎÂùÏúÿÿÿÿ8©ç¯¨í3
+H
+java:S14523"&Remove usage of generic wildcard type.(úÆÅûùÿÿÿÿ8èã®¨í3
+m
+java:S1128"KRemove this unused import 'com.stu.edu.ktx_management.entity.RoomFacility'.(¬şúÿÿÿÿ8ğÅÔ„ş3

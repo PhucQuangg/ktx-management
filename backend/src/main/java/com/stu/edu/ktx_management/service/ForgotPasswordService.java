@@ -26,7 +26,6 @@ public class ForgotPasswordService {
     @Autowired
     private EmailService emailService;
 
-    // Gửi email reset mật khẩu
     public void createPasswordResetToken(String email) {
         Student student = studentRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Email không tồn tại!"));
@@ -48,7 +47,6 @@ public class ForgotPasswordService {
         );
     }
 
-    // Xử lý khi người dùng nhập mật khẩu mới qua link reset
     public void resetPassword(String token, String newPassword) {
         PasswordResetToken resetToken = tokenRepository.findByToken(token)
                 .orElseThrow(() -> new RuntimeException("Token không hợp lệ!"));
@@ -64,9 +62,8 @@ public class ForgotPasswordService {
         tokenRepository.delete(resetToken);
     }
 
-    // Đổi mật khẩu từ trang cá nhân
     public void updatePassword(String username, String oldPassword, String newPassword) {
-        Student student = studentRepository.findByUsername(username)
+        Student student = studentRepository.findByUsernameIgnoreCase(username)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng!"));
 
         if (!passwordEncoder.matches(oldPassword, student.getPassword())) {

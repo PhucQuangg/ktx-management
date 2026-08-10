@@ -1,230 +1,116 @@
-import React, { useEffect, useState } from "react";
-import Sidebar from "../components/Sidebar";
+import React, { useEffect, useState, useCallback } from "react";
+
 import Header from "../components/Header";
+import Sidebar from "../components/Sidebar";
 import Script from "../components/Script";
 
+import "../css/StudentNotifications.css";
+
 export default function StudentNotifications() {
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+
   const [notifications, setNotifications] = useState([]);
+
   const [loading, setLoading] = useState(true);
+
+  const token = sessionStorage.getItem("token");
+
+  const fetchNotifications = useCallback(() => {
+    fetch("http://localhost:8080/api/student/notifications", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res.json())
+
+      .then((data) => {
+        setNotifications(data);
+      })
+
+      .catch((err) => {
+        console.error(err);
+
+        window.showPopup("Lỗi tải thông báo!", true);
+      })
+
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [token]);
 
   useEffect(() => {
     fetchNotifications();
-  }, []);
-
-  const fetchNotifications = async () => {
-    try {
-      const res = await fetch(
-        "http://localhost:8080/api/student/notifications"
-      );
-
-      if (!res.ok) {
-        throw new Error("Không thể tải thông báo");
-      }
-
-      const data = await res.json();
-      setNotifications(data);
-    } catch (err) {
-      console.error(err);
-      window.showPopup("Lỗi tải thông báo", true);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [fetchNotifications]);
 
   return (
-    <div>
-      <Header />
-      <Sidebar />
+    <div className="wrapper">
+      <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+
+      <Sidebar sidebarOpen={sidebarOpen} />
 
       <div
         className="content-wrapper"
         style={{
-          paddingTop: "50px",      
-          paddingBottom: "40px",
-          minHeight: "100vh",
+          marginLeft: sidebarOpen ? "260px" : "80px",
+          transition: ".3s",
+          marginTop: "65px",
         }}
       >
+        <div className="notification-page">
+          <div className="notification-banner">
+            <h2>
+              <i className="fa fa-bell"></i>
+              Thông báo ký túc xá
+            </h2>
 
-        <div
-          className="container"
-          style={{
-            paddingTop: "20px",
-            maxWidth: "1100px",
-          }}
-        >
-
-          {/* Header */}
-          <div className="notification-header">
-
-            <div>
-              <h2>Thông báo ký túc xá</h2>
-              <p>
-                Cập nhật các thông báo mới nhất từ Ban quản lý KTX
-              </p>
-            </div>
-
-            <div className="notification-icon">
-              🔔
-            </div>
-
+            <p>Cập nhật các thông báo mới nhất từ Ban quản lý KTX.</p>
           </div>
 
-          {/* Content */}
           {loading ? (
-
             <div className="notification-empty">
-              Đang tải dữ liệu...
-            </div>
+              <i className="fa fa-spinner"></i>
 
+              <h3>Đang tải dữ liệu...</h3>
+            </div>
           ) : notifications.length === 0 ? (
-
             <div className="notification-empty">
+              <i className="fa fa-bell-slash"></i>
 
-              <div style={{ fontSize: 60 }}>
-                🔕
-              </div>
+              <h3>Chưa có thông báo</h3>
 
-              <h4>Chưa có thông báo</h4>
-
-              <p>
-                Hiện tại chưa có thông báo nào.
-              </p>
-
+              <p>Hiện tại chưa có thông báo nào.</p>
             </div>
-
           ) : (
-
-            <div className="notification-grid">
-
+            <div className="notification-list">
               {notifications.map((item) => (
+                <div className="notification-card" key={item.id}>
+                  <div className="notification-left">
+                    <div className="notification-icon">
+                      <i className="fa fa-bullhorn"></i>
+                    </div>
 
-                <div
-                  key={item.id}
-                  className="notification-card"
-                >
+                    <div className="notification-info">
+                      <h3>{item.title}</h3>
 
-                  <div className="notification-card-header">
+                      <div className="notification-date">
+                        <i className="fa fa-calendar"></i>
 
-                    <h4>
-                      📢 {item.title}
-                    </h4>
+                        {item.createdAt
+                          ? new Date(item.createdAt).toLocaleDateString("vi-VN")
+                          : ""}
+                      </div>
 
-                    <span>
-                      {item.createdAt
-                        ? new Date(
-                            item.createdAt
-                          ).toLocaleDateString("vi-VN")
-                        : ""}
-                    </span>
-
+                      <div className="notification-content">{item.content}</div>
+                    </div>
                   </div>
-
-                  <hr />
-
-                  <div className="notification-content">
-
-                    {item.content}
-
-                  </div>
-
                 </div>
-
               ))}
-
             </div>
-
           )}
-
         </div>
-
       </div>
 
       <Script />
-
-      <style>{`
-
-        .notification-header{
-          background:white;
-          border-radius:16px;
-          padding:25px;
-          margin-bottom:25px;
-          box-shadow:0 4px 20px rgba(0,0,0,0.08);
-
-          display:flex;
-          justify-content:space-between;
-          align-items:center;
-        }
-
-        .notification-header h2{
-          margin:0;
-          color:#344767;
-          font-weight:700;
-        }
-
-        .notification-header p{
-          margin-top:8px;
-          color:#67748e;
-        }
-
-        .notification-icon{
-          font-size:48px;
-        }
-
-        .notification-grid{
-          display:grid;
-          grid-template-columns:
-            repeat(auto-fill,minmax(450px,1fr));
-          gap:20px;
-        }
-
-        .notification-card{
-          background:white;
-          border-radius:16px;
-          padding:20px;
-          box-shadow:0 4px 20px rgba(0,0,0,0.08);
-          transition:0.25s;
-        }
-
-        .notification-card:hover{
-          transform:translateY(-4px);
-        }
-
-        .notification-card-header{
-          display:flex;
-          justify-content:space-between;
-          align-items:center;
-          gap:15px;
-        }
-
-        .notification-card-header h4{
-          margin:0;
-          color:#344767;
-          font-weight:700;
-        }
-
-        .notification-card-header span{
-          color:#8392ab;
-          font-size:14px;
-          white-space:nowrap;
-        }
-
-        .notification-content{
-          white-space:pre-wrap;
-          line-height:1.8;
-          color:#67748e;
-          min-height:80px;
-        }
-
-        .notification-empty{
-          background:white;
-          border-radius:16px;
-          padding:60px;
-          text-align:center;
-          box-shadow:0 4px 20px rgba(0,0,0,0.08);
-        }
-
-      `}</style>
-
     </div>
   );
 }

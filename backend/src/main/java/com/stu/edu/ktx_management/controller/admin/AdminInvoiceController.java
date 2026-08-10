@@ -1,6 +1,5 @@
 package com.stu.edu.ktx_management.controller.admin;
 
-import com.stu.edu.ktx_management.dto.CreateInvoiceRequest;
 import com.stu.edu.ktx_management.service.InvoiceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
@@ -20,19 +19,11 @@ public class AdminInvoiceController {
 
     private final InvoiceService invoiceService;
 
-    @PostMapping
-    public ResponseEntity<?> create(@RequestBody CreateInvoiceRequest request) {
-        try {
-            return ResponseEntity.ok(invoiceService.createInvoice(request));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
     @PostMapping("/generate")
     public ResponseEntity<?> generate(@RequestBody Map<String, String> body) {
         try {
             invoiceService.generateInvoices(body.get("month"));
-            return ResponseEntity.ok("Tạo hóa đơn hàng loạt thành công");
+            return ResponseEntity.ok("Tạo hóa đơn hàng loạt thành công! ");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -69,8 +60,8 @@ public class AdminInvoiceController {
     @PostMapping("/remind")
     public ResponseEntity<?> remindAll() {
         try {
-            int total = invoiceService.remindAllInvoices();
-            return ResponseEntity.ok("Đã gửi " + total + " email nhắc nhở thanh toán!");
+            invoiceService.remindAllInvoices();
+            return ResponseEntity.ok("Đã gửi email nhắc nhở thanh toán cho sinh viên!");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

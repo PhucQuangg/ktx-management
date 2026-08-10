@@ -37,7 +37,6 @@ public class ContractService {
     @Autowired
     private SemesterRegistrationRepository semesterRepository;
 
-    // ================= GET ALL =================
     public List<Contract> getAllContract() {
         return contractRepository.findAll();
     }
@@ -59,12 +58,11 @@ public class ContractService {
     }
 
 
-    // ================= GET CURRENT USER =================
     private Student getLoggedInStudent() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
 
-        return studentRepository.findByUsername(username)
+        return studentRepository.findByUsernameIgnoreCase(username)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy sinh viên"));
     }
 
@@ -72,7 +70,6 @@ public class ContractService {
         return getLoggedInStudent().getId();
     }
 
-    // ================= STUDENTS IN ROOM =================
     public List<StudentDTO> getStudentsInRoom(Integer roomId) {
         List<Contract> contracts = contractRepository.findByRoomId(roomId);
 
@@ -97,6 +94,11 @@ public class ContractService {
 
         SemesterRegistration currentSemester = null;
 
+        if (semesters.isEmpty()) {
+            throw new RuntimeException(
+                    "Hiện tại hệ thống chưa mở đăng ký phòng."
+            );
+        }
         for (SemesterRegistration s : semesters) {
 
             LocalDate registerStart =
@@ -142,7 +144,7 @@ public class ContractService {
         if (currentSemester == null) {
 
             throw new RuntimeException(
-                    "Hiện không trong thời gian đăng ký phòng"
+                    "Hiện tại chưa đến hoặc đã hết thời gian đăng ký phòng."
             );
         }
 
@@ -197,12 +199,7 @@ public class ContractService {
         if (contractRepository.findByStudentAndStatus(student, ContractStatus.ACTIVE).isPresent()) {
             throw new RuntimeException("Bạn đã có hợp đồng đang hoạt động");
         }
-        boolean hasPending =
-                contractRepository
-                        .existsByStudentAndStatus(
-                                student,
-                                ContractStatus.PENDING
-                        );
+        boolean hasPending = contractRepository.existsByStudentAndStatus(student, ContractStatus.PENDING);
 
         if (hasPending) {
             throw new RuntimeException(
@@ -244,15 +241,11 @@ public class ContractService {
         roomRepository.save(room);
         Contract result = contractRepository.save(contract);
 
-        emailService.sendApprovalContract(
-                result.getStudent(),
-                result
-        );
+        emailService.sendApprovalContract(result.getStudent(), result);
 
         return result;
     }
 
-    // ================= REJECT =================
     public Contract rejectContract(Integer contractId, String reason) {
         Contract contract = contractRepository.findById(contractId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy hợp đồng"));
@@ -273,7 +266,6 @@ public class ContractService {
     }
 
 
-    // ================= CANCEL =================
     public Contract cancelContract(Integer contractId, String reason) {
         Contract contract = contractRepository.findById(contractId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy hợp đồng"));
@@ -318,7 +310,6 @@ public class ContractService {
         return contract;
     }
 
-    // ================= EXPIRE =================
     public void expireContracts() {
         LocalDate today = LocalDate.now();
 
@@ -345,19 +336,7 @@ public class ContractService {
         }
     }
 
-    // ================= CHECK ACTIVE =================
-    public boolean hasActiveContract(Student student) {
-        List<Contract> contracts = contractRepository.findByStudent(student);
-        LocalDate now = LocalDate.now();
 
-        return contracts.stream()
-                .anyMatch(c ->
-                        !c.getStartDate().isAfter(now) &&
-                                !c.getEndDate().isBefore(now)
-                );
-    }
-
-    // ================= MY CONTRACT =================
     public List<StudentContractDTO> getContractsByStudentId() {
         Integer studentId = getCurrentStudentId();
 
@@ -367,9 +346,8 @@ public class ContractService {
                 .toList();
     }
 
-    // ================= DETAIL =================
     public ContractDTO getContractDetail(Integer contractId) {
-        Integer studentId = getCurrentStudentId(); // ✅ FIX CHÍNH
+        Integer studentId = getCurrentStudentId();
 
         Contract contract = contractRepository
                 .findByIdAndStudentId(contractId, studentId)
@@ -378,7 +356,6 @@ public class ContractService {
         return ContractMapper.toDetailDTO(contract);
     }
 
-    // ================= AUTO SCHEDULE =================
     @Scheduled(cron = "0 0 0 * * *")
     public void autoExpireContracts() {
         expireContracts();

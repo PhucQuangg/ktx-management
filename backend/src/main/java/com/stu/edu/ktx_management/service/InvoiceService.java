@@ -1,13 +1,8 @@
 package com.stu.edu.ktx_management.service;
 
-
-
-import com.stu.edu.ktx_management.dto.CreateInvoiceRequest;
 import com.stu.edu.ktx_management.dto.InvoiceDTO;
 import com.stu.edu.ktx_management.entity.*;
-import com.stu.edu.ktx_management.repository.ContractRepository;
-import com.stu.edu.ktx_management.repository.InvoiceRepository;
-import com.stu.edu.ktx_management.repository.StudentRepository;
+import com.stu.edu.ktx_management.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,131 +16,124 @@ import java.util.List;
 public class InvoiceService {
 
     private final InvoiceRepository invoiceRepository;
+
     private final ContractRepository contractRepository;
+
     private final StudentRepository studentRepository;
+
     private final EmailService emailService;
+
     private final PdfInvoiceService pdfInvoiceService;
 
-    private final Double SERVICE_FEE = 350000.0;
+    private final ServiceRepository serviceRepository;
 
-    public Invoice createInvoice(CreateInvoiceRequest request) {
-
-        Contract contract = contractRepository.findById(request.getContractId())
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy hợp đồng"));
-
-        if (contract.getStatus() != ContractStatus.ACTIVE) {
-            throw new RuntimeException("Chỉ hợp đồng ACTIVE mới tạo được hóa đơn");
-        }
-
-
-        // ✅ CHECK THÁNG
-        YearMonth currentMonth = YearMonth.now();
-        YearMonth requestMonth = YearMonth.parse(request.getMonth());
-
-        if (!requestMonth.equals(currentMonth)) {
-            throw new RuntimeException("Chỉ được tạo hóa đơn tháng hiện tại");
-        }
-
-        // ✅ CHECK TRÙNG
-        boolean exists = invoiceRepository
-                .existsByContractIdAndMonth(contract.getId(), request.getMonth());
-
-        if (exists) {
-            throw new RuntimeException("Hóa đơn đã tồn tại");
-        }
-
-        Double roomPrice = contract.getRoom().getPrice();
-
-        Invoice invoice = Invoice.builder()
-                .contract(contract)
-                .student(contract.getStudent())
-                .room(contract.getRoom())
-                .month(request.getMonth())
-                .roomPrice(roomPrice)
-                .serviceFee(SERVICE_FEE)
-                .totalAmount(roomPrice + SERVICE_FEE)
-                .status(InvoiceStatus.UNPAID)
-                .dueDate(LocalDate.now().plusDays(7))
-                .createdAt(LocalDateTime.now())
-                .build();
-
-
-        return invoiceRepository.save(invoice);
-
-    }
+    private final InvoiceServiceRepository invoiceServiceRepository;
 
     public int generateInvoices(String month) {
 
-        // ✅ VALIDATE MONTH NULL
         if (month == null || month.isBlank()) {
             throw new RuntimeException("Tháng không hợp lệ");
         }
 
-        // ✅ VALIDATE FORMAT YYYY-MM
         YearMonth requestMonth;
+
         try {
             requestMonth = YearMonth.parse(month);
         } catch (Exception e) {
             throw new RuntimeException("Format tháng phải là YYYY-MM");
         }
 
-        // ✅ (OPTION) CHỈ CHO TẠO THÁNG HIỆN TẠI
         YearMonth currentMonth = YearMonth.now();
+
         if (!requestMonth.equals(currentMonth)) {
-            throw new RuntimeException("Chỉ được tạo hóa đơn tháng hiện tại");
+            throw new RuntimeException(
+                    "Chỉ được tạo hóa đơn tháng hiện tại"
+            );
         }
 
-        // ✅ LẤY CONTRACT ACTIVE
-        List<Contract> contracts = contractRepository.findAll()
-                .stream()
-                .filter(c -> c.getStatus() == ContractStatus.ACTIVE)
-                .toList();
+        List<Contract> contracts =
+                contractRepository.findAll()
+                        .stream()
+                        .filter(c -> c.getStatus() == ContractStatus.ACTIVE)
+
+                        .filter(c -> c.getStartDate() != null)
+
+                        .filter(c -> c.getEndDate() != null)
+
+                        .filter(c -> {
+                            YearMonth startMonth =
+                                    YearMonth.from(
+                                            c.getStartDate()
+                                    );
+
+                            YearMonth endMonth =
+                                    YearMonth.from(
+                                            c.getEndDate()
+                                    );
+
+                            return !requestMonth.isBefore(startMonth) && !requestMonth.isAfter(endMonth);
+                        })
+
+                        .toList();
 
         int createdCount = 0;
 
         for (Contract contract : contracts) {
 
-            // ❗ CHECK TRÙNG
-            boolean exists = invoiceRepository
-                    .existsByContractIdAndMonth(contract.getId(), month);
+            boolean exists = invoiceRepository.existsByContractIdAndMonth(contract.getId(), month);
 
-            if (exists) continue;
+            if (exists) {
+                continue;
+            }
 
             Double roomPrice = contract.getRoom().getPrice();
 
-            Invoice invoice = Invoice.builder()
-                    .contract(contract)
-                    .student(contract.getStudent())
-                    .room(contract.getRoom())
-                    .month(month)
-                    .roomPrice(roomPrice)
-                    .serviceFee(SERVICE_FEE)
-                    .totalAmount(roomPrice + SERVICE_FEE)
-                    .status(InvoiceStatus.UNPAID)
-                    .dueDate(LocalDate.now().plusDays(7))
-                    .createdAt(LocalDateTime.now())
-                    .build();
+            List<Services> services = serviceRepository.findAll();
 
-            invoiceRepository.save(invoice);
+            double totalService = services.stream()
+                            .mapToDouble(
+                                    Services::getPrice
+                            )
+                            .sum();
+            Invoice invoice =
+                    Invoice.builder()
+                            .contract(contract)
+                            .student(contract.getStudent())
+                            .room(contract.getRoom())
+                            .month(month)
+                            .roomPrice(roomPrice)
+                            .serviceFee(totalService)
+                            .totalAmount(roomPrice + totalService)
+                            .status(InvoiceStatus.UNPAID)
+                            .dueDate(LocalDate.now().plusDays(7))
+                            .createdAt(LocalDateTime.now()
+                            )
+                            .build();
+
+            Invoice savedInvoice = invoiceRepository.save(invoice);
+
+            for (Services service : services) {
+
+                InvoiceServices invoiceService =
+                        InvoiceServices.builder()
+
+                                .invoice(savedInvoice)
+                                .service(service)
+                                .amount(service.getPrice())
+                                .build();
+
+                invoiceServiceRepository.save(invoiceService);
+            }
+
             createdCount++;
         }
 
         return createdCount;
     }
 
-
-    public List<InvoiceDTO> getAll() {
-        List<Invoice> invoices = invoiceRepository.findAll();
-
-        return invoices.stream()
-                .map(InvoiceDTO::new)
-                .toList();
-
-    }
-
     public List<InvoiceDTO> getByStudent(String username) {
 
-        Student student = studentRepository.findByUsername(username)
+        Student student = studentRepository.findByUsernameIgnoreCase(username)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy student"));
 
         return invoiceRepository.findByStudentId(student.getId())
@@ -161,14 +149,32 @@ public class InvoiceService {
     }
 
     @Transactional
-    public Invoice markAsPaid(Integer id) {
+    public Invoice markAsPaid(Integer invoiceId) {
+        Invoice invoice =
+                invoiceRepository
+                        .findById(invoiceId)
+                        .orElseThrow(() ->
+                                        new RuntimeException(
+                                                "Không tìm thấy hóa đơn."
+                                        )
+                        );
 
-        Invoice invoice = getById(id);
+        if (invoice.getStatus() == InvoiceStatus.PAID) {
+            throw new RuntimeException(
+                    "Hóa đơn này đã được thanh toán."
+            );
+        }
+
         invoice.setStatus(InvoiceStatus.PAID);
-        emailService.sendPaymentSuccessEmail(invoice);
 
-        return invoice;
+        Invoice savedInvoice = invoiceRepository.saveAndFlush(invoice);
+
+        emailService.sendPaymentSuccessEmail(savedInvoice.getId());
+
+
+        return savedInvoice;
     }
+
     public List<InvoiceDTO> filter(String status, String month, String roomName) {
 
         InvoiceStatus st = null;
@@ -206,8 +212,6 @@ public class InvoiceService {
 
         return count;
     }
-
-
 
     public File generatePdf(Integer id) throws Exception {
 

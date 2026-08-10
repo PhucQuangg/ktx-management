@@ -30,7 +30,6 @@ public class ContractDTO {
         this.endDate = endDate;
         this.status = status;
     }
-    // getters
 }
 
 

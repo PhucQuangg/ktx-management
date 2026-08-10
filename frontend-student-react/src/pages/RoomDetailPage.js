@@ -7,11 +7,12 @@ import Header from "../components/Header";
 export default function RoomDetail() {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const roomId = queryParams.get("id"); 
+  const roomId = queryParams.get("id");
 
   const [room, setRoom] = useState(null);
   const [loading, setLoading] = useState(true);
   const [loadingRegister, setLoadingRegister] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const [contractStatus, setContractStatus] = useState(null);
 
@@ -33,17 +34,18 @@ export default function RoomDetail() {
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
 
-      fetch(`http://localhost:8080/api/student/contracts/my-contracts`, {
-        headers: { Authorization: `Bearer ${token}` },
+    fetch(`http://localhost:8080/api/student/contracts/my-contracts`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => res.json())
+      .then((contracts) => {
+        const activeContract = contracts.find((c) => c.status === "ACTIVE");
+        if (activeContract) setContractStatus("ACTIVE");
+        else if (contracts.find((c) => c.status === "PENDING"))
+          setContractStatus("PENDING");
+        else setContractStatus(null);
       })
-        .then((res) => res.json())
-        .then((contracts) => {
-          const activeContract = contracts.find(c => c.status === "ACTIVE");
-          if (activeContract) setContractStatus("ACTIVE");
-          else if (contracts.find(c => c.status === "PENDING")) setContractStatus("PENDING");
-          else setContractStatus(null);
-        })
-        .catch(err => console.error(err));
+      .catch((err) => console.error(err));
   }, [roomId]);
 
   if (loading) return <p>Đang tải...</p>;
@@ -51,23 +53,23 @@ export default function RoomDetail() {
 
   const occupancyRate = Math.round((room.current_people / room.capacity) * 100);
   const typeVN = room.type === "NORMAL" ? "Tiêu Chuẩn" : "Tiện Nghi";
-  const statusVN = {
-    AVAILABLE: "Có sẵn",
-    FULL: "Đầy",
-    MAINTENANCE: "Bảo trì",
-  }[room.status] || room.status;
+  const statusVN =
+    {
+      AVAILABLE: "Có sẵn",
+      FULL: "Đầy",
+      MAINTENANCE: "Bảo trì",
+    }[room.status] || room.status;
 
   const registerRoom = () => {
-
     const token = sessionStorage.getItem("token");
-  
+
     if (!token) {
       window.showPopup("Bạn chưa đăng nhập!", true);
       return;
     }
-  
+
     setLoadingRegister(true);
-  
+
     fetch(
       `http://localhost:8080/api/student/contracts/register/semester?roomId=${roomId}`,
       {
@@ -78,63 +80,64 @@ export default function RoomDetail() {
       }
     )
       .then(async (res) => {
-  
         const data = await res.json();
-  
+
         if (!res.ok) {
           throw new Error(data.message || "Không thể đăng ký phòng");
         }
-  
+
         return data;
       })
       .then(() => {
-  
-        window.showPopup(
-          "Đăng ký phòng thành công! Chờ admin duyệt!"
-        );
-  
+        window.showPopup("Đăng ký phòng thành công! Chờ admin duyệt!");
+
         setTimeout(() => {
           window.location.reload();
         }, 2000);
-  
       })
       .catch((err) => {
-  
-        window.showPopup(
-          err.message,
-          true
-        );
-  
+        window.showPopup(err.message, true);
       })
       .finally(() => {
-  
         setLoadingRegister(false);
-  
       });
   };
-  
 
-  
   return (
     <div>
-      <Header />
-      <Sidebar />
+      <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+
+      <Sidebar sidebarOpen={sidebarOpen} />
       <div
         className="content-wrapper"
         style={{
-          paddingTop: "50px",      
-          paddingBottom: "40px",
+          marginLeft: sidebarOpen ? "260px" : "80px",
+
+          marginTop: "65px",
+
+          transition: "all .3s",
+
           minHeight: "100vh",
+
+          background:
+            "linear-gradient(135deg,#eef5ff 0%,#f8fbff 50%,#ffffff 100%)",
+
+          padding: "35px",
         }}
       >
-        <div className="container" style={{ paddingTop: 20 }}        >
+        <div className="container" style={{ paddingTop: 20 }}>
           <div className="card">
             <div className="room-header">
               <div className="photo">
                 <img
-                  src={room.photo || "/assets/images/roomDefault.jpg"}
-                  alt={`Phòng ${room.name}`}
-                  style={{ width: "160px", height: "110px", borderRadius: 10, objectFit: "cover" }}
+                  src="/assets/images/room.png"
+                  alt="Room"
+                  style={{
+                    width: "160px",
+                    height: "110px",
+                    borderRadius: 10,
+                    objectFit: "cover",
+                  }}
                 />
               </div>
               <div className="meta">
@@ -143,16 +146,23 @@ export default function RoomDetail() {
                   Loại: {typeVN} • ID: #{room.id}
                 </p>
                 <div className="badges">
-                  <span className={`badge status-${room.status}`}>{statusVN}</span>
+                  <span className={`badge status-${room.status}`}>
+                    {statusVN}
+                  </span>
                   <span className="badge type-small">{typeVN}</span>
-                  <span className="badge" style={{ background: "#f8fafc", color: "#0f172a" }}>
+                  <span
+                    className="badge"
+                    style={{ background: "#f8fafc", color: "#0f172a" }}
+                  >
                     Sức chứa: {room.capacity}
                   </span>
                 </div>
               </div>
               <div style={{ textAlign: "right" }}>
                 <div className="muted-2">Hiện có</div>
-                <div style={{ fontWeight: 800, fontSize: 20 }}>{room.current_people}</div>
+                <div style={{ fontWeight: 800, fontSize: 20 }}>
+                  {room.current_people}
+                </div>
               </div>
             </div>
 
@@ -174,7 +184,10 @@ export default function RoomDetail() {
                   <div style={{ width: "55%" }}>
                     <div className="label">Tỉ lệ lấp đầy</div>
                     <div className="progress">
-                      <div className="bar" style={{ width: `${occupancyRate}%` }}></div>
+                      <div
+                        className="bar"
+                        style={{ width: `${occupancyRate}%` }}
+                      ></div>
                     </div>
                   </div>
                   <div style={{ textAlign: "right" }} className="value">
@@ -184,7 +197,9 @@ export default function RoomDetail() {
                 <div className="field">
                   <div className="label">Trạng thái</div>
                   <div className="value">
-                    <span className={`badge status-${room.status}`}>{statusVN}</span>
+                    <span className={`badge status-${room.status}`}>
+                      {statusVN}
+                    </span>
                   </div>
                 </div>
                 <div className="field">
@@ -196,48 +211,31 @@ export default function RoomDetail() {
                   <div className="value muted">{room.note || "Không có"}</div>
                 </div>
                 <div className="facility-section">
+                  <h4 className="facility-title">Cơ sở vật chất phòng</h4>
 
-                <h4 className="facility-title">
-                  Cơ sở vật chất phòng
-                </h4>
+                  {room.facilities && room.facilities.length > 0 ? (
+                    <div className="facility-grid">
+                      {room.facilities.map((item, index) => (
+                        <div key={index} className="facility-card">
+                          <div className="facility-icon">🛠️</div>
 
-                {room.facilities && room.facilities.length > 0 ? (
+                          <div>
+                            <div className="facility-name">
+                              {item.facilityName}
+                            </div>
 
-                  <div className="facility-grid">
-
-                    {room.facilities.map((item, index) => (
-
-                      <div
-                        key={index}
-                        className="facility-card"
-                      >
-                        <div className="facility-icon">
-                          🛠️
-                        </div>
-
-                        <div>
-                          <div className="facility-name">
-                            {item.facilityName}
-                          </div>
-
-                          <div className="facility-quantity">
-                            Số lượng: {item.quantity}
+                            <div className="facility-quantity">
+                              Số lượng: {item.quantity}
+                            </div>
                           </div>
                         </div>
-                      </div>
-
-                    ))}
-
-                  </div>
-
-                ) : (
-
-                  <div className="text-muted">
-                    Chưa có dữ liệu cơ sở vật chất
-                  </div>
-
-                )}
-
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-muted">
+                      Chưa có dữ liệu cơ sở vật chất
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -253,124 +251,95 @@ export default function RoomDetail() {
                   Các tùy chọn
                 </div>
                 <div className="actions">
-                <button
-                  className="btn btn-primary"
-                  disabled={loadingRegister}
-                  onClick={() => {
+                  <button
+                    className="btn btn-primary"
+                    disabled={loadingRegister}
+                    onClick={() => {
+                      if (contractStatus === "ACTIVE") {
+                        window.showPopup(
+                          "Bạn đã có hợp đồng đang hoạt động",
+                          true
+                        );
 
-                    if (contractStatus === "ACTIVE") {
+                        return;
+                      }
 
-                      window.showPopup(
-                        "Bạn đã có hợp đồng đang hoạt động",
-                        true
-                      );
+                      if (contractStatus === "PENDING") {
+                        window.showPopup(
+                          "Bạn đã có đơn đăng ký đang chờ duyệt",
+                          true
+                        );
 
-                      return;
-                    }
+                        return;
+                      }
 
-                    if (contractStatus === "PENDING") {
+                      registerRoom();
+                    }}
+                  >
+                    {loadingRegister ? "Đang đăng ký..." : "Đăng ký phòng"}
+                  </button>
+                </div>
 
-                      window.showPopup(
-                        "Bạn đã có đơn đăng ký đang chờ duyệt",
-                        true
-                      );
-
-                      return;
-                    }
-
-                    registerRoom();
+                <div
+                  style={{
+                    marginTop: 18,
+                    borderTop: "1px dashed #eef2ff",
+                    paddingTop: 12,
                   }}
                 >
-                  {loadingRegister
-                    ? "Đang đăng ký..."
-                    : "Đăng ký phòng"}
-                </button>
+                  <div
+                    className="muted"
+                    style={{
+                      fontWeight: 600,
+                      marginBottom: 10,
+                    }}
+                  >
+                    Thông tin thêm
                   </div>
-
 
                   <div
                     style={{
-                      marginTop: 18,
-                      borderTop: "1px dashed #eef2ff",
-                      paddingTop: 12,
+                      fontSize: 13,
+                      lineHeight: "1.8",
+                      color: "#64748b",
                     }}
                   >
                     <div
-                      className="muted"
                       style={{
-                        fontWeight: 600,
-                        marginBottom: 10,
+                        marginTop: 10,
+                        padding: 10,
+                        background: "#f8fafc",
+                        borderRadius: 8,
+                        border: "1px solid #e2e8f0",
                       }}
                     >
-                      Thông tin thêm
-                    </div>
-
-                    <div
-                      style={{
-                        fontSize: 13,
-                        lineHeight: "1.8",
-                        color: "#64748b",
-                      }}
-                    >
-                      <div>
-                        💡 <strong>Phí điện nước:</strong> 350.000đ/người/tháng
-                      </div>
-
-                      <div
-                        style={{
-                          marginTop: 10,
-                          padding: 10,
-                          background: "#f8fafc",
-                          borderRadius: 8,
-                          border: "1px solid #e2e8f0",
-                        }}
-                      >
-                        <div style={{ fontWeight: 600, color: "#1e293b" }}>
-                          📚 Học kỳ 1
-                        </div>
-
-                        <div>
-                          ⏰ Đăng ký: <strong>01/06 - 31/07</strong>
-                        </div>
-
-                        <div>
-                          🏠 Lưu trú: <strong>01/09 - 31/01</strong>
-                        </div>
-                      </div>
-
-                      <div
-                        style={{
-                          marginTop: 10,
-                          padding: 10,
-                          background: "#f8fafc",
-                          borderRadius: 8,
-                          border: "1px solid #e2e8f0",
-                        }}
-                      >
-                        <div style={{ fontWeight: 600, color: "#1e293b" }}>
-                          📚 Học kỳ 2
-                        </div>
-
-                        <div>
-                          ⏰ Đăng ký: <strong>01/12 - 31/01</strong>
-                        </div>
-
-                        <div>
-                          🏠 Lưu trú: <strong>01/02 - 30/06</strong>
-                        </div>
+                      <div style={{ fontWeight: 600, color: "#1e293b" }}>
+                        Theo dõi thời gian đăng ký theo thông báo của Ban Quản
+                        lý Ký túc xá.
                       </div>
                     </div>
                   </div>
+                </div>
               </aside>
 
-              <button className="back-button" onClick={() => (window.location.href = "/rooms")}>
+              <button
+                className="back-button"
+                style={{
+                  width: "100%",
+                  background: "#1565C0",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "12px",
+                  padding: "13px",
+                  fontWeight: 600,
+                }}
+                onClick={() => (window.location.href = "/rooms")}
+              >
                 Quay lại
               </button>
             </div>
           </div>
         </div>
-
-        
 
         <Script />
 

@@ -49,4 +49,11 @@ public class Student {
 
     @Column(name = "class_name")
     private String className;
+
+    @OneToOne(
+            mappedBy = "student",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private ResidenceInfo residenceInfo;
 }

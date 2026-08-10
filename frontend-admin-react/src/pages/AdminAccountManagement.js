@@ -1,369 +1,884 @@
 import React, { useEffect, useState } from "react";
+
 import Sidebar from "../components/Sidebar";
-import SettingsPanel from "../components/SettingsPanel";
-import Script from "../components/Script";
+
+import "../css/DormitoryRegistrationAdmin.css";
 
 export default function DormitoryRegistration() {
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+
   const [students, setStudents] = useState([]);
   const [filteredStudents, setFilteredStudents] = useState([]);
-  const [selectedRole, setSelectedRole] = useState("ALL");
-  const [sidebarColor, setSidebarColor] = useState("bg-white");
 
-  // Modal chi tiết sinh viên
+  const [selectedStatus, setSelectedStatus] = useState("PENDING");
+  const [loading, setLoading] = useState(true);
+
   const [detailModal, setDetailModal] = useState({
     show: false,
-    student: null
+    student: null,
   });
 
-  // Modal từ chối
   const [rejectModalData, setRejectModalData] = useState({
     show: false,
     studentId: null,
     reasonType: "",
-    customReason: ""
+    customReason: "",
   });
 
   const token = sessionStorage.getItem("admin_token");
 
   useEffect(() => {
-    fetch("http://localhost:8080/api/admin/accounts/all", {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
-      .then(res => res.json())
-      .then(data => {
-  
-        const studentList = data.filter(
-          s => s.role === "STUDENT"
-        );
-  
-        setStudents(studentList);
-  
-        setFilteredStudents(
-          studentList.filter(
-            s => s.approvalStatus === "PENDING"
-          )
-        );
-  
-        setSelectedRole("PENDING");
-      })
-      .catch(err => console.error(err));
-  
+    fetchStudents();
   }, [token]);
 
   useEffect(() => {
-    if (selectedRole === "ALL") setFilteredStudents(students);
-    else setFilteredStudents(students.filter(s => s.approvalStatus === selectedRole));
-  }, [selectedRole, students]);
+    if (selectedStatus === "ALL") {
+      setFilteredStudents(students);
+      return;
+    }
 
-  // DUYỆT
-  const approveStudent = async (id) => {
+    setFilteredStudents(
+      students.filter((student) => student.approvalStatus === selectedStatus)
+    );
+  }, [selectedStatus, students]);
+
+  const fetchStudents = async () => {
     try {
-      const res = await fetch(`http://localhost:8080/api/admin/accounts/approve/${id}`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` }
+      setLoading(true);
+
+      const res = await fetch("http://localhost:8080/api/admin/accounts/all", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
-      if (res.ok) {
-        window.showPopup("Email thông báo đã được gửi cho sinh viên.");
-        setStudents(prev => prev.filter(s => s.id !== id));
-      } else {
-        const err = await res.text();
-        window.showPopup(err,true);
+
+      if (!res.ok) {
+        const message = await res.text();
+
+        throw new Error(message || "Không thể tải danh sách đăng ký nội trú.");
       }
-    } catch (err) {
-      console.error(err);
-      window.showPopup("Lỗi khi duyệt sinh viên",true);
+
+      const data = await res.json();
+
+      const studentList = data.filter((student) => student.role === "STUDENT");
+
+      setStudents(studentList);
+    } catch (error) {
+      console.error(error);
+
+      window.showPopup?.(
+        error.message || "Lỗi khi tải danh sách sinh viên.",
+        true
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Mở modal từ chối
+  const approveStudent = async (id) => {
+    window.showPopup?.(
+      "Xác nhận duyệt đơn đăng ký nội trú này?",
+      false,
+      true,
+      async () => {
+        try {
+          const res = await fetch(
+            `http://localhost:8080/api/admin/accounts/approve/${id}`,
+            {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
+          const message = await res.text();
+
+          if (!res.ok) {
+            throw new Error(message || "Không thể duyệt đơn đăng ký.");
+          }
+
+          window.showPopup?.(message || "Duyệt đơn đăng ký thành công.");
+
+          setStudents((prev) =>
+            prev.map((student) =>
+              student.id === id
+                ? {
+                    ...student,
+                    approvalStatus: "APPROVED",
+                  }
+                : student
+            )
+          );
+
+          setDetailModal({
+            show: false,
+            student: null,
+          });
+          setTimeout(() => {
+            window.showPopup?.(message || "Duyệt đơn đăng ký thành công.");
+          }, 300);
+        } catch (error) {
+          console.error(error);
+
+          window.showPopup?.(error.message || "Lỗi khi duyệt sinh viên.", true);
+        }
+      }
+    );
+  };
+
   const openRejectModal = (id) => {
     setRejectModalData({
       show: true,
       studentId: id,
       reasonType: "",
-      customReason: ""
+      customReason: "",
     });
   };
 
-  // Xác nhận từ chối
+  const closeRejectModal = () => {
+    setRejectModalData({
+      show: false,
+      studentId: null,
+      reasonType: "",
+      customReason: "",
+    });
+  };
+
   const confirmReject = async () => {
     const { studentId, reasonType, customReason } = rejectModalData;
-    const reason = reasonType === "Khác" ? customReason : reasonType;
-    if (!reason) return window.showPopup("Vui lòng chọn hoặc nhập lý do từ chối!",true);
+
+    const reason = reasonType === "Khác" ? customReason.trim() : reasonType;
+
+    if (!reason) {
+      window.showPopup?.("Vui lòng chọn hoặc nhập lý do từ chối.", true);
+      return;
+    }
 
     try {
       const res = await fetch(
-        `http://localhost:8080/api/admin/accounts/reject/${studentId}?reason=${encodeURIComponent(reason)}`,
-        { method: "POST", headers: { Authorization: `Bearer ${token}` } }
+        `http://localhost:8080/api/admin/accounts/reject/${studentId}?reason=${encodeURIComponent(
+          reason
+        )}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
-      if (res.ok) {
-        window.showPopup("Đã gửi thông báo từ chối đến sinh viên.");
-        setRejectModalData({ show: false, studentId: null, reasonType: "", customReason: "" });
-        setStudents(prev => prev.filter(s => s.id !== studentId));
-      } else {
-        const err = await res.text();
-        window.showPopup(err,true);
+
+      const message = await res.text();
+
+      if (!res.ok) {
+        throw new Error(message || "Không thể từ chối đơn đăng ký.");
       }
-    } catch (err) {
-      console.error(err);
-      window.showPopup("Lỗi khi từ chối sinh viên!",true);
+
+      window.showPopup?.(message || "Đã từ chối đơn đăng ký nội trú.");
+
+      setStudents((prev) =>
+        prev.map((student) =>
+          student.id === studentId
+            ? {
+                ...student,
+                approvalStatus: "REJECTED",
+              }
+            : student
+        )
+      );
+
+      closeRejectModal();
+      setTimeout(() => {
+        window.showPopup?.(message || "Đã từ chối đơn đăng ký nội trú.");
+      }, 300);
+    } catch (error) {
+      console.error(error);
+
+      window.showPopup?.(error.message || "Lỗi khi từ chối sinh viên.", true);
     }
   };
 
+  const formatDate = (date) => {
+    if (!date) {
+      return "Chưa cập nhật";
+    }
 
+    const parsedDate = new Date(date);
+
+    if (Number.isNaN(parsedDate.getTime())) {
+      return date;
+    }
+
+    return parsedDate.toLocaleDateString("vi-VN");
+  };
+
+  const getStatusText = (status) => {
+    switch (status) {
+      case "PENDING":
+        return "Chờ duyệt";
+
+      case "APPROVED":
+        return "Đã duyệt";
+
+      case "REJECTED":
+        return "Đã từ chối";
+
+      default:
+        return status || "Chưa xác định";
+    }
+  };
+
+  const countByStatus = (status) =>
+    students.filter((student) => student.approvalStatus === status).length;
   return (
-    <div className="g-sidenav-show">
-      <Sidebar color={sidebarColor} />
-      <main className="main-content position-relative max-height-vh-100 h-100 border-radius-lg">
+    <div className="admin-registration-layout">
+      <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
-      <nav
-          className="navbar navbar-main navbar-expand-lg px-0 mx-3 shadow-none border-radius-xl"
-          id="navbarBlur"
-          data-scroll="true"
-        >
-          <div className="container-fluid py-1 px-3">
-            <nav aria-label="breadcrumb">
-              <ol className="breadcrumb bg-transparent mb-0 pb-0 pt-1 px-0 me-sm-6 me-5">
-                <li className="breadcrumb-item text-sm">
-                  <a className="opacity-5 text-dark" href="#">
-                    Trang
-                  </a>
-                </li>
-                <li
-                  className="breadcrumb-item text-sm text-dark active"
-                  aria-current="page"
-                >
-                  Quản lý tài khoản
-                </li>
-              </ol>
-            </nav>
+      <main
+        className={`admin-registration-content ${
+          sidebarOpen ? "" : "sidebar-collapsed"
+        }`}
+      >
+        <section className="registration-banner">
+          <div>
+            <div className="registration-banner-badge">
+              <i className="fa fa-file-signature"></i>
+              Quản lý nội trú
+            </div>
 
-            <ul className="navbar-nav d-flex align-items-center justify-content-end">
-              <li className="nav-item d-xl-none ps-3 d-flex align-items-center">
-                <a href="#" className="nav-link text-body p-0" id="iconNavbarSidenav">
-                  <div className="sidenav-toggler-inner">
-                    <i className="sidenav-toggler-line"></i>
-                    <i className="sidenav-toggler-line"></i>
-                    <i className="sidenav-toggler-line"></i>
-                  </div>
-                </a>
-              </li>
+            <h1>Đăng ký nội trú</h1>
 
-              <li className="nav-item px-3 d-flex align-items-center">
-                <a href="#" className="nav-link text-body p-0">
-                  <i className="material-symbols-rounded fixed-plugin-button-nav">
-                    settings
-                  </i>
-                </a>
-              </li>
-
-              <li className="nav-item d-flex align-items-center">
-                <a
-                  href="http://localhost:3000/login"
-                  className="nav-link text-body font-weight-bold px-0"
-                >
-                  <i className="material-symbols-rounded">account_circle</i>
-                </a>
-              </li>
-            </ul>
+            <p>
+              Theo dõi, kiểm tra và xét duyệt hồ sơ đăng ký nội trú của sinh
+              viên.
+            </p>
           </div>
-        </nav>
 
-        {/* CONTENT */}
-        <div className="container-fluid py-2">
-          <div className="row">
-            <div className="col-12">
-              <div className="card my-4">
-                <div className="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
-                  <div className="bg-gradient-dark shadow-dark border-radius-lg pt-4 pb-3">
-                    <h6 className="text-white text-capitalize ps-3">Danh sách tài khoản</h6>
-                  </div>
-                </div>
+          <div className="registration-banner-icon">
+            <i className="fa fa-user-check"></i>
+          </div>
+        </section>
 
-                <div className="card-body px-0 pb-2">
-                  <div className="table-responsive p-0">
+        <section className="registration-statistics">
+          <div className="registration-stat-card total">
+            <div className="stat-icon">
+              <i className="fa fa-users"></i>
+            </div>
 
-                    {/* FILTER */}
-                    <div className="d-flex justify-content-between align-items-center px-4 pt-3">
-                      <select className="form-select w-auto" value={selectedRole} onChange={e => setSelectedRole(e.target.value)}>
-                        <option value="ALL">Tất cả</option>
-                        <option value="PENDING">Chờ duyệt</option>
-                        <option value="APPROVED">Đã duyệt</option>
-                      </select>
-                    </div>
-
-                    {/* TABLE */}
-                    <table className="table align-middle mb-0 text-center">
-                      <thead>
-                        <tr>
-                          <th>Họ và tên</th>
-                          <th>Tên đăng nhập</th>
-                          <th>Lớp</th>
-                          <th>Email</th>
-                          <th>Vai trò</th>
-                          <th>Trạng thái</th>
-                        </tr>
-                      </thead>
-
-                      <tbody>
-                        {filteredStudents.length > 0 ? (
-                          filteredStudents.map(s => (
-                            <tr key={s.id} style={{ cursor: "pointer" }} onClick={() => setDetailModal({ show: true, student: s })}>
-                              <td>{s.fullName}</td>
-                              <td>{s.username}</td>
-                              <td>{s.className}</td>
-                              <td>{s.email}</td>
-                              <td>{s.role}</td>
-                              <td>
-                                {s.approvalStatus === "PENDING" && <span className="text-warning">Chờ duyệt</span>}
-                                {s.approvalStatus === "APPROVED" && <span className="text-success fw-bold">Đã duyệt</span>}
-                              </td>
-                            </tr>
-                          ))
-                        ) : (
-                          <tr>
-                            <td colSpan="8" className="text-center py-3">Không có dữ liệu</td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-
-                  </div>
-                </div>
-              </div>
+            <div>
+              <span>Tổng hồ sơ</span>
+              <strong>{students.length}</strong>
             </div>
           </div>
-        </div>
-      </main>
 
-      {/* ================= MODAL CHI TIẾT SINH VIÊN ================= */}
-      {detailModal.show && (
-        <div className="modal fade show d-block" tabIndex="-1">
-          <div className="modal-dialog modal-lg">
-            <div className="modal-content">
-              <div className="modal-header bg-dark text-white">
-                <h5 className="modal-title" style={{ color: "#FFF" }}>Thông tin sinh viên</h5>
-                <button type="button" className="btn-close white"  onClick={() => setDetailModal({ show: false, student: null })}></button>
+          <div className="registration-stat-card pending">
+            <div className="stat-icon">
+              <i className="fa fa-clock"></i>
+            </div>
+
+            <div>
+              <span>Chờ duyệt</span>
+              <strong>{countByStatus("PENDING")}</strong>
+            </div>
+          </div>
+
+          <div className="registration-stat-card approved">
+            <div className="stat-icon">
+              <i className="fa fa-check-circle"></i>
+            </div>
+
+            <div>
+              <span>Đã duyệt</span>
+              <strong>{countByStatus("APPROVED")}</strong>
+            </div>
+          </div>
+
+          <div className="registration-stat-card rejected">
+            <div className="stat-icon">
+              <i className="fa fa-times-circle"></i>
+            </div>
+
+            <div>
+              <span>Đã từ chối</span>
+              <strong>{countByStatus("REJECTED")}</strong>
+            </div>
+          </div>
+        </section>
+
+        <section className="registration-list-section">
+          <div className="registration-toolbar">
+            <div>
+              <h2>Danh sách hồ sơ đăng ký</h2>
+
+              <p>
+                Lọc hồ sơ theo trạng thái và xem thông tin chi tiết của sinh
+                viên.
+              </p>
+            </div>
+
+            <div className="registration-filter">
+              <label htmlFor="registration-status-filter">Trạng thái</label>
+
+              <select
+                id="registration-status-filter"
+                value={selectedStatus}
+                onChange={(e) => setSelectedStatus(e.target.value)}
+              >
+                <option value="ALL">Tất cả hồ sơ</option>
+                <option value="PENDING">Chờ duyệt</option>
+                <option value="APPROVED">Đã duyệt</option>
+                <option value="REJECTED">Đã từ chối</option>
+              </select>
+            </div>
+          </div>
+
+          {loading ? (
+            <div className="registration-loading">
+              <i className="fa fa-spinner fa-spin"></i>
+
+              <p>Đang tải danh sách hồ sơ...</p>
+            </div>
+          ) : filteredStudents.length === 0 ? (
+            <div className="registration-empty">
+              <div className="registration-empty-icon">
+                <i className="fa fa-folder-open"></i>
               </div>
 
-              <div className="modal-body">
-                <table className="table">
-                  <tbody>
-                    <tr><th>Họ tên:</th><td>{detailModal.student.fullName}</td></tr>
-                    <tr><th>MSSV:</th><td>{detailModal.student.username}</td></tr>
-                    <tr><th>Lớp:</th><td>{detailModal.student.className}</td></tr>
-                    <tr><th>Email:</th><td>{detailModal.student.email}</td></tr>
-                    <tr><th>Số điện thoại:</th><td>{detailModal.student.phone || "Chưa cập nhật"}</td></tr>
-                    <tr><th>Giới tính:</th><td>{detailModal.student.gender ? "Nữ" : "Nam"}</td></tr>
-                    <tr><th>Ngày sinh:</th><td>{detailModal.student.dateOfBirth}</td></tr>
-                    <tr>
-                      <th>Trạng thái:</th>
+              <h3>Không có hồ sơ phù hợp</h3>
+
+              <p>
+                Hiện tại chưa có hồ sơ đăng ký nội trú theo trạng thái đã chọn.
+              </p>
+            </div>
+          ) : (
+            <div className="registration-table-wrapper">
+              <table className="registration-table">
+                <thead>
+                  <tr>
+                    <th>Họ và tên</th>
+                    <th>MSSV</th>
+                    <th>Lớp</th>
+                    <th>Email</th>
+                    <th>Trạng thái</th>
+                    <th>Thao tác</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {filteredStudents.map((student) => (
+                    <tr key={student.id}>
                       <td>
-                        {detailModal.student.approvalStatus === "PENDING" && <span className="text-warning">Chờ duyệt</span>}
-                        {detailModal.student.approvalStatus === "APPROVED" && <span className="text-success">Đã duyệt</span>}
-                        {detailModal.student.approvalStatus === "REJECTED" && <span className="text-danger">Từ chối</span>}
+                        <div className="registration-student-cell">
+                          <div className="registration-avatar">
+                            {student.fullName
+                              ? student.fullName.trim().charAt(0).toUpperCase()
+                              : "S"}
+                          </div>
+
+                          <div>
+                            <strong>
+                              {student.fullName || "Chưa cập nhật"}
+                            </strong>
+
+                            <span>
+                              {student.phone || "Chưa có số điện thoại"}
+                            </span>
+                          </div>
+                        </div>
+                      </td>
+
+                      <td>{student.username || "—"}</td>
+
+                      <td>{student.className || "—"}</td>
+
+                      <td className="registration-email-cell">
+                        {student.email || "—"}
+                      </td>
+
+                      <td>
+                        <span
+                          className={`registration-status-badge ${
+                            student.approvalStatus
+                              ? student.approvalStatus.toLowerCase()
+                              : ""
+                          }`}
+                        >
+                          {getStatusText(student.approvalStatus)}
+                        </span>
+                      </td>
+
+                      <td>
+                        <div className="registration-actions">
+                          <button
+                            type="button"
+                            className="registration-detail-button"
+                            onClick={() =>
+                              setDetailModal({
+                                show: true,
+                                student,
+                              })
+                            }
+                          >
+                            <i className="fa fa-eye"></i>
+                            Chi tiết
+                          </button>
+
+                          {student.approvalStatus === "PENDING" && (
+                            <>
+                              <button
+                                type="button"
+                                className="registration-approve-button"
+                                onClick={() => approveStudent(student.id)}
+                              >
+                                <i className="fa fa-check"></i>
+                                Duyệt
+                              </button>
+
+                              <button
+                                type="button"
+                                className="registration-reject-button"
+                                onClick={() => openRejectModal(student.id)}
+                              >
+                                <i className="fa fa-times"></i>
+                                Từ chối
+                              </button>
+                            </>
+                          )}
+                        </div>
                       </td>
                     </tr>
-                  </tbody>
-                </table>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </section>
+
+        {detailModal.show && detailModal.student && (
+          <div
+            className="registration-modal-overlay"
+            onMouseDown={(e) => {
+              if (e.target === e.currentTarget) {
+                setDetailModal({
+                  show: false,
+                  student: null,
+                });
+              }
+            }}
+          >
+            <div className="registration-detail-modal">
+              <div className="registration-modal-header">
+                <div>
+                  <span className="registration-modal-label">
+                    Hồ sơ đăng ký nội trú
+                  </span>
+
+                  <h2>Thông tin sinh viên</h2>
+                </div>
+
+                <button
+                  type="button"
+                  className="registration-modal-close"
+                  onClick={() =>
+                    setDetailModal({
+                      show: false,
+                      student: null,
+                    })
+                  }
+                >
+                  <i className="fa fa-times"></i>
+                </button>
               </div>
 
-              <div className="modal-footer">
+              <div className="registration-modal-body">
+                <section className="registration-detail-section">
+                  <div className="registration-detail-title">
+                    <div className="detail-title-icon">
+                      <i className="fa fa-user-graduate"></i>
+                    </div>
+
+                    <div>
+                      <h3>Thông tin sinh viên</h3>
+                      <p>Thông tin tài khoản và hồ sơ cá nhân</p>
+                    </div>
+                  </div>
+
+                  <div className="registration-detail-grid">
+                    <div className="registration-detail-row">
+                      <label>Họ và tên</label>
+                      <span>
+                        {detailModal.student.fullName || "Chưa cập nhật"}
+                      </span>
+                    </div>
+
+                    <div className="registration-detail-row">
+                      <label>Mã số sinh viên</label>
+                      <span>{detailModal.student.username || "—"}</span>
+                    </div>
+
+                    <div className="registration-detail-row">
+                      <label>Lớp</label>
+                      <span>{detailModal.student.className || "—"}</span>
+                    </div>
+
+                    <div className="registration-detail-row">
+                      <label>Email</label>
+                      <span>{detailModal.student.email || "—"}</span>
+                    </div>
+
+                    <div className="registration-detail-row">
+                      <label>Số điện thoại</label>
+                      <span>
+                        {detailModal.student.phone || "Chưa cập nhật"}
+                      </span>
+                    </div>
+
+                    <div className="registration-detail-row">
+                      <label>Giới tính</label>
+                      <span>
+                        {detailModal.student.gender === true
+                          ? "Nữ"
+                          : detailModal.student.gender === false
+                          ? "Nam"
+                          : "Chưa cập nhật"}
+                      </span>
+                    </div>
+
+                    <div className="registration-detail-row">
+                      <label>Ngày sinh</label>
+                      <span>{formatDate(detailModal.student.dateOfBirth)}</span>
+                    </div>
+
+                    <div className="registration-detail-row">
+                      <label>Trạng thái hồ sơ</label>
+
+                      <span
+                        className={`registration-status-badge ${
+                          detailModal.student.approvalStatus
+                            ? detailModal.student.approvalStatus.toLowerCase()
+                            : ""
+                        }`}
+                      >
+                        {getStatusText(detailModal.student.approvalStatus)}
+                      </span>
+                    </div>
+                  </div>
+                </section>
+
+                <section className="registration-detail-section">
+                  <div className="registration-detail-title">
+                    <div className="detail-title-icon residence">
+                      <i className="fa fa-id-card"></i>
+                    </div>
+
+                    <div>
+                      <h3>Thông tin cư trú</h3>
+                      <p>Thông tin căn cước và địa chỉ thường trú</p>
+                    </div>
+                  </div>
+
+                  {detailModal.student.residenceInfo ? (
+                    <div className="registration-detail-grid">
+                      <div className="registration-detail-row">
+                        <label>Số CCCD</label>
+                        <span>
+                          {detailModal.student.residenceInfo.identityNumber ||
+                            "Chưa cập nhật"}
+                        </span>
+                      </div>
+
+                      <div className="registration-detail-row">
+                        <label>Ngày cấp</label>
+                        <span>
+                          {formatDate(
+                            detailModal.student.residenceInfo.identityIssueDate
+                          )}
+                        </span>
+                      </div>
+
+                      <div className="registration-detail-row">
+                        <label>Nơi cấp</label>
+                        <span>
+                          {detailModal.student.residenceInfo
+                            .identityIssuePlace || "Chưa cập nhật"}
+                        </span>
+                      </div>
+
+                      <div className="registration-detail-row">
+                        <label>Quốc tịch</label>
+                        <span>
+                          {detailModal.student.residenceInfo.nationality ||
+                            "Chưa cập nhật"}
+                        </span>
+                      </div>
+
+                      <div className="registration-detail-row">
+                        <label>Nơi sinh</label>
+                        <span>
+                          {detailModal.student.residenceInfo.placeOfBirth ||
+                            "Chưa cập nhật"}
+                        </span>
+                      </div>
+
+                      <div className="registration-detail-row">
+                        <label>Dân tộc</label>
+                        <span>
+                          {detailModal.student.residenceInfo.ethnicity ||
+                            "Chưa cập nhật"}
+                        </span>
+                      </div>
+
+                      <div className="registration-detail-row">
+                        <label>Tôn giáo</label>
+                        <span>
+                          {detailModal.student.residenceInfo.religion ||
+                            "Chưa cập nhật"}
+                        </span>
+                      </div>
+
+                      <div className="registration-detail-row">
+                        <label>Tỉnh / Thành phố</label>
+                        <span>
+                          {detailModal.student.residenceInfo.province ||
+                            "Chưa cập nhật"}
+                        </span>
+                      </div>
+
+                      <div className="registration-detail-row">
+                        <label>Quận / Huyện</label>
+                        <span>
+                          {detailModal.student.residenceInfo.district ||
+                            "Chưa cập nhật"}
+                        </span>
+                      </div>
+
+                      <div className="registration-detail-row">
+                        <label>Phường / Xã</label>
+                        <span>
+                          {detailModal.student.residenceInfo.ward ||
+                            "Chưa cập nhật"}
+                        </span>
+                      </div>
+
+                      <div className="registration-detail-row full-width">
+                        <label>Địa chỉ</label>
+                        <span>
+                          {detailModal.student.residenceInfo.address ||
+                            "Chưa cập nhật"}
+                        </span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="registration-no-residence">
+                      <i className="fa fa-address-card"></i>
+
+                      <p>Sinh viên chưa cập nhật thông tin cư trú.</p>
+                    </div>
+                  )}
+                </section>
+              </div>
+
+              <div className="registration-modal-footer">
+                <button
+                  type="button"
+                  className="registration-close-button"
+                  onClick={() =>
+                    setDetailModal({
+                      show: false,
+                      student: null,
+                    })
+                  }
+                >
+                  Đóng
+                </button>
+
                 {detailModal.student.approvalStatus === "PENDING" && (
                   <>
                     <button
-                      className="btn btn-success"
+                      type="button"
+                      className="registration-reject-button"
                       onClick={() => {
-                        approveStudent(detailModal.student.id);
-                        setDetailModal({ show: false, student: null });
+                        const studentId = detailModal.student.id;
+
+                        setDetailModal({
+                          show: false,
+                          student: null,
+                        });
+
+                        openRejectModal(studentId);
                       }}
                     >
-                      Duyệt sinh viên
+                      <i className="fa fa-times"></i>
+                      Từ chối
                     </button>
 
                     <button
-                      className="btn btn-danger"
-                      onClick={() => {
-                        setDetailModal({ show: false, student: null });
-                        openRejectModal(detailModal.student.id);
-                      }}
+                      type="button"
+                      className="registration-approve-button"
+                      onClick={() => approveStudent(detailModal.student.id)}
                     >
-                      Từ chối
+                      <i className="fa fa-check"></i>
+                      Duyệt hồ sơ
                     </button>
                   </>
                 )}
-
-                <button className="btn btn-secondary" onClick={() => setDetailModal({ show: false, student: null })}>
-                  Đóng
-                </button>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* ================= MODAL TỪ CHỐI ================= */}
-      {rejectModalData.show && (
-        <div className="modal fade show d-block" tabIndex="-1">
-          <div className="modal-dialog">
-            <div className="modal-content">
-              <div className="modal-header bg-danger text-white">
-                <h5 className="modal-title" style={{ color: "#FFF" }}>Từ chối đăng ký nội trú</h5>
+        {rejectModalData.show && (
+          <div
+            className="registration-modal-overlay"
+            onMouseDown={(e) => {
+              if (e.target === e.currentTarget) {
+                closeRejectModal();
+              }
+            }}
+          >
+            <div className="registration-reject-modal">
+              <div className="registration-modal-header reject">
+                <div>
+                  <span className="registration-modal-label">Xử lý hồ sơ</span>
+
+                  <h2>Từ chối đăng ký nội trú</h2>
+                </div>
+
                 <button
                   type="button"
-                  className="btn-close btn-close-white"
-                  onClick={() => setRejectModalData({ show: false, studentId: null, reasonType: "", customReason: "" })}
-                ></button>
+                  className="registration-modal-close"
+                  onClick={closeRejectModal}
+                >
+                  <i className="fa fa-times"></i>
+                </button>
               </div>
 
-              <div className="modal-body">
-                <label className="form-label fw-bold">Chọn lý do từ chối</label>
-                <select
-                  className="form-select mb-3"
-                  value={rejectModalData.reasonType}
-                  onChange={(e) => setRejectModalData(prev => ({ ...prev, reasonType: e.target.value }))}
-                >
-                  <option value="">-- Chọn lý do --</option>
-                  <option value="Không đủ điều kiện nội trú">Không đủ điều kiện nội trú</option>
-                  <option value="Ký túc xá đã hết chỗ">Ký túc xá đã hết chỗ</option>
-                  <option value="Thiếu hoặc sai thông tin hồ sơ">Thiếu hoặc sai thông tin hồ sơ</option>
-                  <option value="Sinh viên đã từng vi phạm nội quy KTX">Sinh viên đã từng vi phạm nội quy KTX</option>
-                  <option value="Đăng ký quá hạn">Đăng ký quá hạn</option>
-                  <option value="Khác">Khác</option>
-                </select>
+              <div className="registration-modal-body">
+                <div className="registration-reject-warning">
+                  <div className="reject-warning-icon">
+                    <i className="fa fa-exclamation-triangle"></i>
+                  </div>
+
+                  <div>
+                    <h3>Xác nhận từ chối hồ sơ</h3>
+
+                    <p>
+                      Vui lòng chọn lý do phù hợp. Nội dung này sẽ được gửi đến
+                      sinh viên qua email.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="reject-form-group">
+                  <label
+                    htmlFor="reject-reason"
+                    className="reject-select-label"
+                  >
+                    <i className="fa fa-list-alt"></i>
+
+                    <span>Lý do từ chối</span>
+
+                    <span className="required">*</span>
+                  </label>
+
+                  <div className="reject-select-wrapper">
+                    <select
+                      id="reject-reason"
+                      className="reject-select"
+                      value={rejectModalData.reasonType}
+                      onChange={(e) =>
+                        setRejectModalData((prev) => ({
+                          ...prev,
+                          reasonType: e.target.value,
+                          customReason:
+                            e.target.value === "Khác" ? prev.customReason : "",
+                        }))
+                      }
+                    >
+                      <option value="">-- Chọn lý do từ chối --</option>
+
+                      <option value="Không đủ điều kiện nội trú">
+                        Không đủ điều kiện nội trú
+                      </option>
+
+                      <option value="Ký túc xá đã hết chỗ">
+                        Ký túc xá đã hết chỗ
+                      </option>
+
+                      <option value="Thiếu hoặc sai thông tin hồ sơ">
+                        Thiếu hoặc sai thông tin hồ sơ
+                      </option>
+
+                      <option value="Sinh viên đã từng vi phạm nội quy KTX">
+                        Sinh viên đã từng vi phạm nội quy KTX
+                      </option>
+
+                      <option value="Đăng ký quá hạn">Đăng ký quá hạn</option>
+
+                      <option value="Khác">Lý do khác</option>
+                    </select>
+
+                    <i className="fa fa-chevron-down select-arrow"></i>
+                  </div>
+                </div>
 
                 {rejectModalData.reasonType === "Khác" && (
-                  <textarea
-                    className="form-control"
-                    rows="3"
-                    placeholder="Nhập lý do khác..."
-                    value={rejectModalData.customReason}
-                    onChange={(e) => setRejectModalData(prev => ({ ...prev, customReason: e.target.value }))}
-                  />
+                  <div className="registration-form-group">
+                    <label htmlFor="custom-reject-reason">
+                      Nhập lý do khác
+                      <span>*</span>
+                    </label>
+
+                    <textarea
+                      id="custom-reject-reason"
+                      className="reject-custom-textarea"
+                      rows="5"
+                      maxLength="500"
+                      value={rejectModalData.customReason}
+                      onChange={(e) =>
+                        setRejectModalData((prev) => ({
+                          ...prev,
+                          customReason: e.target.value,
+                        }))
+                      }
+                      placeholder="Nhập nội dung lý do từ chối..."
+                    />
+
+                    <div className="reject-textarea-footer">
+                      <span>
+                        {rejectModalData.customReason.length}/500 ký tự
+                      </span>
+                    </div>
+
+                    <div className="registration-character-count">
+                      {rejectModalData.customReason.length}/500 ký tự
+                    </div>
+                  </div>
                 )}
               </div>
 
-              <div className="modal-footer">
-                <button className="btn btn-secondary"
-                  onClick={() => setRejectModalData({ show: false, studentId: null, reasonType: "", customReason: "" })}
+              <div className="registration-modal-footer">
+                <button
+                  type="button"
+                  className="registration-close-button"
+                  onClick={closeRejectModal}
                 >
                   Hủy
                 </button>
 
-                <button className="btn btn-danger" onClick={confirmReject}>
+                <button
+                  type="button"
+                  className="registration-confirm-reject-button"
+                  onClick={confirmReject}
+                >
+                  <i className="fa fa-times-circle"></i>
                   Xác nhận từ chối
                 </button>
               </div>
-
             </div>
           </div>
-        </div>
-      )}
-
-      <SettingsPanel sidebarColor={sidebarColor} setSidebarColor={setSidebarColor} />
-      <Script />
+        )}
+      </main>
     </div>
   );
 }

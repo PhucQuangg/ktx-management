@@ -7,8 +7,8 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface StudentVerificationRepository
-        extends JpaRepository<StudentVerification, String> {
+public interface StudentVerificationRepository extends JpaRepository<StudentVerification, String> {
+
     Optional<StudentVerification> findByMssv(String mssv);
 
 }
