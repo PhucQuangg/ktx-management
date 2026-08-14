@@ -33,6 +33,8 @@ export default function InvoiceList() {
 
   const [serviceForm, setServiceForm] = useState(initialServiceForm);
 
+  const [editingService, setEditingService] = useState(null);
+
   useEffect(() => {
     if (!token) {
       window.location.href = "/login";
@@ -437,7 +439,26 @@ export default function InvoiceList() {
     }));
   };
 
-  const addService = async () => {
+  // =====================================================
+  // CHỌN DỊCH VỤ CẦN SỬA
+  // =====================================================
+
+  const editService = (service) => {
+    setEditingService(service);
+
+    setServiceForm({
+      name: service.name || "",
+      price: service.price ?? "",
+    });
+  };
+
+  const cancelEditService = () => {
+    setEditingService(null);
+
+    setServiceForm(initialServiceForm);
+  };
+
+  const saveService = async () => {
     const serviceName = serviceForm.name.trim();
 
     const servicePrice = Number(serviceForm.price);
@@ -454,15 +475,24 @@ export default function InvoiceList() {
       return;
     }
 
+    const isEditing = editingService !== null;
+
     try {
       setProcessing(true);
 
-      const response = await fetch("http://localhost:8080/api/admin/services", {
-        method: "POST",
+      const url = isEditing
+        ? `http://localhost:8080/api/admin/services/${editingService.id}`
+        : "http://localhost:8080/api/admin/services";
+
+      const response = await fetch(url, {
+        method: isEditing ? "PUT" : "POST",
+
         headers: {
           "Content-Type": "application/json",
+
           Authorization: `Bearer ${token}`,
         },
+
         body: JSON.stringify({
           name: serviceName,
           price: servicePrice,
@@ -472,26 +502,59 @@ export default function InvoiceList() {
       const message = await response.text();
 
       if (!response.ok) {
-        throw new Error(message || "Không thể thêm dịch vụ.");
+        throw new Error(
+          message ||
+            (isEditing
+              ? "Không thể cập nhật dịch vụ."
+              : "Không thể thêm dịch vụ.")
+        );
       }
+
+      // ================= RESET FORM =================
 
       setServiceForm(initialServiceForm);
 
-      await fetchServices();
-    } catch (error) {
-      console.error(error);
+      setEditingService(null);
 
-      window.showPopup?.(error.message || "Lỗi khi thêm dịch vụ.", true);
+      // ================= LOAD LẠI DANH SÁCH =================
+
+      await fetchServices();
+
+      // ================= THÔNG BÁO =================
+
+      setTimeout(() => {
+        window.showPopup?.(
+          message ||
+            (isEditing
+              ? "Cập nhật dịch vụ thành công."
+              : "Thêm dịch vụ thành công.")
+        );
+      }, 350);
+    } catch (error) {
+      console.error("Lỗi lưu dịch vụ:", error);
+
+      setTimeout(() => {
+        window.showPopup?.(
+          error.message ||
+            (isEditing ? "Lỗi khi cập nhật dịch vụ." : "Lỗi khi thêm dịch vụ."),
+          true
+        );
+      }, 350);
     } finally {
       setProcessing(false);
     }
   };
+
+  // =====================================================
+  // XÓA DỊCH VỤ
+  // =====================================================
 
   const deleteService = (serviceId) => {
     window.showPopup?.(
       "Bạn có chắc chắn muốn xóa dịch vụ này?",
       false,
       true,
+
       async () => {
         try {
           setProcessing(true);
@@ -500,6 +563,7 @@ export default function InvoiceList() {
             `http://localhost:8080/api/admin/services/${serviceId}`,
             {
               method: "DELETE",
+
               headers: {
                 Authorization: `Bearer ${token}`,
               },
@@ -512,13 +576,24 @@ export default function InvoiceList() {
             throw new Error(message || "Không thể xóa dịch vụ.");
           }
 
-          window.showPopup?.(message || "Xóa dịch vụ thành công.");
+          // Nếu đang sửa chính dịch vụ vừa xóa
+          // thì reset form
+
+          if (editingService?.id === serviceId) {
+            cancelEditService();
+          }
 
           await fetchServices();
-        } catch (error) {
-          console.error(error);
 
-          window.showPopup?.(error.message || "Lỗi khi xóa dịch vụ.", true);
+          setTimeout(() => {
+            window.showPopup?.(message || "Xóa dịch vụ thành công.");
+          }, 350);
+        } catch (error) {
+          console.error("Lỗi xóa dịch vụ:", error);
+
+          setTimeout(() => {
+            window.showPopup?.(error.message || "Lỗi khi xóa dịch vụ.", true);
+          }, 350);
         } finally {
           setProcessing(false);
         }
@@ -1080,15 +1155,36 @@ export default function InvoiceList() {
                   </div>
                 </div>
 
-                <button
-                  type="button"
-                  className="service-add-button"
-                  onClick={addService}
-                  disabled={processing}
-                >
-                  <i className="fa fa-plus"></i>
-                  Thêm dịch vụ
-                </button>
+                <div className="service-form-actions">
+                  <button
+                    type="button"
+                    className={
+                      editingService
+                        ? "service-update-button"
+                        : "service-add-button"
+                    }
+                    onClick={saveService}
+                    disabled={processing}
+                  >
+                    <i
+                      className={editingService ? "fa fa-save" : "fa fa-plus"}
+                    ></i>
+
+                    {editingService ? "Cập nhật" : "Thêm dịch vụ"}
+                  </button>
+
+                  {editingService && (
+                    <button
+                      type="button"
+                      className="service-cancel-edit-icon"
+                      onClick={cancelEditService}
+                      disabled={processing}
+                      title="Hủy chỉnh sửa"
+                    >
+                      <i className="fa fa-times"></i>
+                    </button>
+                  )}
+                </div>
               </div>
 
               {services.length === 0 ? (
@@ -1121,15 +1217,27 @@ export default function InvoiceList() {
                           <td>{formatMoney(service.price)}</td>
 
                           <td>
-                            <button
-                              type="button"
-                              className="service-delete-button"
-                              disabled={processing}
-                              onClick={() => deleteService(service.id)}
-                            >
-                              <i className="fa fa-trash"></i>
-                              Xóa
-                            </button>
+                            <div className="service-action-buttons">
+                              <button
+                                type="button"
+                                className="service-edit-button"
+                                disabled={processing}
+                                onClick={() => editService(service)}
+                              >
+                                <i className="fa fa-pen"></i>
+                                Sửa
+                              </button>
+
+                              <button
+                                type="button"
+                                className="service-delete-button"
+                                disabled={processing}
+                                onClick={() => deleteService(service.id)}
+                              >
+                                <i className="fa fa-trash"></i>
+                                Xóa
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))}
@@ -1142,7 +1250,10 @@ export default function InvoiceList() {
             <div className="service-modal-footer">
               <button
                 type="button"
-                onClick={() => setShowServiceModal(false)}
+                onClick={() => {
+                  setShowServiceModal(false);
+                  cancelEditService();
+                }}
                 disabled={processing}
               >
                 Đóng

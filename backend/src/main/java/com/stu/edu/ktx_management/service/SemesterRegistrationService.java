@@ -155,7 +155,8 @@ public class SemesterRegistrationService {
 
         LocalDate today = LocalDate.now();
 
-        List<SemesterRegistration> activeSemesters = semesterRepository.findByActiveTrue();
+        List<SemesterRegistration> activeSemesters =
+                semesterRepository.findByActiveTrue();
 
         for (SemesterRegistration semester : activeSemesters) {
 
@@ -168,52 +169,97 @@ public class SemesterRegistrationService {
 
                 semester.setActive(false);
 
-                semesterRepository.save(semester);
+                semesterRepository.save(
+                        semester
+                );
 
                 continue;
             }
 
-
-            LocalDate startDate;
-
-            LocalDate endDate;
-
             try {
 
-                startDate =
+                int startMonth =
+                        semester.getRegisterStartMonth();
+
+                int startDay =
+                        semester.getRegisterStartDay();
+
+                int endMonth =
+                        semester.getRegisterEndMonth();
+
+                int endDay =
+                        semester.getRegisterEndDay();
+
+                boolean crossYear =
+                        endMonth < startMonth;
+
+
+                int startYear =
+                        today.getYear();
+
+                if (
+                        crossYear &&
+                                today.getMonthValue() <= endMonth
+                ) {
+
+                    startYear =
+                            today.getYear() - 1;
+                }
+
+
+                LocalDate startDate =
                         LocalDate.of(
-                                today.getYear(),
-                                semester.getRegisterStartMonth(),
-                                semester.getRegisterStartDay()
+                                startYear,
+                                startMonth,
+                                startDay
                         );
 
-                endDate =
+
+                int endYear =
+                        crossYear
+                                ? startYear + 1
+                                : startYear;
+
+
+                LocalDate endDate =
                         LocalDate.of(
-                                today.getYear(),
-                                semester.getRegisterEndMonth(),
-                                semester.getRegisterEndDay()
+                                endYear,
+                                endMonth,
+                                endDay
                         );
+
+
+                System.out.println(
+                        semester.getName()
+                                + " | "
+                                + startDate
+                                + " -> "
+                                + endDate
+                                + " | Today = "
+                                + today
+                );
+
+                if (today.isAfter(endDate)) {
+
+                    semester.setActive(false);
+
+                    semesterRepository.save(
+                            semester
+                    );
+
+                    System.out.println(
+                            "Đã tự động đóng "
+                                    + semester.getName()
+                    );
+                }
 
             } catch (DateTimeException e) {
 
                 semester.setActive(false);
 
-                semesterRepository.save(semester);
-
-                continue;
-            }
-
-            if (endDate.isBefore(startDate)) {
-                if (today.getMonthValue() == 12) {
-                    endDate = endDate.plusYears(1);
-                } else {
-                    startDate = startDate.minusYears(1);
-                }
-            }
-
-            if (today.isAfter(endDate)) {
-                semester.setActive(false);
-                semesterRepository.save(semester);
+                semesterRepository.save(
+                        semester
+                );
             }
         }
     }

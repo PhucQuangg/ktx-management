@@ -302,64 +302,78 @@ export default function ContractList() {
     if (!validateSemesterTimes()) {
       return;
     }
-
+  
     try {
       setProcessing(true);
-
+  
       for (const semester of semesterTimes) {
-        const [startMonth, startDay] = semester.registerStartDate
-          .split("-")
-          .map(Number);
-
-        const [endMonth, endDay] = semester.registerEndDate
-          .split("-")
-          .map(Number);
-
+        const [, startMonth, startDay] =
+          semester.registerStartDate
+            .split("-")
+            .map(Number);
+  
+        const [, endMonth, endDay] =
+          semester.registerEndDate
+            .split("-")
+            .map(Number);
+  
         const payload = {
           registerStartMonth: startMonth,
-
           registerStartDay: startDay,
-
+  
           registerEndMonth: endMonth,
-
           registerEndDay: endDay,
         };
-
+  
+  
         const response = await fetch(
           `http://localhost:8080/api/admin/semester-registration/${semester.id}`,
           {
             method: "PUT",
-
             headers: {
               "Content-Type": "application/json",
-
               Authorization: `Bearer ${token}`,
             },
-
             body: JSON.stringify(payload),
           }
         );
-
-        const message = await response.text();
-
+  
+        const message =
+          await response.text();
+  
         if (!response.ok) {
-          throw new Error(message || `Không thể cập nhật ${semester.name}.`);
+          throw new Error(
+            message ||
+              `Không thể cập nhật ${semester.name}.`
+          );
         }
       }
-
-      window.showPopup?.("Cập nhật thời gian đăng ký thành công.");
-
+  
       setShowSemesterTimeModal(false);
-
+  
       await loadSemesterRegistrations();
       await loadActiveSemester();
+  
+      setTimeout(() => {
+        window.showPopup?.(
+          "Cập nhật thời gian đăng ký thành công."
+        );
+      }, 350);
+  
     } catch (error) {
-      console.error("Lỗi cập nhật thời gian:", error);
-
-      window.showPopup?.(
-        error.message || "Không thể cập nhật thời gian đăng ký.",
-        true
+      console.error(
+        "Lỗi cập nhật thời gian:",
+        error
       );
+  
+      setTimeout(() => {
+        window.showPopup?.(
+          error.message ||
+            "Không thể cập nhật thời gian đăng ký.",
+          true
+        );
+      }, 350);
+  
     } finally {
       setProcessing(false);
     }

@@ -1932,3 +1932,309 @@
         flex-direction: column;
     }
 }
+
+   .service-form-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.service-add-button {
+    min-height: 44px;
+    padding: 0 20px;
+
+    border: none;
+    border-radius: 10px;
+
+    background: #2563eb;
+    color: #ffffff;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.service-add-button:hover:not(:disabled) {
+    background: #1d4ed8;
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 5px 12px rgba(37, 99, 235, 0.2);
+}
+
+.service-add-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.service-update-button {
+    min-height: 44px;
+    padding: 0 20px;
+
+    border: none;
+    border-radius: 10px;
+
+    background: #16a34a;
+    color: #ffffff;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.service-update-button:hover:not(:disabled) {
+    background: #15803d;
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 5px 12px rgba(22, 163, 74, 0.2);
+}
+
+.service-update-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.service-cancel-edit-button {
+    min-height: 44px;
+    padding: 0 18px;
+
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+
+    background: #ffffff;
+    color: #475569;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease;
+}
+
+.service-cancel-edit-button:hover:not(:disabled) {
+    background: #f8fafc;
+    border-color: #94a3b8;
+    color: #1e293b;
+}
+
+.service-cancel-edit-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.service-action-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    flex-wrap: nowrap;
+}
+
+.service-edit-button {
+    height: 36px;
+    padding: 0 13px;
+
+    border: 1px solid #bfdbfe;
+    border-radius: 8px;
+
+    background: #eff6ff;
+    color: #2563eb;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+
+    cursor: pointer;
+
+    white-space: nowrap;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.service-edit-button:hover:not(:disabled) {
+    background: #dbeafe;
+    border-color: #93c5fd;
+    color: #1d4ed8;
+
+    transform: translateY(-1px);
+}
+
+.service-edit-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.service-delete-button {
+    height: 36px;
+    padding: 0 13px;
+
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+
+    background: #fef2f2;
+    color: #dc2626;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+
+    cursor: pointer;
+
+    white-space: nowrap;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.service-delete-button:hover:not(:disabled) {
+    background: #fee2e2;
+    border-color: #fca5a5;
+    color: #b91c1c;
+
+    transform: translateY(-1px);
+}
+
+.service-delete-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.service-add-button i,
+.service-update-button i,
+.service-cancel-edit-button i,
+.service-edit-button i,
+.service-delete-button i {
+    font-size: 13px;
+}
+
+.service-table th:last-child,
+.service-table td:last-child {
+    text-align: center;
+    width: 180px;
+}
+
+@media (max-width: 768px) {
+
+    .service-form-actions {
+        width: 100%;
+    }
+
+    .service-add-button,
+    .service-update-button,
+    .service-cancel-edit-button {
+        flex: 1;
+    }
+
+    .service-action-buttons {
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .service-edit-button,
+    .service-delete-button {
+        width: 100%;
+    }
+
+    .service-table th:last-child,
+    .service-table td:last-child {
+        width: 120px;
+    }
+}
+.service-cancel-edit-icon {
+    width: 42px;
+    height: 42px;
+
+    border: 1px solid #fecaca;
+    border-radius: 10px;
+
+    background: #fff5f5;
+    color: #dc2626;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.service-cancel-edit-icon i {
+    font-size: 15px;
+}
+
+.service-cancel-edit-icon:hover:not(:disabled) {
+    background: #fee2e2;
+    border-color: #fca5a5;
+    color: #b91c1c;
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 4px 10px rgba(220, 38, 38, 0.12);
+}
+
+.service-cancel-edit-icon:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.service-cancel-edit-icon:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

@@ -3,6 +3,7 @@ import com.stu.edu.ktx_management.dto.ServiceDTO;
 import com.stu.edu.ktx_management.entity.Services;
 import com.stu.edu.ktx_management.service.ServicesService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,8 +26,9 @@ public class AdminServicesController {
     }
 
     @PutMapping("/{id}")
-    public Services update(@PathVariable Integer id, @RequestBody ServiceDTO dto){
-        return servicesService.update(id,dto);
+    public ResponseEntity<?> update(@PathVariable Integer id, @RequestBody ServiceDTO dto){
+        servicesService.update(id,dto);
+        return ResponseEntity.ok("Cập nhật dịch vụ thành công! ");
     }
 
     @DeleteMapping("/{id}")
